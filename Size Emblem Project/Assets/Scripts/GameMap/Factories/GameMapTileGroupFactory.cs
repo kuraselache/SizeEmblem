@@ -13,9 +13,9 @@ namespace SizeEmblem.Scripts.GameMap.Factories
     {
         
 
-        public IGameMapTileGroup Resolve()
+        public IGameMapTileGroup Resolve(int mapLayers)
         {
-            return new GameMapTileGroup();
+            return new GameMapTileGroup(mapLayers);
         }
 
         public void Release(IGameMapTileGroup gameMapTileGroup)

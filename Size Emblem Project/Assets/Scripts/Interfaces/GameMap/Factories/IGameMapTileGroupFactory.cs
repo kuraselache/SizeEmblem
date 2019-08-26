@@ -8,7 +8,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap.Factories
 {
     public interface IGameMapTileGroupFactory
     {
-        IGameMapTileGroup Resolve();
+        IGameMapTileGroup Resolve(int mapLayers);
 
         void Release(IGameMapTileGroup gameMapTileGroup);
     }

@@ -1,6 +1,6 @@
 ﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces;
-using SizeEmblem.Scripts.Interfaces.Units;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace SizeEmblem.Scripts.Units
+namespace SizeEmblem.Scripts.GameUnits
 {
     [CreateAssetMenu(fileName = "New Unit Data", menuName = "Game Data/Unit Data", order = 1)]
     public class GameUnitData : ScriptableObject, IUnitData

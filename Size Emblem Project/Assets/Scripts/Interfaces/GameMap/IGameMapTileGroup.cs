@@ -1,5 +1,5 @@
 ﻿using SizeEmblem.Scripts.Constants;
-using SizeEmblem.Scripts.Interfaces.Units;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,9 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
 {
     public interface IGameMapTileGroup
     {
-        IList<IGameMapTile> Tiles { get; }
+        IReadOnlyList<IGameMapTile> Tiles { get; }
+
+        void SetLayerTile(int layer, IGameMapTile tile);
 
         float GetMovementCostForType(MovementType movementType);
         uint GetInhibitionScoreForUnit(IGameUnit unit);

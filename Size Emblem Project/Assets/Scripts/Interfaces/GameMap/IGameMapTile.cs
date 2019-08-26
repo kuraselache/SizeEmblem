@@ -1,5 +1,5 @@
 ﻿using SizeEmblem.Scripts.GameMap;
-using SizeEmblem.Scripts.Interfaces.Units;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -116,6 +116,7 @@ namespace SizeEmblem.Scripts.GameMap
         /// </summary>
         public void PopulateMovementData()
         {
+            // Only populate the MovementData dictionary once, 
             if (MovementData.Any() || movementTileData == null) return;
 
             foreach(var movementData in movementTileData.movementData)
@@ -123,12 +124,24 @@ namespace SizeEmblem.Scripts.GameMap
                 if (MovementData.ContainsKey(movementData.movementType)) continue;
                 MovementData.Add(movementData.movementType, movementData);
             }
+
+            // If we have a general movement rule then assign it to any movement types that don't have data
+            if(MovementData.ContainsKey(MovementType.General))
+            {
+                var generalMovementRule = MovementData[MovementType.General];
+
+                foreach (var movementType in Enum.GetValues(typeof(MovementType)).Cast<MovementType>())
+                {
+                    if (MovementData.ContainsKey(movementType)) continue;
+                    MovementData.Add(movementType, generalMovementRule);
+                }
+            }
         }
 
 
         /// <summary>
         /// Get the movement cost for this tile for a given movement type.
-        /// If the movement type is not included in this tile then it will check the "General" movement type and return that.
+        /// This will trigger populating the movement data for this tile data instance.
         /// If no movement data is found it will return NaN to indicate this tile is impassible.
         /// </summary>
         /// <param name="movementType">The type of movement to check.</param>
@@ -138,14 +151,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Make sure our dumb dictionary of stupidity is populated before we check movement data for this tile data
             PopulateMovementData();
 
-            // If no movement data exists for the given movement type assume it is impassable aka a negative value
-            if (!MovementData.ContainsKey(movementType))
-            {
-                if (movementType == MovementType.General) return float.NaN;
-                return (GetMovementCost(MovementType.General));
-            }
-
-            return MovementData[movementType].MovementCost;
+            return MovementData.ContainsKey(movementType) ? MovementData[movementType].MovementCost : float.NaN;
         }
     }
 }

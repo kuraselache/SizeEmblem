@@ -7,10 +7,10 @@ using SizeEmblem.Scripts.Helpers.Comparers;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameMap.Factories;
 using SizeEmblem.Scripts.Interfaces.Managers;
-using SizeEmblem.Scripts.Interfaces.Units;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using SizeEmblem.Scripts.Managers;
 using SizeEmblem.Scripts.UI;
-using SizeEmblem.Scripts.Units;
+using SizeEmblem.Scripts.GameUnits;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -104,7 +104,7 @@ namespace SizeEmblem.Scripts.GameMap
             {
                 GameMapTiles = new GameMapTileGroup[GameMapWidth * GameMapHeight];
                 for (var i = 0; i < GameMapTiles.Length; i++)
-                    GameMapTiles[i] = _gameMapTileGroupFactory.Resolve();
+                    GameMapTiles[i] = _gameMapTileGroupFactory.Resolve(MapLayers);
             }
 
             Debug.Log("Array initialized, begin populating");
@@ -148,7 +148,7 @@ namespace SizeEmblem.Scripts.GameMap
                 if (index >= gameMapTiles.Length) Debug.Log("OH SHIT");
 
                 // The tile is in bounds of our intended map data so add it to our game map tiles array
-                gameMapTiles[mapY * gmWidth + mapX].Tiles.Add(mapTile);
+                gameMapTiles[mapY * gmWidth + mapX].SetLayerTile(mapLayer, mapTile);
             }
         }
 
@@ -498,7 +498,7 @@ namespace SizeEmblem.Scripts.GameMap
 
                     var tileGroup = GameMapTiles[tileIndex];
 
-                    foreach(var tile in tileGroup.Tiles)
+                    foreach(var tile in tileGroup.Tiles.Where(z => z != null))
                     {
                         tile.InflictDamage(damage, unit);
                     }

@@ -1,4 +1,4 @@
-﻿using SizeEmblem.Scripts.Units;
+﻿using SizeEmblem.Scripts.GameUnits;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

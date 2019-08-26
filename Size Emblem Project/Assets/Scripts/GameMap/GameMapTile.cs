@@ -3,7 +3,7 @@ using Assets.Scripts.Managers;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces;
 using SizeEmblem.Scripts.Interfaces.GameMap;
-using SizeEmblem.Scripts.Interfaces.Units;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
