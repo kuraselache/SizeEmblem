@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6119578953140600346
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1918591189559609175, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_Name
+      value: HeroSamuraiGirlPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4220177823777639525, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -6109714860684983329, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: baseUnitData
+      value: 
+      objectReference: {fileID: 11400000, guid: 8519271ae8834c4489eb5ed1b4f62e5d,
+        type: 2}
+    - target: {fileID: -6109714860684983329, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: unitName
+      value: Samurai Girl Unit
+      objectReference: {fileID: 0}
+    - target: {fileID: 8824441506704272523, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8824441506704272523, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f03c7354547f73041a739addfcaa92ce,
+        type: 3}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.48
+      objectReference: {fileID: 0}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.48
+      objectReference: {fileID: 0}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -4276117397974164184, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a659fc9c33818a74d8ba799e4f4ea344, type: 3}

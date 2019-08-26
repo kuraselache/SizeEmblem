@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Map Base Layer
+    uniqueID: 2325149549
+    locked: 0
+  - name: Map Decoration Layer
+    uniqueID: 1335428389
+    locked: 0
+  - name: Map Movement Overlay
+    uniqueID: 1100672061
+    locked: 0
+  - name: Battler Layer
+    uniqueID: 1971500293
+    locked: 0

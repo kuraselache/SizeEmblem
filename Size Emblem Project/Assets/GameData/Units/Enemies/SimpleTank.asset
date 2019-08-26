@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6c9c3afa54a44c46b2e8d39a5bf3294, type: 3}
+  m_Name: SimpleTank
+  m_EditorClassIdentifier: 
+  unitName: Simple Debug Tank
+  sizeCategory: 1
+  unitCategory: 2
+  weaponType: 2
+  movementType: 1
+  movementSpeed: 5
+  initialLevel: 0
+  hp: 15
+  sp: 5
+  strength: 4
+  magic: 0
+  skill: 3
+  speed: 3
+  defense: 2
+  resistance: 0
+  luck: 2
+  height: 2.5
+  tileWidth: 1
+  tileHeight: 1
+  unitSprite: {fileID: 21300000, guid: f03c7354547f73041a739addfcaa92ce, type: 3}
