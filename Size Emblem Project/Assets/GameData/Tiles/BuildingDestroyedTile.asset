@@ -15,8 +15,9 @@ MonoBehaviour:
   tileName: Destroyed Building Tile
   tileWidth: 1
   tileHeight: 1
-  movementTileData: {fileID: 11400000, guid: 1f31a9e7ab8ae7f498b7616716459dba, type: 2}
+  movementTileData: {fileID: 11400000, guid: 152a1c9442b69824593dd771724adcfb, type: 2}
   tileMaxHealth: 0
+  onDestroyedTile: {fileID: 0}
   destructable: 0
   destructionValue: 0
   destructionDeathTollRange:

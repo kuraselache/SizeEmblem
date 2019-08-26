@@ -13,12 +13,6 @@ MonoBehaviour:
   m_Name: SmallBulidingMovement
   m_EditorClassIdentifier: 
   movementData:
-  - movementType: 0
-    Passable: 1
-    MovementCost: 1
-  - movementType: 3
-    Passable: 0
-    MovementCost: 1
   - movementType: 6
     Passable: 1
     MovementCost: 2
