@@ -267,6 +267,9 @@ namespace SizeEmblem.Scripts.GameMap
 
         public void ShowUnitMovementRange(IGameUnit unit)
         {
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
             ClearMovementOverlay();
 
             _availableRoutes = GetAllRoutesForUnit(unit);
@@ -276,7 +279,9 @@ namespace SizeEmblem.Scripts.GameMap
                 var tilePosition = TranslateMapXYToUnityXY(route.EndX, route.EndY);
                 movementOverlay.SetTile(tilePosition, overlayTile);
             }
-            
+
+            stopwatch.Stop();
+            Debug.Log(String.Format("Execution time: {0}ms", stopwatch.ElapsedMilliseconds));
         }
 
 
@@ -296,16 +301,21 @@ namespace SizeEmblem.Scripts.GameMap
             var originRoute = new GameMapMovementRoute(mapX, mapY);
 
             // Get the routes from all directions from our origin route
-            GetRoutesForLocation(routesFound, originRoute, Direction.North, unit, availableMovement);
-            GetRoutesForLocation(routesFound, originRoute, Direction.East,  unit, availableMovement);
-            GetRoutesForLocation(routesFound, originRoute, Direction.South, unit, availableMovement);
-            GetRoutesForLocation(routesFound, originRoute, Direction.West,  unit, availableMovement);
+            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.North, unit, availableMovement);
+            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.East,  unit, availableMovement);
+            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.South, unit, availableMovement);
+            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.West,  unit, availableMovement);
+
+            GetRoutesForLocationBreadthSearch(routesFound, originRoute, unit, availableMovement);
 
             // Now that we found our routes we need to narrow them down so there's only one route for each End X,Y. We need to group our end X,Ys together
             return routesFound.Values.ToList();
         }
 
-        public void GetRoutesForLocation(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, Direction direction, IGameUnit unit, int availableMovement)
+
+
+
+        public void GetRoutesForLocationDepthSearch(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, Direction direction, IGameUnit unit, int availableMovement)
         {
             // sometimes I wonder what I'm thinking
             if (direction == Direction.None) return;
@@ -347,22 +357,117 @@ namespace SizeEmblem.Scripts.GameMap
             // Now see if we can go any other directions from here that won't overlap our base route
             if(direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
             {
-                GetRoutesForLocation(routesFound, routeHere, Direction.South, unit, availableMovement);
+                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.South, unit, availableMovement);
             }
 
             if (direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
             {
-                GetRoutesForLocation(routesFound, routeHere, Direction.North, unit, availableMovement);
+                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.North, unit, availableMovement);
             }
 
             if (direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
             {
-                GetRoutesForLocation(routesFound, routeHere, Direction.West, unit, availableMovement);
+                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.West, unit, availableMovement);
             }
 
             if (direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
             {
-                GetRoutesForLocation(routesFound, routeHere, Direction.East, unit, availableMovement);
+                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.East, unit, availableMovement);
+            }
+
+        }
+
+
+        public void GetRoutesForLocationBreadthSearch(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, IGameUnit unit, int availableMovement)
+        {
+
+            var searchQueue = new Queue<GetRouteSearchParams>();
+
+            // Queue up our initial directions
+            searchQueue.Enqueue(new GetRouteSearchParams(baseRoute, Direction.North));
+            searchQueue.Enqueue(new GetRouteSearchParams(baseRoute, Direction.East));
+            searchQueue.Enqueue(new GetRouteSearchParams(baseRoute, Direction.South));
+            searchQueue.Enqueue(new GetRouteSearchParams(baseRoute, Direction.West));
+
+
+            while (searchQueue.Any())
+            {
+                var searchItem = searchQueue.Dequeue();
+                ProcessBreadthSearchQueueItem(searchQueue, searchItem, routesFound, unit, availableMovement);
+            }
+        }
+
+        public void ProcessBreadthSearchQueueItem(Queue<GetRouteSearchParams> searchQueue, GetRouteSearchParams searchParameters, Dictionary<int, IGameMapMovementRoute> routesFound, IGameUnit unit, int availableMovement)
+        {
+            // still wonderin'
+            if (searchParameters.Direction == Direction.None) return;
+
+            // We need to find what tiles we're going to check the movement cost for. Since units cover multiple tiles they have both an area we need to calculate and the edge of the unit we're looking for
+            var targetX = searchParameters.BaseRoute.EndX;
+            var targetY = searchParameters.BaseRoute.EndY;
+            if      (searchParameters.Direction == Direction.East)  targetX += unit.TileWidth;
+            else if (searchParameters.Direction == Direction.West)  targetX -= unit.TileWidth;
+            else if (searchParameters.Direction == Direction.North) targetY += unit.TileHeight;
+            else if (searchParameters.Direction == Direction.South) targetY -= unit.TileHeight;
+
+            // Grab the area that we're going to check
+            var areaWidth  = DirectionHelper.DirectionVertical(searchParameters.Direction)   ? unit.TileWidth  : 1;
+            var areaHeight = DirectionHelper.DirectionHorizontal(searchParameters.Direction) ? unit.TileHeight : 1;
+
+            // Get the movement cost for this unit to move this direction by one tile
+            var movementCost = AreaMovementCostForUnit(unit, targetX, targetY, areaWidth, areaHeight);
+
+            // If the movement cost is IMPASSIBLE or exceeds our available movement then this movement isn't possible
+            var totalCost = Mathf.CeilToInt(searchParameters.BaseRoute.RouteCost.Cost + movementCost.Cost); // we do this just as a check here, movement cost can be fractional (TODO: there is a bug here, check half steps logic)
+            if (!movementCost.IsPassable || totalCost > availableMovement) return;
+
+            // If it is possible to make this movement then we can create a new route for it!
+            var routeHere = searchParameters.BaseRoute.CreateExtendRoute(searchParameters.Direction, movementCost);
+            // See if we have an existing route to this ending X,Y
+            if (routesFound.ContainsKey(routeHere.EndSortKey))
+            {
+                var compare = GameMapMovementRouteComparer.Instance.Compare(routeHere, routesFound[routeHere.EndSortKey]);
+                if (compare < 0)
+                    routesFound[routeHere.EndSortKey] = routeHere;
+                else if (compare > 0) return;
+                else return; // collision strat: drop latest
+            }
+            else
+            {
+                routesFound.Add(routeHere.EndSortKey, routeHere);
+            }
+
+            // Queue up more work
+            if (searchParameters.Direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
+            {
+                searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.South));
+            }
+
+            if (searchParameters.Direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
+            {
+                searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.North));
+            }
+
+            if (searchParameters.Direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
+            {
+                searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.West));
+            }
+
+            if (searchParameters.Direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
+            {
+                searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.East));
+            }
+        }
+
+        public struct GetRouteSearchParams
+        {
+            public readonly IGameMapMovementRoute BaseRoute;
+            public readonly Direction Direction;
+
+            public GetRouteSearchParams(IGameMapMovementRoute baseRoute, Direction direction)
+            {
+                BaseRoute = baseRoute;
+                Direction = direction;
             }
         }
 
