@@ -438,26 +438,49 @@ namespace SizeEmblem.Scripts.GameMap
             }
 
             // Queue up more work
-            if (searchParameters.Direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
+            //if (searchParameters.Direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
+            //{
+            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.South));
+            //}
+
+            //if (searchParameters.Direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
+            //{
+            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.North));
+            //}
+
+            //if (searchParameters.Direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
+            //{
+            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.West));
+            //}
+
+            //if (searchParameters.Direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
+            //{
+            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.East));
+            //}
+
+            var openDirections = routeHere.GetOpenDirections();
+
+            if (searchParameters.Direction != Direction.North && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.South))
             {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.South));
             }
 
-            if (searchParameters.Direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
+            if (searchParameters.Direction != Direction.South && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.North))
             {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.North));
             }
 
-            if (searchParameters.Direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
+            if (searchParameters.Direction != Direction.East && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.West))
             {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.West));
             }
 
-            if (searchParameters.Direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
+            if (searchParameters.Direction != Direction.West && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.East))
             {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.East));
             }
         }
+
 
         public struct GetRouteSearchParams
         {

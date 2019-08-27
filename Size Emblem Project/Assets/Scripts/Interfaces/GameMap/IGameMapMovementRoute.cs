@@ -20,6 +20,8 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
 
 
         bool CheckDirectionForOverlap(Direction newDirection);
+        int GetOpenDirections();
+
         IGameMapMovementRoute CreateExtendRoute(Direction newDirection, MovementCost newDirectionCost);
     }
 }

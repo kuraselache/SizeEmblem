@@ -37,14 +37,6 @@ namespace SizeEmblem.Scripts.GameMap
             RouteCost = new MovementCost();
         }
 
-        //public GameMapMovementRoute(int startX, int startY, IEnumerable<Direction> route, MovementCost routeCost)
-        //{
-        //    StartX = startX;
-        //    StartY = startY;
-        //    // Copy the passed route to this instance
-        //    _route.AddRange(route);
-        //    RouteCost = routeCost;
-        //}
 
         public GameMapMovementRoute(IGameMapMovementRoute toCopy, Direction addedDirection, MovementCost addedCost)
         {
@@ -108,7 +100,46 @@ namespace SizeEmblem.Scripts.GameMap
 
             // Fallthrough: We checked out entire route for overlap and found none so this direction is good!
             return true;
+        }
 
+
+        public int GetOpenDirections()
+        {
+            var openDirections = (int)DirectionFlags.East | (int)DirectionFlags.North | (int)DirectionFlags.South | (int)DirectionFlags.West;
+
+            // If the route is empty then all directions are open!
+            if (!Route.Any()) return openDirections;
+
+            var x = StartX;
+            var y = StartY;
+
+            foreach(var direction in _route)
+            {
+                if(DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.North) && x == EndX && y == EndY+1)
+                {
+                    openDirections = DirectionFlagsHelper.UnsetDirectionFlag(openDirections, DirectionFlags.North);
+                }
+
+                if (DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.South) && x == EndX && y == EndY - 1)
+                {
+                    openDirections = DirectionFlagsHelper.UnsetDirectionFlag(openDirections, DirectionFlags.South);
+                }
+
+                if (DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.East) && x == EndX + 1 && y == EndY)
+                {
+                    openDirections = DirectionFlagsHelper.UnsetDirectionFlag(openDirections, DirectionFlags.East);
+                }
+
+                if (DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.West) && x == EndX - 1 && y == EndY)
+                {
+                    openDirections = DirectionFlagsHelper.UnsetDirectionFlag(openDirections, DirectionFlags.West);
+                }
+
+                // If we're out of open directions we can go there's no need to continue checking and just return nothing
+                if (openDirections == 0) break;
+            }
+
+            return openDirections;
         }
 
 
