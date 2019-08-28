@@ -8,10 +8,11 @@ namespace SizeEmblem.Scripts.Constants
 {
     public enum DirectionFlags
     {
+        None  = 0,
         North = 0x1,
-        East = 0x2,
+        East  = 0x2,
         South = 0x4,
-        West = 0x8
+        West  = 0x8
     }
 
     public static class DirectionFlagsHelper

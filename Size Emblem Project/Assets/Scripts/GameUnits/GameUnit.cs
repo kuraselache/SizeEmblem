@@ -109,6 +109,21 @@ namespace SizeEmblem.Scripts.GameUnits
         #endregion
 
 
+        #region Faction
+
+        public Faction unitFaction;
+        public Faction UnitFaction
+        {
+            get { return unitFaction; }
+            set
+            {
+                if (value == unitFaction) return;
+                unitFaction = value;
+            }
+        }
+
+        #endregion
+
         #region Movement
 
         public int BaseMovement { get { return BaseUnitData.MovementSpeed; } }

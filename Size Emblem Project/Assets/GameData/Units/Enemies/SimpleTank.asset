@@ -16,7 +16,7 @@ MonoBehaviour:
   sizeCategory: 1
   unitCategory: 2
   weaponType: 2
-  movementType: 1
+  baseMovementType: 2
   movementSpeed: 5
   initialLevel: 0
   hp: 15
@@ -28,6 +28,8 @@ MonoBehaviour:
   defense: 2
   resistance: 0
   luck: 2
+  bonusWalkingDamage: 0
+  bonusWalkingDamageRange: 0
   height: 2.5
   tileWidth: 1
   tileHeight: 1

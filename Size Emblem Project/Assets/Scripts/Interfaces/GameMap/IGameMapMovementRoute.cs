@@ -17,7 +17,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         int EndX { get; }
         int EndY { get; }
         int EndSortKey { get; }
-
+        bool CanStopHere { get; set; }
 
         bool CheckDirectionForOverlap(Direction newDirection);
         int GetOpenDirections();

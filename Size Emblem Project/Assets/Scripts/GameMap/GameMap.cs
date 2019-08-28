@@ -238,7 +238,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Group movemenet cost uses the LOWEST / BEST movement cost and easiest passibility
             var groupCost = float.MaxValue;
             var groupPassable = false;
-            uint groupInhibition = 0;
+            ulong groupInhibition = 0;
 
             foreach (var movementType in unit.MovementTypes)
             {
@@ -248,7 +248,7 @@ namespace SizeEmblem.Scripts.GameMap
                 groupCost = Math.Min(groupCost, cost);
                 groupInhibition += gameMapTileGroup.GetInhibitionScoreForUnit(unit);
             }
-            // If the tile was found to be impassable then return NaN for movement cost
+            // If the tile was found to be impassable then return our impassible object
             if (!groupPassable) return MovementCost.Impassable;
             return new MovementCost(groupCost, groupInhibition);
         }
@@ -300,82 +300,12 @@ namespace SizeEmblem.Scripts.GameMap
             // Create an origin route that we'll extend from here
             var originRoute = new GameMapMovementRoute(mapX, mapY);
 
-            // Get the routes from all directions from our origin route
-            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.North, unit, availableMovement);
-            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.East,  unit, availableMovement);
-            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.South, unit, availableMovement);
-            //GetRoutesForLocationDepthSearch(routesFound, originRoute, Direction.West,  unit, availableMovement);
-
             GetRoutesForLocationBreadthSearch(routesFound, originRoute, unit, availableMovement);
 
             // Now that we found our routes we need to narrow them down so there's only one route for each End X,Y. We need to group our end X,Ys together
             return routesFound.Values.ToList();
         }
 
-
-
-
-        public void GetRoutesForLocationDepthSearch(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, Direction direction, IGameUnit unit, int availableMovement)
-        {
-            // sometimes I wonder what I'm thinking
-            if (direction == Direction.None) return;
-
-            // We need to find what tiles we're going to check the movement cost for. Since units cover multiple tiles they have both an area we need to calculate and the edge of the unit we're looking for
-            var targetX = baseRoute.EndX;
-            var targetY = baseRoute.EndY;
-            if      (direction == Direction.East)  targetX += unit.TileWidth;
-            else if (direction == Direction.West)  targetX -= unit.TileWidth;
-            else if (direction == Direction.North) targetY += unit.TileHeight;
-            else if (direction == Direction.South) targetY -= unit.TileHeight;
-
-            // Grab the area that we're going to check
-            var areaWidth  = DirectionHelper.DirectionVertical(direction)   ? unit.TileWidth  : 1;
-            var areaHeight = DirectionHelper.DirectionHorizontal(direction) ? unit.TileHeight : 1;
-
-            // Get the movement cost for this unit to move this direction by one tile
-            var movementCost = AreaMovementCostForUnit(unit, targetX, targetY, areaWidth, areaHeight);
-
-            // If the movement cost is IMPASSIBLE or exceeds our available movement then this movement isn't possible
-            var totalCost = Mathf.CeilToInt(baseRoute.RouteCost.Cost + movementCost.Cost); // we do this just as a check here, movement cost can be fractional (TODO: there is a bug here, check half steps logic)
-            if (!movementCost.IsPassable || totalCost > availableMovement) return;
-
-            // If it is possible to make this movement then we can create a new route for it!
-            var routeHere = baseRoute.CreateExtendRoute(direction, movementCost);
-            // See if we have an existing route to this ending X,Y
-            if(routesFound.ContainsKey(routeHere.EndSortKey))
-            {
-                var compare = GameMapMovementRouteComparer.Instance.Compare(routeHere, routesFound[routeHere.EndSortKey]);
-                if (compare < 0)
-                    routesFound[routeHere.EndSortKey] = routeHere;
-                else if (compare > 0) return;
-            }
-            else
-            {
-                routesFound.Add(routeHere.EndSortKey, routeHere);
-            }
-
-            // Now see if we can go any other directions from here that won't overlap our base route
-            if(direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
-            {
-                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.South, unit, availableMovement);
-            }
-
-            if (direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
-            {
-                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.North, unit, availableMovement);
-            }
-
-            if (direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
-            {
-                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.West, unit, availableMovement);
-            }
-
-            if (direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
-            {
-                GetRoutesForLocationDepthSearch(routesFound, routeHere, Direction.East, unit, availableMovement);
-            }
-
-        }
 
 
         public void GetRoutesForLocationBreadthSearch(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, IGameUnit unit, int availableMovement)
@@ -394,6 +324,13 @@ namespace SizeEmblem.Scripts.GameMap
             {
                 var searchItem = searchQueue.Dequeue();
                 ProcessBreadthSearchQueueItem(searchQueue, searchItem, routesFound, unit, availableMovement);
+            }
+
+            // Now that we've found all of our routes we need to see which routes have a valid ending point
+            foreach(var route in routesFound.Values)
+            {
+                // Determine if the route can end here
+                route.CanStopHere = CanUnitEndMoveHere(unit, route.EndX, route.EndY);
             }
         }
 
@@ -437,48 +374,21 @@ namespace SizeEmblem.Scripts.GameMap
                 routesFound.Add(routeHere.EndSortKey, routeHere);
             }
 
-            // Queue up more work
-            //if (searchParameters.Direction != Direction.North && routeHere.CheckDirectionForOverlap(Direction.South))
-            //{
-            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.South));
-            //}
-
-            //if (searchParameters.Direction != Direction.South && routeHere.CheckDirectionForOverlap(Direction.North))
-            //{
-            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.North));
-            //}
-
-            //if (searchParameters.Direction != Direction.East && routeHere.CheckDirectionForOverlap(Direction.West))
-            //{
-            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.West));
-            //}
-
-            //if (searchParameters.Direction != Direction.West && routeHere.CheckDirectionForOverlap(Direction.East))
-            //{
-            //    searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.East));
-            //}
-
+            // Find which directions don't overlap the current route
             var openDirections = routeHere.GetOpenDirections();
 
+            // Then add each non-overlapping direction to our queue of searches to perform with this current route
             if (searchParameters.Direction != Direction.North && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.South))
-            {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.South));
-            }
 
             if (searchParameters.Direction != Direction.South && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.North))
-            {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.North));
-            }
 
             if (searchParameters.Direction != Direction.East && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.West))
-            {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.West));
-            }
 
             if (searchParameters.Direction != Direction.West && DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.East))
-            {
                 searchQueue.Enqueue(new GetRouteSearchParams(routeHere, Direction.East));
-            }
         }
 
 
@@ -494,11 +404,40 @@ namespace SizeEmblem.Scripts.GameMap
             }
         }
 
+
+        public bool CanUnitEndMoveHere(IGameUnit unit, int mapX, int mapY)
+        {
+            return true;
+            // The unit can't end their move on impassible tiles, but they can't have a route that ends on them anyways because they're impassible!
+            // Ergo we only need to check on a tile that we can move over but can't end their turn on, which would be tiles occupied by other units.
+            // Not sure exactly the final rules of this mechanic, for now we'll assume all friendly units are passable.
+
+            var bounds = new Bounds(new Vector3(mapX + unit.TileWidth / 2, mapY + unit.TileHeight / 2), unit.Bounds.size);
+
+            // Instead collect all units that this unit can pass-through
+            foreach (var testUnit in PassThroughUnits(unit))
+            {
+                if (testUnit.Bounds.Intersects(bounds)) return false;
+            }
+
+            return true;
+        }
+
+        public IEnumerable<IGameUnit> PassThroughUnits(IGameUnit testUnit)
+        {
+            foreach(var otherUnit in MapUnits)
+            {
+                if (otherUnit == testUnit) continue;
+
+                if (testUnit.UnitFaction == otherUnit.UnitFaction) yield return otherUnit;
+            }
+        }
+
         #endregion
 
 
         public List<IGameMapObject> MapObjects { get; } = new List<IGameMapObject>();
-        public List<GameUnit> MapUnits { get; } = new List<GameUnit>();
+        public List<IGameUnit> MapUnits { get; } = new List<IGameUnit>();
 
 
         

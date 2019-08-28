@@ -48,12 +48,13 @@ namespace SizeEmblem.Scripts.GameMap
             return float.NaN;
         }
 
-        public uint GetInhibitionScoreForUnit(IGameUnit unit)
+        public ulong GetInhibitionScoreForUnit(IGameUnit unit)
         {
             if (!Tiles.Any()) return 0;
 
-
-            return 0;
+            ulong sum = 0;
+            Tiles.Where(x => x != null).ForEach(x => sum += x.MapTileData.DestructionValue);
+            return sum;
         }
     }
 }

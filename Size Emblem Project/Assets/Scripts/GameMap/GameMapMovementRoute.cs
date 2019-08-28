@@ -26,6 +26,9 @@ namespace SizeEmblem.Scripts.GameMap
         // We use this just as a quick hack for sorting routes based on their end X,Y
         public int EndSortKey { get { return EndX * 10000 + EndY; } }
 
+        // Flag if the route can end here
+        public bool CanStopHere { get; set; } = true;
+
         public GameMapMovementRoute(int startX, int startY)
         {
             StartX = startX;
@@ -113,7 +116,7 @@ namespace SizeEmblem.Scripts.GameMap
             var x = StartX;
             var y = StartY;
 
-            foreach(var direction in _route)
+            foreach(var direction in _route.FastReverse())
             {
                 if(DirectionFlagsHelper.HasDirectionFlag(openDirections, DirectionFlags.North) && x == EndX && y == EndY+1)
                 {

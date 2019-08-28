@@ -14,6 +14,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         ILocalizationString NameLocalized { get; }
 
+        Faction UnitFaction { get; set; }
 
         int BaseMovement { get; }
         int MaxMovement { get; }

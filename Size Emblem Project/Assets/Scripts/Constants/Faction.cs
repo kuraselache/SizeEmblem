@@ -8,6 +8,7 @@ namespace SizeEmblem.Scripts.Constants
 {
     public enum Faction
     {
+        UndefinedFaction,
         PlayerFaction,
         AlliedFaction,
         EnemyAlphaFaction,

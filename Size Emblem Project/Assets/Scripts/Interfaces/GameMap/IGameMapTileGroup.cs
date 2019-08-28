@@ -15,6 +15,6 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         void SetLayerTile(int layer, IGameMapTile tile);
 
         float GetMovementCostForType(MovementType movementType);
-        uint GetInhibitionScoreForUnit(IGameUnit unit);
+        ulong GetInhibitionScoreForUnit(IGameUnit unit);
     }
 }

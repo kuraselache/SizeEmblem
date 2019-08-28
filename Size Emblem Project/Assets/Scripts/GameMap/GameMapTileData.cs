@@ -151,7 +151,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Make sure our dumb dictionary of stupidity is populated before we check movement data for this tile data
             PopulateMovementData();
 
-            return MovementData.ContainsKey(movementType) ? MovementData[movementType].MovementCost : float.NaN;
+            return MovementData.ContainsKey(movementType) && MovementData[movementType].Passable ? MovementData[movementType].MovementCost : float.NaN;
         }
     }
 }

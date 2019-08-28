@@ -6,13 +6,23 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.Extensions
 {
-    /// <summary>
-    /// c/p of MoreLinq stuff
-    /// https://stackoverflow.com/questions/914109/how-to-use-linq-to-select-object-with-minimum-or-maximum-property-value
-    /// https://github.com/morelinq
-    /// </summary>
+
+    
     public static class LinqExtensions
     {
+
+        public static void ForEach<T>(this IEnumerable<T> sourceItems, Action<T> action)
+        {
+            foreach(var sourceItem in sourceItems)
+            {
+                action.Invoke(sourceItem);
+            }
+        }
+
+
+        // https://stackoverflow.com/questions/914109/how-to-use-linq-to-select-object-with-minimum-or-maximum-property-value
+        // https://github.com/morelinq
+
         /// <summary>
         /// Returns the minimal element of the given sequence, based on
         /// the given projection.
