@@ -21,7 +21,7 @@ namespace SizeEmblem.Scripts.Helpers.Comparers
 
         public int Compare(IGameMapMovementRoute x, IGameMapMovementRoute y)
         {
-            var compareResult = MovementCostComparer.Instance.Compare(x.RouteCost, y.RouteCost);
+            var compareResult = MovementCostComparerLowInhibition.Instance.Compare(x.RouteCost, y.RouteCost);
             if (compareResult == 0)
                 compareResult = x.Route.Count.CompareTo(y.Route.Count);
 

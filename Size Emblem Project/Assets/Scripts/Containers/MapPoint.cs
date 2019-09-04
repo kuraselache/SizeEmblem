@@ -25,7 +25,7 @@ namespace SizeEmblem.Scripts.Containers
 
         public bool CollidesWith(MapPoint other)
         {
-            if ((X + Width < other.X || other.X + other.Width < X) && (Y + Height < other.Y || other.Y + other.Height < Y)) return false;
+            if (X + Width - 1 < other.X || other.X + other.Width - 1 < X || Y + Height - 1 < other.Y || other.Y + other.Height - 1 < Y) return false;
             return true;
         }
     }

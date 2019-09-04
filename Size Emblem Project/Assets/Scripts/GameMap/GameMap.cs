@@ -208,6 +208,17 @@ namespace SizeEmblem.Scripts.GameMap
             {
                 for (var y = mapY; y < mapY + areaHeight; y++)
                 {
+                    // Check for collision from game objects or units.
+                    FindMapObjectInBounds(out var foundObject, x, y);
+                    if(foundObject != null && unit != foundObject)
+                    {
+                        if(foundObject is IGameUnit)
+                        {
+                            var otherUnit = foundObject as IGameUnit;
+                            if (otherUnit.UnitFaction != unit.UnitFaction) return MovementCost.Impassable;
+                        }
+                    }
+
                     // Get the tile group in question
                     var tileIndex = y * GameMapWidth + x;
                     if (tileIndex < 0 || tileIndex >= GameMapTiles.Length || GameMapTiles[tileIndex] == null)
@@ -302,8 +313,8 @@ namespace SizeEmblem.Scripts.GameMap
 
             GetRoutesForLocationBreadthSearch(routesFound, originRoute, unit, availableMovement);
 
-            // Now that we found our routes we need to narrow them down so there's only one route for each End X,Y. We need to group our end X,Ys together
-            return routesFound.Values.ToList();
+            // Now that we found our routes filter out the routes that the user can't end on and return them
+            return routesFound.Values.Where(x => x.CanStopHere).ToList();
         }
 
 
@@ -407,31 +418,23 @@ namespace SizeEmblem.Scripts.GameMap
 
         public bool CanUnitEndMoveHere(IGameUnit unit, int mapX, int mapY)
         {
-            return true;
             // The unit can't end their move on impassible tiles, but they can't have a route that ends on them anyways because they're impassible!
             // Ergo we only need to check on a tile that we can move over but can't end their turn on, which would be tiles occupied by other units.
             // Not sure exactly the final rules of this mechanic, for now we'll assume all friendly units are passable.
 
-            var bounds = new Bounds(new Vector3(mapX + unit.TileWidth / 2, mapY + unit.TileHeight / 2), unit.Bounds.size);
-
-            // Instead collect all units that this unit can pass-through
-            foreach (var testUnit in PassThroughUnits(unit))
+            for(var x = mapX; x < mapX + unit.TileWidth; x++)
             {
-                if (testUnit.Bounds.Intersects(bounds)) return false;
-            }
+                for(var y = mapY; y < mapY + unit.TileHeight; y++)
+                {
+                    if (!FindMapObjectInBounds(out var foundObject, x, y)) continue;
+                    if (foundObject == unit) continue;
+                    return false;
 
+                }
+            }
             return true;
         }
 
-        public IEnumerable<IGameUnit> PassThroughUnits(IGameUnit testUnit)
-        {
-            foreach(var otherUnit in MapUnits)
-            {
-                if (otherUnit == testUnit) continue;
-
-                if (testUnit.UnitFaction == otherUnit.UnitFaction) yield return otherUnit;
-            }
-        }
 
         #endregion
 
@@ -453,7 +456,7 @@ namespace SizeEmblem.Scripts.GameMap
 
             // Populate our internal data structures to track what's going on in the map
             RefreshGameMapTileArray();
-            UpdateMapUnits();
+            RefreshMapUnits();
         }
 
 
@@ -482,7 +485,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Convert our grid position into map data X,Y positions which is how we're storing positional information
             TranslateUnityXYToMapXY(tilePosition, out var mapX, out var mapY);
 
-            if (FindMapUnitInBounds(out var foundObject, mapX, mapY))
+            if (FindMapObjectInBounds(out var foundObject, mapX, mapY))
             {
                 var foundUnit = foundObject as IGameUnit;
                 if (_selectedUnit == foundUnit) return;
@@ -599,7 +602,7 @@ namespace SizeEmblem.Scripts.GameMap
             //var cursorPostion = objectTileMap.CellToWorld(tilePosition);
 
             // Find an object to highlight. If there is a unit the cursor should match it's position and tile width/height via scaling
-            if (FindMapUnitInBounds(out var foundObject, mapX, mapY))
+            if (FindMapObjectInBounds(out var foundObject, mapX, mapY))
             {
                 var foundUnit = foundObject as GameUnit;
                 SetCursorPosition(new Vector3(foundUnit.transform.position.x, foundUnit.transform.position.y + foundUnit.TileHeight - 1, gameMapCursor.transform.position.z));
@@ -631,7 +634,7 @@ namespace SizeEmblem.Scripts.GameMap
         #endregion
 
 
-        public bool FindMapUnitInBounds(out IGameMapObject foundObject, int mapX, int mapY)
+        public bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY)
         {
             foreach(var mapObject in MapObjects)
             {
@@ -665,7 +668,7 @@ namespace SizeEmblem.Scripts.GameMap
         }
 
 
-        public void UpdateMapUnits()
+        public void RefreshMapUnits()
         {
 
             var mapUnits = objectTileMap.GetComponentsInChildren<GameUnit>();
