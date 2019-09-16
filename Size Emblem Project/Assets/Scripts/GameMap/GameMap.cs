@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Text;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -354,9 +355,9 @@ namespace SizeEmblem.Scripts.GameMap
             var targetX = searchParameters.BaseRoute.EndX;
             var targetY = searchParameters.BaseRoute.EndY;
             if      (searchParameters.Direction == Direction.East)  targetX += unit.TileWidth;
-            else if (searchParameters.Direction == Direction.West)  targetX -= unit.TileWidth;
+            else if (searchParameters.Direction == Direction.West)  targetX -= 1;
             else if (searchParameters.Direction == Direction.North) targetY += unit.TileHeight;
-            else if (searchParameters.Direction == Direction.South) targetY -= unit.TileHeight;
+            else if (searchParameters.Direction == Direction.South) targetY -= 1;
 
             // Grab the area that we're going to check
             var areaWidth  = DirectionHelper.DirectionVertical(searchParameters.Direction)   ? unit.TileWidth  : 1;
@@ -513,8 +514,14 @@ namespace SizeEmblem.Scripts.GameMap
             ClearMovementOverlay();
             _availableRoutes = null;
 
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("Route: ");
+            route.Route.Select(x => x.ToString()).ForEach(x => stringBuilder.Append(x).Append(", "));
+            Debug.Log(stringBuilder.ToString());
+
             foreach (var routeStep in route.Route.Where(x => x != Direction.None))
             {
+
                 var directionVector = DirectionHelper.GetDirectionVector(routeStep);
                 var targetPosition = unit.WorldPosition + directionVector;
 
