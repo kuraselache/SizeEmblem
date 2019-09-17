@@ -543,12 +543,7 @@ namespace SizeEmblem.Scripts.GameMap
                 unit.MapX = newX;
                 unit.MapY = newY;
 
-                var areaWidth = 1;
-                var areaHeight = 1;
-                if (unit.TileHeight > 1 && DirectionHelper.DirectionHorizontal(routeStep)) areaHeight = unit.TileHeight;
-                if (unit.TileWidth > 1 && DirectionHelper.DirectionVertical(routeStep)) areaWidth = unit.TileWidth;
-
-                ApplyWalkingDamage(unit, newX, newY, areaWidth, areaHeight);
+                ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight);
             }
 
             unit.MapX = route.EndX;
