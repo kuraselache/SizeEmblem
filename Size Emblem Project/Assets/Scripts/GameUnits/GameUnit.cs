@@ -140,7 +140,8 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public void ProcessBattleStart()
         {
-
+            // Make sure units are reset at the start of battle
+            ResetActionsConsumed();
         }
 
         public void ProcessBattleEnd()
@@ -161,12 +162,12 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public void ProcessPhaseStart()
         {
-            ResetActionsConsumed();
         }
 
         public void ProcessPhaseEnd()
         {
-
+            // We'll reset here so units once the phase is over. This will reset visual state to normal
+            ResetActionsConsumed();
         }
 
         #endregion
@@ -362,21 +363,6 @@ namespace SizeEmblem.Scripts.GameUnits
         #endregion
 
 
-        #region Turn & Action Functions
-
-        /// <summary>
-        /// Function to reset a unit to their pre-turn state, resetting actions and movement consumed
-        /// </summary>
-        public void ResetTurnState()
-        {
-            SpentMovement = 0;
-            MovementActionConsumed = false;
-            MinorActionConsumed = false;
-            MajorActionConsumed = false;
-        }
-
-        #endregion
-
 
         #region Drawing & Graphics Related
 
@@ -415,6 +401,27 @@ namespace SizeEmblem.Scripts.GameUnits
         }
 
 
+        private bool _lastActionOver;
+
+        public void RefreshSprite()
+        {
+            _lastActionOver = ActionOver;
+
+            UpdateSprite();
+        }
+
+        public void UpdateSprite()
+        {
+            if (_spriteRenderer == null) return;
+
+            if(_lastActionOver != ActionOver)
+            {
+                _spriteRenderer.color = ActionOver ? Color.grey : Color.white;
+                _lastActionOver = ActionOver;
+            }
+            
+        }
+
         #endregion
 
 
@@ -436,5 +443,10 @@ namespace SizeEmblem.Scripts.GameUnits
             RefreshMovementTypes();
         }
 
+
+        public void Update()
+        {
+            UpdateSprite();
+        }
     }
 }
