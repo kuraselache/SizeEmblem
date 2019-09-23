@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Containers;
-using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using System;
 using System.Collections.Generic;

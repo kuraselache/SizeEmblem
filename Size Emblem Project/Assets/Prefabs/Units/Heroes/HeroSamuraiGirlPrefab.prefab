@@ -78,6 +78,16 @@ PrefabInstance:
       propertyPath: unitName
       value: Samurai Girl Unit
       objectReference: {fileID: 0}
+    - target: {fileID: -6109714860684983329, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: faction
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -6109714860684983329, guid: a659fc9c33818a74d8ba799e4f4ea344,
+        type: 3}
+      propertyPath: unitFaction
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8824441506704272523, guid: a659fc9c33818a74d8ba799e4f4ea344,
         type: 3}
       propertyPath: m_WasSpriteAssigned

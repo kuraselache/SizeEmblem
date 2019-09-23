@@ -16,22 +16,54 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         Faction UnitFaction { get; set; }
 
-        int BaseMovement { get; }
-        int MaxMovement { get; }
-        int SpentMovement { get; }
-        int RemainingMovement { get; }
 
-        IReadOnlyList<MovementType> MovementTypes { get; }
+        
 
 
-        ulong DestructionTotal { get; set; }
-        ulong BodyCount { get; set; }
+        IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get; }
+        ulong SetStatistic(UnitStatistic statistic, ulong value);
+        ulong IncrementStatistic(UnitStatistic statistic, ulong value);
+        
 
         int GetAttribute(UnitAttribute attribue);
 
         List<IAbility> Abilities { get; }
 
 
+        
+
+
+        // Combat State
+        bool IsActive { get; set; }
+        bool MovementActionConsumed { get; set; }
+        bool MinorActionConsumed { get; set; }
+        bool MajorActionConsumed { get; set; }
+        bool ActionOver { get; set; }
+
+        bool CanAct();
+        bool CanMoveAction();
+        void ResetActionsConsumed();
+
+        void EndAction();
+
+
+        void ProcessBattleStart();
+        void ProcessBattleEnd();
+
+        void ProcessTurnStart();
+        void ProcessTurnEnd();
+
+
+        void ProcessPhaseStart();
+        void ProcessPhaseEnd();
+
+        // Movement State
+        int MaxMovement { get; }
+        int SpentMovement { get; }
+        int RemainingMovement { get; }
+        IReadOnlyList<MovementType> MovementTypes { get; }
+
         bool CanMove();
+        void AddRouteCost(IGameMapMovementRoute route);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Interfaces.GameMap;
-using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.Extensions;
 using SizeEmblem.Scripts.GameMap.Factories;
@@ -18,9 +17,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Text;
+using SizeEmblem.Scripts.Interfaces.GameScenes;
+using SizeEmblem.Scripts.GameScenes;
+using SizeEmblem.Scripts.Events.GameMap;
 
 namespace SizeEmblem.Scripts.GameMap
 {
+
     public class GameMap : MonoBehaviour, IGameMap
     {
         #region Unity Dependencies
@@ -52,6 +55,19 @@ namespace SizeEmblem.Scripts.GameMap
             // Add DI eventually here
             _inputManager = new UnityInputManager();
             _gameMapTileGroupFactory = new GameMapTileGroupFactory();
+
+            FindGameSceneBattle();
+        }
+
+        private IGameSceneBattle _gameSceneBattle;
+
+        public void FindGameSceneBattle()
+        {
+            if (_gameSceneBattle == null)
+            {
+                var sceneBattle = Component.FindObjectOfType<GameSceneBattle>();
+                _gameSceneBattle = sceneBattle;
+            }
         }
 
         #endregion
@@ -101,7 +117,7 @@ namespace SizeEmblem.Scripts.GameMap
         {
             Debug.Log("Start game map tiles refresh");
             // Create our array to hold the map data
-            if(GameMapTiles == null || GameMapTiles.Length != GameMapWidth * GameMapHeight)
+            if (GameMapTiles == null || GameMapTiles.Length != GameMapWidth * GameMapHeight)
             {
                 GameMapTiles = new GameMapTileGroup[GameMapWidth * GameMapHeight];
                 for (var i = 0; i < GameMapTiles.Length; i++)
@@ -127,8 +143,8 @@ namespace SizeEmblem.Scripts.GameMap
 
             // Get all the map tiles on this base tile map
             var mapTiles = tileMap.GetComponentsInChildren<GameMapTile>();
-            
-            foreach(var mapTile in mapTiles)
+
+            foreach (var mapTile in mapTiles)
             {
                 // Convert the unity position of this tile to the tilemap's position
                 var cellPosition = tileMap.WorldToCell(mapTile.transform.position);
@@ -192,7 +208,7 @@ namespace SizeEmblem.Scripts.GameMap
 
 
         #region Passibility & Movement Cost
-        
+
 
         public MovementCost AreaMovementCostForUnit(IGameUnit unit, int mapX, int mapY, int areaWidth = 1, int areaHeight = 1)
         {
@@ -211,9 +227,9 @@ namespace SizeEmblem.Scripts.GameMap
                 {
                     // Check for collision from game objects or units.
                     FindMapObjectInBounds(out var foundObject, x, y);
-                    if(foundObject != null && unit != foundObject)
+                    if (foundObject != null && unit != foundObject)
                     {
-                        if(foundObject is IGameUnit)
+                        if (foundObject is IGameUnit)
                         {
                             var otherUnit = foundObject as IGameUnit;
                             if (otherUnit.UnitFaction != unit.UnitFaction) return MovementCost.Impassable;
@@ -286,7 +302,7 @@ namespace SizeEmblem.Scripts.GameMap
 
             _availableRoutes = GetAllRoutesForUnit(unit);
 
-            foreach(var route in _availableRoutes)
+            foreach (var route in _availableRoutes)
             {
                 var tilePosition = TranslateMapXYToUnityXY(route.EndX, route.EndY);
                 movementOverlay.SetTile(tilePosition, overlayTile);
@@ -339,7 +355,7 @@ namespace SizeEmblem.Scripts.GameMap
             }
 
             // Now that we've found all of our routes we need to see which routes have a valid ending point
-            foreach(var route in routesFound.Values)
+            foreach (var route in routesFound.Values)
             {
                 // Determine if the route can end here
                 route.CanStopHere = CanUnitEndMoveHere(unit, route.EndX, route.EndY);
@@ -354,13 +370,13 @@ namespace SizeEmblem.Scripts.GameMap
             // We need to find what tiles we're going to check the movement cost for. Since units cover multiple tiles they have both an area we need to calculate and the edge of the unit we're looking for
             var targetX = searchParameters.BaseRoute.EndX;
             var targetY = searchParameters.BaseRoute.EndY;
-            if      (searchParameters.Direction == Direction.East)  targetX += unit.TileWidth;
-            else if (searchParameters.Direction == Direction.West)  targetX -= 1;
+            if (searchParameters.Direction == Direction.East) targetX += unit.TileWidth;
+            else if (searchParameters.Direction == Direction.West) targetX -= 1;
             else if (searchParameters.Direction == Direction.North) targetY += unit.TileHeight;
             else if (searchParameters.Direction == Direction.South) targetY -= 1;
 
             // Grab the area that we're going to check
-            var areaWidth  = DirectionHelper.DirectionVertical(searchParameters.Direction)   ? unit.TileWidth  : 1;
+            var areaWidth = DirectionHelper.DirectionVertical(searchParameters.Direction) ? unit.TileWidth : 1;
             var areaHeight = DirectionHelper.DirectionHorizontal(searchParameters.Direction) ? unit.TileHeight : 1;
 
             // Get the movement cost for this unit to move this direction by one tile
@@ -423,9 +439,9 @@ namespace SizeEmblem.Scripts.GameMap
             // Ergo we only need to check on a tile that we can move over but can't end their turn on, which would be tiles occupied by other units.
             // Not sure exactly the final rules of this mechanic, for now we'll assume all friendly units are passable.
 
-            for(var x = mapX; x < mapX + unit.TileWidth; x++)
+            for (var x = mapX; x < mapX + unit.TileWidth; x++)
             {
-                for(var y = mapY; y < mapY + unit.TileHeight; y++)
+                for (var y = mapY; y < mapY + unit.TileHeight; y++)
                 {
                     if (!FindMapObjectInBounds(out var foundObject, x, y)) continue;
                     if (foundObject == unit) continue;
@@ -443,8 +459,25 @@ namespace SizeEmblem.Scripts.GameMap
         public List<IGameMapObject> MapObjects { get; } = new List<IGameMapObject>();
         public List<IGameUnit> MapUnits { get; } = new List<IGameUnit>();
 
+        private bool _isLoaded = false;
+        public bool IsLoaded
+        {
+            get { return _isLoaded; }
+            set
+            {
+                if (value == _isLoaded) return;
+                _isLoaded = value;
+                if (_isLoaded) OnLoaded();
+            }
+        }
 
-        
+
+        public event GameMapLoadedHandler Loaded;
+        protected void OnLoaded()
+        {
+            Loaded?.Invoke(this, EventArgs.Empty);
+        }
+
 
         // Start is called before the first frame update
         public void Start()
@@ -458,6 +491,8 @@ namespace SizeEmblem.Scripts.GameMap
             // Populate our internal data structures to track what's going on in the map
             RefreshGameMapTileArray();
             RefreshMapUnits();
+
+            IsLoaded = true;
         }
 
 
@@ -498,11 +533,11 @@ namespace SizeEmblem.Scripts.GameMap
             else
             {
                 if (_selectedUnit == null) return;
+                if (!_gameSceneBattle.CanUnitAct(_selectedUnit)) return;
 
                 var route = _availableRoutes.FirstOrDefault(x => x.EndX == mapX && x.EndY == mapY);
                 if (route == null) return;
 
-                Debug.Log("Found a route to the selected square!");
                 var unit = _selectedUnit;
                 _selectedUnit = null;
                 StartCoroutine(MoveUnitCoroutine(unit, route));
@@ -514,10 +549,10 @@ namespace SizeEmblem.Scripts.GameMap
             ClearMovementOverlay();
             _availableRoutes = null;
 
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("Route: ");
-            route.Route.Select(x => x.ToString()).ForEach(x => stringBuilder.Append(x).Append(", "));
-            Debug.Log(stringBuilder.ToString());
+            //var stringBuilder = new StringBuilder();
+            //stringBuilder.Append("Route: ");
+            //route.Route.Select(x => x.ToString()).ForEach(x => stringBuilder.Append(x).Append(", "));
+            //Debug.Log(stringBuilder.ToString());
 
             foreach (var routeStep in route.Route.Where(x => x != Direction.None))
             {
@@ -528,7 +563,7 @@ namespace SizeEmblem.Scripts.GameMap
                 var duration = 0.15f;
                 var stepTime = 1f * duration;
 
-                while(stepTime > 0)
+                while (stepTime > 0)
                 {
                     var delta = Time.deltaTime;
                     stepTime -= delta;
@@ -543,11 +578,15 @@ namespace SizeEmblem.Scripts.GameMap
                 unit.MapX = newX;
                 unit.MapY = newY;
 
-                ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight);
+                if(unit.GetAttribute(UnitAttribute.WalkingDamage) > 0)
+                {
+                    ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight);
+                }
             }
 
             unit.MapX = route.EndX;
             unit.MapY = route.EndY;
+            unit.AddRouteCost(route);
         }
 
         public void ApplyWalkingDamage(IGameUnit unit, int mapX, int mapY, int areaWidth, int areaHeight)
@@ -570,7 +609,7 @@ namespace SizeEmblem.Scripts.GameMap
 
                     var tileGroup = GameMapTiles[tileIndex];
 
-                    foreach(var tile in tileGroup.Tiles.Where(z => z != null))
+                    foreach (var tile in tileGroup.Tiles.Where(z => z != null))
                     {
                         tile.InflictDamage(damage, unit);
                     }
@@ -595,7 +634,7 @@ namespace SizeEmblem.Scripts.GameMap
             var tilePosition = objectTileMap.WorldToCell(point);
 
             // If the tile coordinates haven't changed since our last update then we shouldn't do any work since it should have the same results
-            if(_lastCursorCellPosition == tilePosition) return;
+            if (_lastCursorCellPosition == tilePosition) return;
 
             // Convert our grid position into map data X,Y positions which is how we're storing positional information
             TranslateUnityXYToMapXY(tilePosition, out var mapX, out var mapY);
@@ -626,7 +665,7 @@ namespace SizeEmblem.Scripts.GameMap
         }
 
 
-        
+
         public void SetCursorPosition(Vector3 newPosition)
         {
             var adjustedVector = newPosition + _cursorOffsetVector;
@@ -638,13 +677,13 @@ namespace SizeEmblem.Scripts.GameMap
 
         public bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY)
         {
-            foreach(var mapObject in MapObjects)
+            foreach (var mapObject in MapObjects)
             {
                 // Simple check: Object is not visible or hidden then skip checking this item
                 if (mapObject.TileWidth < 1 || mapObject.TileHeight < 1) continue;
 
                 // Simple check: The unit is 1x1
-                if(mapObject.TileWidth == 1 && mapObject.TileHeight == 1 && mapObject.MapX == mapX && mapObject.MapY == mapY)
+                if (mapObject.TileWidth == 1 && mapObject.TileHeight == 1 && mapObject.MapX == mapX && mapObject.MapY == mapY)
                 {
                     foundObject = mapObject;
                     return true;
@@ -652,9 +691,9 @@ namespace SizeEmblem.Scripts.GameMap
 
 
                 // The map object has dimensions, we need to see if our target X/Y falls within its bounds
-                var leftBounds   = mapObject.MapX;
-                var rightBounds  = leftBounds + (mapObject.TileWidth - 1);
-                var topBounds    = mapObject.MapY + (mapObject.TileHeight - 1);
+                var leftBounds = mapObject.MapX;
+                var rightBounds = leftBounds + (mapObject.TileWidth - 1);
+                var topBounds = mapObject.MapY + (mapObject.TileHeight - 1);
                 var bottomBounds = mapObject.MapY;
 
                 if (mapX >= leftBounds && mapX <= rightBounds && mapY <= topBounds && mapY >= bottomBounds)
@@ -674,12 +713,12 @@ namespace SizeEmblem.Scripts.GameMap
         {
 
             var mapUnits = objectTileMap.GetComponentsInChildren<GameUnit>();
-            if(mapUnits.Any())
+            if (mapUnits.Any())
             {
-                foreach(var unit in mapUnits)
+                foreach (var unit in mapUnits)
                 {
                     // Add the unit to our list of units and objects on this map
-                    if(!MapUnits.Contains(unit))
+                    if (!MapUnits.Contains(unit))
                         MapUnits.Add(unit);
                     if (!MapObjects.Contains(unit))
                         MapObjects.Add(unit);

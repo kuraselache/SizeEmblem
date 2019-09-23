@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizeEmblem.Scripts.Interfaces.Managers
+namespace SizeEmblem.Scripts.Managers
 {
-    public interface IRNGManager
+    class GamePartyManager
     {
-        ulong GetRange(ulong min, ulong max);
     }
 }

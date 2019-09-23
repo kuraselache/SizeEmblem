@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces;
+using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
@@ -97,14 +98,76 @@ namespace SizeEmblem.Scripts.GameUnits
 
         #region Combat State
 
-        public Faction faction;
-        public Faction Faction { get { return faction; } }
+        public bool IsActive { get; set; } = true;
 
         // Turn state properties
-        public float MovementConsumed { get; set; }
         public bool MovementActionConsumed { get; set; }
         public bool MinorActionConsumed { get; set; }
         public bool MajorActionConsumed { get; set; }
+        
+        public bool ActionOver { get; set; }
+
+
+        public bool CanAct()
+        {
+            if (!IsActive) return false;
+            if (HP <= 0) return false;
+            if (ActionOver) return false;
+            return true;
+        }
+
+        public bool CanMoveAction()
+        {
+            if (!CanAct() || SpentMovement > 0) return false;
+            return true;
+        }
+
+        public void ResetActionsConsumed()
+        {
+            SpentMovement = 0;
+            MovementActionConsumed = false;
+            MinorActionConsumed = false;
+            MajorActionConsumed = false;
+            ActionOver = false;
+        }
+
+
+        public void EndAction()
+        {
+            ActionOver = true;
+        }
+
+
+        public void ProcessBattleStart()
+        {
+
+        }
+
+        public void ProcessBattleEnd()
+        {
+
+        }
+
+
+        public void ProcessTurnStart()
+        {
+
+        }
+
+        public void ProcessTurnEnd()
+        {
+
+        }
+
+        public void ProcessPhaseStart()
+        {
+            ResetActionsConsumed();
+        }
+
+        public void ProcessPhaseEnd()
+        {
+
+        }
 
         #endregion
 
@@ -126,7 +189,6 @@ namespace SizeEmblem.Scripts.GameUnits
 
         #region Movement
 
-        public int BaseMovement { get { return BaseUnitData.MovementSpeed; } }
 
         public int MaxMovement { get { return GetAttribute(UnitAttribute.Movement); } }
 
@@ -144,7 +206,8 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public int RemainingMovement { get { return Math.Max(MaxMovement - SpentMovement, 0); } }
 
-        public IReadOnlyList<MovementType> MovementTypes { get; private set; }
+        private readonly List<MovementType> _movementTypes = new List<MovementType>();
+        public IReadOnlyList<MovementType> MovementTypes { get { return _movementTypes.AsReadOnly(); } }
 
 
         public bool CanMove()
@@ -152,41 +215,47 @@ namespace SizeEmblem.Scripts.GameUnits
             return RemainingMovement > 0;
         }
 
+        public void AddRouteCost(IGameMapMovementRoute route)
+        {
+            SpentMovement = Int16.MaxValue;
+            ActionOver = true;
+        }
+
         public void RefreshMovementTypes()
         {
-            var movementTypes = new List<MovementType>();
-            movementTypes.Add(BaseUnitData.BaseMovementType);
-
-            MovementTypes = movementTypes.AsReadOnly();
+            _movementTypes.Clear();
+            _movementTypes.Add(BaseUnitData.BaseMovementType);
         }
 
         #endregion
 
 
-        #region Destruction Statistics
+        #region Statistics
 
-        public ulong destructionTotal;
-        public ulong DestructionTotal
+        private Dictionary<UnitStatistic, ulong> _statistics = new Dictionary<UnitStatistic, ulong>();
+        public IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get { return _statistics as IReadOnlyDictionary<UnitStatistic, ulong>; } }
+
+        public ulong SetStatistic(UnitStatistic statistic, ulong value)
         {
-            get { return destructionTotal; }
-            set
-            {
-                if (value == destructionTotal) return;
-                destructionTotal = value;
-            }
+            if(!Statistics.ContainsKey(statistic))
+                _statistics.Add(statistic, value);
+            else
+                _statistics[statistic] = value;
+
+            return value;
         }
 
-
-
-        public ulong bodyCount;
-        public ulong BodyCount
+        public ulong IncrementStatistic(UnitStatistic statistic, ulong value)
         {
-            get { return bodyCount; }
-            set
+            if (!Statistics.ContainsKey(statistic))
             {
-                if (value == bodyCount) return;
-                bodyCount = value;
+                _statistics.Add(statistic, value);
+                return value;
             }
+
+            var newValue = _statistics[statistic] + value;
+            _statistics[statistic] = newValue;
+            return newValue;
         }
 
         #endregion
@@ -202,11 +271,11 @@ namespace SizeEmblem.Scripts.GameUnits
         public int Level { get { return level; } }
 
 
-        public int currentHP;
-        public int CurrentHP { get { return currentHP; } }
+        public int hp;
+        public int HP { get { return hp; } }
 
-        public int currentSP;
-        public int CurrentSP { get { return currentSP; } }
+        public int sp;
+        public int SP { get { return sp; } }
 
 
         public List<IAbility> Abilities { get; } = new List<IAbility>();
@@ -300,7 +369,7 @@ namespace SizeEmblem.Scripts.GameUnits
         /// </summary>
         public void ResetTurnState()
         {
-            MovementConsumed = 0f;
+            SpentMovement = 0;
             MovementActionConsumed = false;
             MinorActionConsumed = false;
             MajorActionConsumed = false;

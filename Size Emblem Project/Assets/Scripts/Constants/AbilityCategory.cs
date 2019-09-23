@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizeEmblem.Scripts.Interfaces.Managers
+namespace SizeEmblem.Scripts.Constants
 {
-    public interface IRNGManager
+    public enum AbilityCategory
     {
-        ulong GetRange(ulong min, ulong max);
+        Base,
+        Attack,
+        Special,
     }
 }

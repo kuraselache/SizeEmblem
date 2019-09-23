@@ -1,9 +1,8 @@
-﻿using Assets.Scripts.Interfaces.Managers;
-using Assets.Scripts.Managers;
-using SizeEmblem.Scripts.Constants;
-using SizeEmblem.Scripts.Interfaces;
+﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
+using SizeEmblem.Scripts.Interfaces.Managers;
+using SizeEmblem.Scripts.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,8 +127,8 @@ namespace SizeEmblem.Scripts.GameMap
                 // If we have an attacking unit then count our destruction value and body count towards them
                 if(attackingUnit != null)
                 {
-                    attackingUnit.DestructionTotal += DestructionValue;
-                    attackingUnit.BodyCount += DestructionBodyCount;
+                    attackingUnit.IncrementStatistic(UnitStatistic.PropertyDamage, DestructionValue);
+                    attackingUnit.IncrementStatistic(UnitStatistic.BodyCount, DestructionBodyCount);
                 }
 
                 // If we have a tile to become when we're destroyed then we'll change to that

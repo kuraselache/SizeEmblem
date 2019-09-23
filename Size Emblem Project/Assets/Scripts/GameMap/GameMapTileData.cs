@@ -1,7 +1,5 @@
-﻿using Assets.Scripts.Containers;
-using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
-using SizeEmblem.Scripts.Interfaces;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using System;
 using System.Collections.Generic;

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizeEmblem.Scripts.Interfaces.Managers
+namespace SizeEmblem.Scripts.GameMap
 {
-    public interface IRNGManager
+    public class GameMapRouteCalculator
     {
-        ulong GetRange(ulong min, ulong max);
+
     }
 }

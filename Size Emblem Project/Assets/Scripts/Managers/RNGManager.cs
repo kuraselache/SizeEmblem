@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.Interfaces.Managers;
+﻿using SizeEmblem.Scripts.Interfaces.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.Managers
+namespace SizeEmblem.Scripts.Managers
 {
     public class RNGManager : IRNGManager
     {
