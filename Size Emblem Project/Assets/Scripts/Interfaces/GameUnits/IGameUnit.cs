@@ -17,14 +17,18 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         Faction UnitFaction { get; set; }
 
 
-        
+        SizeCategory SizeCategory { get; }
+
+
 
 
         IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get; }
         ulong SetStatistic(UnitStatistic statistic, ulong value);
         ulong IncrementStatistic(UnitStatistic statistic, ulong value);
-        
 
+
+        int HP { get; }
+        int SP { get; }
         int GetAttribute(UnitAttribute attribue);
 
         List<IAbility> Abilities { get; }

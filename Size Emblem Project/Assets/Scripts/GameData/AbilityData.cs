@@ -20,9 +20,19 @@ namespace SizeEmblem.Scripts.GameData
         public int LocalizationDescriptionID;
 
         // Ability Category and Action Type
-        public AbilityCategory Category;
+        public AbilityCategory AbilityCategory;
+        public WeaponCategory WeaponCategory;
 
-        public string ActionConsumptionSpecial;
+        // Range
+        public AbilityRangeDistanceRule RangeDistanceRule;
+        public AbilityRangeSpecialRule RangeSpecialRule;
+
+        public int MinRange;
+        public int MaxRange;
+
+
+        // ID for what minor action this ability consumes, NULL for none
+        public string MinorActionConsumptionID;
 
         // Ability Cost
         public int HPCost;
@@ -30,10 +40,16 @@ namespace SizeEmblem.Scripts.GameData
         public int DurabilityCost;  // Not sure how I'd link this to a weapon yet
 
         // Ability Restrictions
+        public bool HasPerBattleUses;
         public int PerBattleUses;
+
+        public bool HasCooldown;
         public int CooldownTurns;
+
+        public bool HasWarmup;
         public int WarmupTurns;
 
+        // 
 
     }
 }

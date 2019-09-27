@@ -63064,7 +63064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8b24eae464794e40adbbf064b8ecd9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BattleFactions: 
+  Factions: 
 --- !u!1001 &1985995746
 PrefabInstance:
   m_ObjectHideFlags: 0

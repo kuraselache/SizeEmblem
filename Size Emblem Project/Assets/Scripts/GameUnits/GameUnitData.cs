@@ -26,8 +26,8 @@ namespace SizeEmblem.Scripts.GameUnits
         public UnitCategory unitCategory;
         public UnitCategory UnitCategory { get { return UnitCategory; } }
 
-        public WeaponType weaponType;
-        public WeaponType WeaponType { get { return weaponType; } }
+        public WeaponCategory weaponType;
+        public WeaponCategory WeaponType { get { return weaponType; } }
 
         // Movement attributes
         [Header("Movement")]

@@ -13,6 +13,6 @@ namespace SizeEmblem.Scripts.Constants
         Medium, // 2x2 units
         Large, // 3x3 units
         Gigantic, // 4x4+ units
-
+        GiganticSuper, // Special size category
     }
 }

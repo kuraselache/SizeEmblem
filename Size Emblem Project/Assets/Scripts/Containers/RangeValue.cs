@@ -12,6 +12,17 @@ namespace SizeEmblem.Scripts.Containers
         public T minValue;
         public T maxValue;
 
+
+        public RangeValue()
+        {
+
+        }
+
+        public RangeValue(T min, T max)
+        {
+            minValue = min;
+            maxValue = max;
+        }
     }
 
     [Serializable]

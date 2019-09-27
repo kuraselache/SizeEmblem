@@ -142,6 +142,8 @@ namespace SizeEmblem.Scripts.GameUnits
         {
             // Make sure units are reset at the start of battle
             ResetActionsConsumed();
+            // Reset usage of all abilities
+            Abilities.ForEach(x => x.ResetBattleUsages());
         }
 
         public void ProcessBattleEnd()
@@ -157,7 +159,7 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public void ProcessTurnEnd()
         {
-
+            Abilities.ForEach(x => x.ProcessTurnEnd());
         }
 
         public void ProcessPhaseStart()
@@ -187,6 +189,7 @@ namespace SizeEmblem.Scripts.GameUnits
         }
 
         #endregion
+
 
         #region Movement
 
@@ -261,6 +264,9 @@ namespace SizeEmblem.Scripts.GameUnits
 
         #endregion
 
+
+
+        public SizeCategory SizeCategory { get { return BaseUnitData.SizeCategory; } }
 
         public GameUnitData baseUnitData;
         public GameUnitData BaseUnitData { get { return baseUnitData; } }
