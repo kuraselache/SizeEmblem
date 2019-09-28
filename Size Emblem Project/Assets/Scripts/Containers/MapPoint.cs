@@ -13,6 +13,7 @@ namespace SizeEmblem.Scripts.Containers
         public int Width;
         public int Height;
 
+        public int Key { get { return X * 1000 + Y; } }
 
         public MapPoint(int x, int y, int width, int height)
         {

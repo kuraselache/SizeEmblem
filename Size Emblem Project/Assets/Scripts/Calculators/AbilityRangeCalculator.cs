@@ -12,7 +12,14 @@ namespace SizeEmblem.Assets.Scripts.Calculators
     public static class AbilityRangeCalculator
     {
 
-        public static RangeValue<int> GetAbilityRangeDistance(IAbility ability, IGameUnit unit)
+        /// <summary>
+        /// Get the Min/Max range of an ability for a given unit.
+        /// This will check the abilty's parameters and rule flags and use the unit using the abilty's own state to calculate the min/max range of the ability.
+        /// </summary>
+        /// <param name="ability">The ability to find the min/max range for</param>
+        /// <param name="user">The unit using the ability</param>
+        /// <returns>A min/max range value that has the range of the ability</returns>
+        public static RangeValue<int> GetAbilityRangeDistance(IAbility ability, IGameUnit user)
         {
             int min;
             int max;
@@ -27,7 +34,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             {
                 min = ability.RangeMinMax.minValue;
                 max = 1;
-                switch(unit.SizeCategory)
+                switch(user.SizeCategory)
                 {
                     case SizeCategory.ExtraSmall:
                     case SizeCategory.Small: max = 1; break;
@@ -53,5 +60,70 @@ namespace SizeEmblem.Assets.Scripts.Calculators
 
             return new RangeValue<int>(min, max);
         }
+
+
+        public static IEnumerable<MapPoint> GetMapPointsAbilityTargets(IAbility ability, IGameUnit user)
+        {
+            var rangeMinMax = GetAbilityRangeDistance(ability, user);
+
+            return GetMapPointsAbilityTargets(ability, rangeMinMax, user.MapX, user.MapY, user.TileWidth, user.TileHeight);
+
+        }
+
+        public static IEnumerable<MapPoint> GetMapPointsAbilityTargets(IAbility ability, RangeValue<int> abilityRange, int casterX, int casterY, int casterWidth, int casterHeight)
+        {
+            // Quick get the edges of our unit
+            var casterLeft   = casterX;
+            var casterRight  = casterX + casterWidth;
+            var casterBottom = casterY;
+            var casterTop    = casterY + casterHeight;
+            
+
+            var startX = Math.Max(casterLeft - abilityRange.maxValue, 0);
+            var endX = casterRight + abilityRange.maxValue;
+
+            var startY = Math.Max(casterBottom - abilityRange.maxValue, 0);
+            var endY = casterTop + abilityRange.maxValue;
+
+            
+            for(var x = startX; x <= endX; x++)
+            {
+                // Is the current X-position inside the caster?
+                var isXInCaster = (x >= casterLeft && x <= casterRight);
+                var casterXClosest = x < casterLeft ? casterLeft : casterRight;
+
+                for(var y = startY; y <= endY; y++)
+                {
+                    // Is the current Y-position inside the caster?
+                    var isYInCaster = (y >= casterBottom && y <= casterTop);
+
+                    float fDistance;
+                    // Check if we're inside of our caster. That's a special edge case of distance zero!
+                    if(isXInCaster && isYInCaster)
+                    {
+                        fDistance = 0;
+                    }
+                    // Otherwise just use a normal distance algorithm to find the distance from the current X,Y to the closest tile of the caster
+                    else
+                    {
+                        var casterYClosest = y < casterBottom ? casterBottom : casterTop;
+
+                        var xDistance = x - casterXClosest;
+                        var yDistance = y - casterYClosest;
+                        fDistance = (float)Math.Sqrt(xDistance * xDistance + yDistance * yDistance);
+                    }
+
+                    // Final distance always rounds up
+                    var distance = (int)Math.Ceiling(fDistance);
+
+                    // Check our distance. If it's within our ability range then 
+                    if(distance >= abilityRange.minValue && distance <= abilityRange.maxValue)
+                    {
+                        yield return new MapPoint(x, y, 1, 1);
+                    }
+                }
+            }
+        }
+
     }
 }
