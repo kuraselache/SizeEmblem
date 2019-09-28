@@ -43,10 +43,23 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
 
 
-        public WeaponCategory WeaponCategory { get { return Data.WeaponCategory; } }
+        public WeaponAdvantageCategory WeaponCategory { get { return Data.WeaponCategory; } }
         public AbilityCategory AbilityCategory { get { return Data.AbilityCategory; } }
 
 
+        // Abiilty Damage / Healing
+        public float StrengthMultiplier { get; }
+        public float MagicMultiplier { get; }
+
+        public bool CanDouble { get; }
+
+        // Ability Accuracy
+        public bool SkipAccuracy { get; }
+
+        public int Accuracy { get; }
+
+
+        // Range Properties
         public AbilityRangeDistanceRule RangeDistanceRule { get { return Data.RangeDistanceRule; } }
         public RangeValue<int> RangeMinMax { get { return new RangeValue<int>(Data.MinRange, Data.MaxRange); } }
 

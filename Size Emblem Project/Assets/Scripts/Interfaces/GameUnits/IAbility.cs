@@ -17,10 +17,23 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         AbilityData Data { get; }
 
 
-        WeaponCategory WeaponCategory { get; }
+        WeaponAdvantageCategory WeaponCategory { get; }
         AbilityCategory AbilityCategory { get; }
 
 
+        
+        // Abiilty Damage / Healing
+        float StrengthMultiplier { get; }
+        float MagicMultiplier { get; }
+
+        bool CanDouble { get; }
+
+        // Ability Accuracy
+        bool SkipAccuracy { get; } // Flag if accuracy checks should be skipped, such as for healing abilities
+
+        int Accuracy { get; }
+
+        // Ability Range
         AbilityRangeDistanceRule RangeDistanceRule { get; }
 
         RangeValue<int> RangeMinMax { get; }

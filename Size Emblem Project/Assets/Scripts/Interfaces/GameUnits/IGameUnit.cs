@@ -18,6 +18,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
 
         SizeCategory SizeCategory { get; }
+        WeaponAdvantageCategory WeaponAdvantageCategory { get; }
 
 
 

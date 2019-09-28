@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.Constants
 {
-    public enum WeaponCategory
+    public enum WeaponAdvantageCategory
     {
         None, // Exists outside the triangle, does not get advantage or disadvantage
-        Physical, // Beasts weapon, loses to magic
-        Weapon,  // Beasts magic, loses to physical
+        Physical, // Beats weapon, loses to magic
+        Weapon,  // Beats magic, loses to physical
         Magic, // Beats physical, loses to weapon
         Perfect, // Always gets advantage
         Worst, // Always gets disadvantage

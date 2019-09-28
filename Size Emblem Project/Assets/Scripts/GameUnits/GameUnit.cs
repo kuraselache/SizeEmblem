@@ -267,6 +267,7 @@ namespace SizeEmblem.Scripts.GameUnits
 
 
         public SizeCategory SizeCategory { get { return BaseUnitData.SizeCategory; } }
+        public WeaponAdvantageCategory WeaponAdvantageCategory { get { return BaseUnitData.WeaponType; } }
 
         public GameUnitData baseUnitData;
         public GameUnitData BaseUnitData { get { return baseUnitData; } }

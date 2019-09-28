@@ -21,7 +21,7 @@ namespace SizeEmblem.Scripts.GameData
 
         // Ability Category and Action Type
         public AbilityCategory AbilityCategory;
-        public WeaponCategory WeaponCategory;
+        public WeaponAdvantageCategory WeaponCategory;
 
         // Range
         public AbilityRangeDistanceRule RangeDistanceRule;
