@@ -118,8 +118,8 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public bool CanMoveAction()
         {
-            if (!CanAct() || SpentMovement > 0) return false;
-            return true;
+            if (CanAct() && HasRemainingMovement()) return true;
+            return false;
         }
 
         public void ResetActionsConsumed()
@@ -140,6 +140,9 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public void ProcessBattleStart()
         {
+            // Units start fully healed
+            HealHPSPFull();
+
             // Make sure units are reset at the start of battle
             ResetActionsConsumed();
             // Reset usage of all abilities
@@ -214,7 +217,11 @@ namespace SizeEmblem.Scripts.GameUnits
         public IReadOnlyList<MovementType> MovementTypes { get { return _movementTypes.AsReadOnly(); } }
 
 
-        public bool CanMove()
+        /// <summary>
+        /// Check if this unit has any movement remaining.
+        /// </summary>
+        /// <returns></returns>
+        public bool HasRemainingMovement()
         {
             return RemainingMovement > 0;
         }
@@ -279,11 +286,13 @@ namespace SizeEmblem.Scripts.GameUnits
         public int Level { get { return level; } }
 
 
-        public int hp;
-        public int HP { get { return hp; } }
+        [SerializeField]
+        private int _hp;
+        public int HP { get { return _hp; } }
 
-        public int sp;
-        public int SP { get { return sp; } }
+        [SerializeField]
+        private int _sp;
+        public int SP { get { return _sp; } }
 
 
         public List<IAbility> Abilities { get; } = new List<IAbility>();
@@ -365,6 +374,12 @@ namespace SizeEmblem.Scripts.GameUnits
         {
             // Also not implemented, ignore this for now
             return 0;
+        }
+
+        public void HealHPSPFull()
+        {
+            _hp = GetAttribute(UnitAttribute.MaxHP);
+            _sp = GetAttribute(UnitAttribute.MaxSP);
         }
 
         #endregion

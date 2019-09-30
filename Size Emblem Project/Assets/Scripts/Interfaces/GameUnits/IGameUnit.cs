@@ -68,7 +68,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         int RemainingMovement { get; }
         IReadOnlyList<MovementType> MovementTypes { get; }
 
-        bool CanMove();
+        bool HasRemainingMovement();
         void AddRouteCost(IGameMapMovementRoute route);
     }
 }

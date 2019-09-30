@@ -33,18 +33,9 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             else if(ability.RangeDistanceRule == AbilityRangeDistanceRule.SizeRangeSmall)
             {
                 min = ability.RangeMinMax.minValue;
-                max = 1;
-                switch(user.SizeCategory)
-                {
-                    case SizeCategory.ExtraSmall:
-                    case SizeCategory.Small: max = 1; break;
-                    case SizeCategory.Medium: max = 2; break;
-                    case SizeCategory.Large: max = 3; break;
-                    case SizeCategory.Gigantic: max = 4; break;
-                    case SizeCategory.GiganticSuper: max = 5; break;
-                }
+                max = SizeCalculator.GetMaxRangeBonusForSize(user.SizeCategory);
 
-                max += min - 1;
+                max += Math.Max(min - 1, 0);
             }
             else
             {

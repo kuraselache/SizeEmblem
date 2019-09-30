@@ -318,7 +318,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Create our return list
             var routesFound = new Dictionary<int, IGameMapMovementRoute>();
 
-            if (!unit.CanMove()) return Enumerable.Empty<IGameMapMovementRoute>();
+            if (!unit.HasRemainingMovement()) return Enumerable.Empty<IGameMapMovementRoute>();
 
             // Pull our relevant stats from our unit
             var mapX = unit.MapX;
@@ -505,14 +505,13 @@ namespace SizeEmblem.Scripts.GameMap
         }
 
 
-        #region Select Unit
+        #region Unit Selection and Commands
 
         private IGameUnit _selectedUnit;
 
-        public void SelectUnit()
-        {
-            if (!Input.GetMouseButtonDown(0)) return;
 
+        public MapPoint GetCursorMapPoint()
+        {
             // Get the position of the mouse in world coordinates
             var point = _mapcamera.ScreenToWorldPoint(Input.mousePosition);
             // And convert it to tile coordinates
@@ -521,21 +520,40 @@ namespace SizeEmblem.Scripts.GameMap
             // Convert our grid position into map data X,Y positions which is how we're storing positional information
             TranslateUnityXYToMapXY(tilePosition, out var mapX, out var mapY);
 
-            if (FindMapObjectInBounds(out var foundObject, mapX, mapY))
+            return new MapPoint(mapX, mapY, 1, 1);
+        }
+
+
+        public void SelectUnit()
+        {
+            if (!Input.GetMouseButtonDown(0)) return;
+
+            var userMapPoint = GetCursorMapPoint();
+
+            // If we selected a game object
+            if (FindMapObjectInBounds(out var foundObject, userMapPoint.X, userMapPoint.Y))
             {
                 var foundUnit = foundObject as IGameUnit;
                 if (_selectedUnit == foundUnit) return;
                 if (_selectedUnit != null && _selectedUnit != foundUnit) ClearMovementOverlay();
 
                 _selectedUnit = foundUnit;
-                ShowUnitMovementRange(_selectedUnit);
+                if(_selectedUnit.CanMoveAction()) ShowUnitMovementRange(_selectedUnit);
+                return;
             }
+
+            // If we have already selected a game object
+            //if(_selectedUnit != null)
+            //{
+            //    // See if we selected a route
+            //}
+
             else
             {
                 if (_selectedUnit == null) return;
                 if (!_gameSceneBattle.CanUnitAct(_selectedUnit)) return;
 
-                var route = _availableRoutes.FirstOrDefault(x => x.EndX == mapX && x.EndY == mapY);
+                var route = _availableRoutes.FirstOrDefault(x => x.EndX == userMapPoint.X && x.EndY == userMapPoint.Y);
                 if (route == null) return;
 
                 var unit = _selectedUnit;
@@ -549,27 +567,24 @@ namespace SizeEmblem.Scripts.GameMap
             ClearMovementOverlay();
             _availableRoutes = null;
 
-            //var stringBuilder = new StringBuilder();
-            //stringBuilder.Append("Route: ");
-            //route.Route.Select(x => x.ToString()).ForEach(x => stringBuilder.Append(x).Append(", "));
-            //Debug.Log(stringBuilder.ToString());
+            var hasWalkingDamage = unit.GetAttribute(UnitAttribute.WalkingDamage) > 0;
 
             foreach (var routeStep in route.Route.Where(x => x != Direction.None))
             {
-
+                var startPosition = unit.WorldPosition;
                 var directionVector = DirectionHelper.GetDirectionVector(routeStep);
                 var targetPosition = unit.WorldPosition + directionVector;
 
                 var duration = 0.15f;
-                var stepTime = 1f * duration;
+                var stepTime = 0f;
 
-                while (stepTime > 0)
+                while (stepTime < duration)
                 {
-                    var delta = Time.deltaTime;
-                    stepTime -= delta;
-                    unit.WorldPosition += (directionVector * (delta / duration));
+                    stepTime += Time.deltaTime;
+                    unit.WorldPosition = Vector3.Lerp(startPosition, targetPosition, stepTime / duration);
                     yield return null;
                 }
+
                 // Animation complete, set the unit position to be the end location
                 unit.WorldPosition = targetPosition;
                 var newX = unit.MapX;
@@ -578,14 +593,17 @@ namespace SizeEmblem.Scripts.GameMap
                 unit.MapX = newX;
                 unit.MapY = newY;
 
-                if(unit.GetAttribute(UnitAttribute.WalkingDamage) > 0)
+                if(hasWalkingDamage)
                 {
                     ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight);
                 }
             }
 
+            // Final snap the unit to their end map & unity location
             unit.MapX = route.EndX;
             unit.MapY = route.EndY;
+            unit.WorldPosition = TranslateMapXYToUnityXY(unit.MapX, unit.MapY);
+            // And tell them to consume movement for this route
             unit.AddRouteCost(route);
         }
 
