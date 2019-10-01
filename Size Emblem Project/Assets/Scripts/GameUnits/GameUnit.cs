@@ -111,14 +111,14 @@ namespace SizeEmblem.Scripts.GameUnits
         public bool CanAct()
         {
             if (!IsActive) return false;
-            if (HP <= 0) return false;
+            if (HP <= 0) return false; // temp flag for KO'd units, should be replaced in the future with something smarter
             if (ActionOver) return false;
             return true;
         }
 
         public bool CanMoveAction()
         {
-            if (CanAct() && HasRemainingMovement()) return true;
+            if (CanAct() && HasRemainingMovement() && !MovementActionConsumed) return true;
             return false;
         }
 
@@ -228,8 +228,10 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public void AddRouteCost(IGameMapMovementRoute route)
         {
-            SpentMovement = Int16.MaxValue;
-            ActionOver = true;
+            // Units can only move once for now
+            SpentMovement = 0;
+            MovementActionConsumed = true;
+            ActionOver = true; // Temp flag since units don't have abilities to end their action with
         }
 
         public void RefreshMovementTypes()

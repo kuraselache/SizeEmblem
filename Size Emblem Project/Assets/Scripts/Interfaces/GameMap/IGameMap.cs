@@ -44,7 +44,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         //void ProcessBreadthSearchQueueItem(Queue<GameMap.GetRouteSearchParams> searchQueue, GameMap.GetRouteSearchParams searchParameters, Dictionary<int, IGameMapMovementRoute> routesFound, IGameUnit unit, int availableMovement);
         void RefreshGameMapTileArray();
         void RefreshMapUnits();
-        void SelectUnit();
+        void UpdateUserInput();
         void SetCursorPosition(Vector3 newPosition);
         void ShowUnitMovementRange(IGameUnit unit);
         void Start();

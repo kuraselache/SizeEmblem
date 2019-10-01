@@ -500,8 +500,13 @@ namespace SizeEmblem.Scripts.GameMap
         {
             gameMapCursor.CursorEnabled = true;
 
-            UpdateMapCursor();
-            SelectUnit();
+            if(IsMouseInView())
+            {
+                UpdateMousePoint();
+
+                UpdateMapCursor();
+                UpdateUserInput();
+            }
         }
 
 
@@ -509,11 +514,43 @@ namespace SizeEmblem.Scripts.GameMap
 
         private IGameUnit _selectedUnit;
 
+        private MapPoint _lastMousePosition;
+        private MapPoint _currentMousePosition;
 
-        public MapPoint GetCursorMapPoint()
+
+
+        /// <summary>
+        /// Check if the the primary input for the player is in view of the game window.
+        /// </summary>
+        /// <returns>Returns true if the user input is over the game window, false otherwise.</returns>
+        public bool IsMouseInView()
+        {
+            var viewportPoint = _mapcamera.ScreenToViewportPoint(Input.mousePosition);
+            return viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
+        }
+
+
+        public void UpdateMousePoint()
+        {
+            // Remember our last mouse position
+            _lastMousePosition = _currentMousePosition;
+
+            _currentMousePosition = GetPlayerInputMapPoint();
+        }
+
+
+        
+
+
+        /// <summary>
+        /// Get the map point the user is focusing on based on the player's input, such as the location of the mouse cursor
+        /// </summary>
+        /// <returns>A 1x1 map point for where the player's input is</returns>
+        public MapPoint GetPlayerInputMapPoint()
         {
             // Get the position of the mouse in world coordinates
             var point = _mapcamera.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log(String.Format("Cursor at point: {0}, {1}", point.x, point.y));
             // And convert it to tile coordinates
             var tilePosition = objectTileMap.WorldToCell(point);
 
@@ -524,48 +561,64 @@ namespace SizeEmblem.Scripts.GameMap
         }
 
 
-        public void SelectUnit()
+        public void UpdateUserInput()
         {
+            if (!_gameSceneBattle.IsPlayerEnabledPhase()) return;
+
             if (!Input.GetMouseButtonDown(0)) return;
 
-            var userMapPoint = GetCursorMapPoint();
 
             // If we selected a game object
-            if (FindMapObjectInBounds(out var foundObject, userMapPoint.X, userMapPoint.Y))
+            if (FindMapObjectInBounds(out var foundObject, _currentMousePosition.X, _currentMousePosition.Y))
             {
                 var foundUnit = foundObject as IGameUnit;
                 if (_selectedUnit == foundUnit) return;
                 if (_selectedUnit != null && _selectedUnit != foundUnit) ClearMovementOverlay();
 
                 _selectedUnit = foundUnit;
-                if(_selectedUnit.CanMoveAction()) ShowUnitMovementRange(_selectedUnit);
+                ShowUnitMovementRange(_selectedUnit);
                 return;
             }
 
-            // If we have already selected a game object
-            //if(_selectedUnit != null)
-            //{
-            //    // See if we selected a route
-            //}
-
-            else
+            // The user didn't select a unit, see if they clicked on a visible route and move them if they can
+            if(_selectedUnit != null && _availableRoutes != null && _selectedUnit.CanMoveAction() && _gameSceneBattle.CanUnitAct(_selectedUnit))
             {
-                if (_selectedUnit == null) return;
-                if (!_gameSceneBattle.CanUnitAct(_selectedUnit)) return;
-
-                var route = _availableRoutes.FirstOrDefault(x => x.EndX == userMapPoint.X && x.EndY == userMapPoint.Y);
-                if (route == null) return;
-
-                var unit = _selectedUnit;
-                _selectedUnit = null;
-                StartCoroutine(MoveUnitCoroutine(unit, route));
+                var selectedRoute = _availableRoutes.FirstOrDefault(x => x.EndX == _currentMousePosition.X && x.EndY == _currentMousePosition.Y);
+                if(selectedRoute != null)
+                {
+                    // They clicked on a route for a unit so move them!
+                    StartCoroutine(MoveUnitCoroutine(_selectedUnit, selectedRoute));
+                    return;
+                }
             }
+            
+            // Otherwise they selected empty space
+            SelectEmptySpace();
+
+        }
+
+        public void SelectEmptySpace()
+        {
+            // If we have a unit selected and they haven't moved yet then unselect the unit
+            if(_selectedUnit != null)
+            {
+                UnselectUnit();
+            }
+
+            // Otherwise there's nothing to do yet
+        }
+
+        public void UnselectUnit()
+        {
+            _selectedUnit = null;
+            _availableRoutes = null;
+            ClearMovementOverlay();
         }
 
         public IEnumerator MoveUnitCoroutine(IGameUnit unit, IGameMapMovementRoute route)
         {
-            ClearMovementOverlay();
-            _availableRoutes = null;
+            // Unselect the unit we're moving
+            UnselectUnit();
 
             var hasWalkingDamage = unit.GetAttribute(UnitAttribute.WalkingDamage) > 0;
 
@@ -656,9 +709,6 @@ namespace SizeEmblem.Scripts.GameMap
 
             // Convert our grid position into map data X,Y positions which is how we're storing positional information
             TranslateUnityXYToMapXY(tilePosition, out var mapX, out var mapY);
-
-            // Is this necessary? Should be the same value but as floats... which we cast back to ints in a second
-            //var cursorPostion = objectTileMap.CellToWorld(tilePosition);
 
             // Find an object to highlight. If there is a unit the cursor should match it's position and tile width/height via scaling
             if (FindMapObjectInBounds(out var foundObject, mapX, mapY))

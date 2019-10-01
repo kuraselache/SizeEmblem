@@ -29,6 +29,8 @@ namespace SizeEmblem.Scripts.Interfaces.GameScenes
 
         bool CanUnitAct(IGameUnit unit);
 
+        bool IsPlayerEnabledPhase();
+
         //bool IsTurnComplete();
 
         //bool RoundTick();

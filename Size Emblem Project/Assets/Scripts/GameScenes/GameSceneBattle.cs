@@ -160,6 +160,38 @@ namespace SizeEmblem.Scripts.GameScenes
         }
 
 
+        /// <summary>
+        /// Check if the player is enabled at this time
+        /// </summary>
+        /// <returns></returns>
+        public bool IsPlayerEnabledPhase()
+        {
+            // While this is busy the player can't act
+            if (IsBusy || !IsActive) return false;
+
+            // TODO: State checks for other stuff (cutscenes)
+
+            // We're in a state that the player has control based on whose action/phase it is
+
+            // Check if the immediate action queue. If it's a player unit then they're up!
+            if (_immediateActionQueue.Any() && IsPlayerUnit(_immediateActionQueue.Peek())) return true;
+
+            // Fallthrough: If the current faction is a player faction then they have control!
+            return IsPlayerFaction(CurrentPhase);
+        }
+
+
+        public bool IsPlayerFaction(Faction faction)
+        {
+            // Ideally this should only be true for the player faction, but for now all factions are player factions
+            return true;
+        }
+
+        public bool IsPlayerUnit(IGameUnit unit)
+        {
+            return IsPlayerFaction(unit.UnitFaction);
+        }
+
         #region Loading
 
         // Current game map reference
