@@ -53,3 +53,6 @@ TagManager:
   - name: Battler Layer
     uniqueID: 1971500293
     locked: 0
+  - name: UI Layer
+    uniqueID: 3317838081
+    locked: 0

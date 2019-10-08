@@ -1,6 +1,8 @@
 ﻿using SizeEmblem.Scripts.GameUnits;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,14 +12,15 @@ namespace SizeEmblem.Scripts.UI
     {
         #region UI Components
 
-        public Text UnitNameText;
+        public Canvas WindowCanvas;
 
+        public TextMeshProUGUI UnitNameText;
 
         #endregion
 
 
-        private GameUnit _selectedUnit;
-        public GameUnit SelectedUnit
+        private IGameUnit _selectedUnit;
+        public IGameUnit SelectedUnit
         {
             get { return _selectedUnit; }
             set
@@ -55,17 +58,14 @@ namespace SizeEmblem.Scripts.UI
 
         public void ChangeCanvasEnabled(bool isEnabled)
         {
-            _uiCanvas.enabled = isEnabled;
+            WindowCanvas.enabled = isEnabled;
         }
 
 
         #region Components
 
-        private Canvas _uiCanvas;
-
         void Start()
         {
-            _uiCanvas = GetComponent<Canvas>();
         }
 
         #endregion
