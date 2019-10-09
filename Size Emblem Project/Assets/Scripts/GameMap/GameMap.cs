@@ -31,7 +31,7 @@ namespace SizeEmblem.Scripts.GameMap
         private Camera _mapcamera;
 
 
-        public UISelectedUnitSummary uiSelectedUnitSummary;
+        public SelectedUnitSummaryWindow uiSelectedUnitSummary;
 
         public Tilemap baseTileMap;
         public Tilemap[] baseTileMaps;

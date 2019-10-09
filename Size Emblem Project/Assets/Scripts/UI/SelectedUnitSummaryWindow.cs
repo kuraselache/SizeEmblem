@@ -8,13 +8,17 @@ using UnityEngine.UI;
 
 namespace SizeEmblem.Scripts.UI
 {
-    public class UISelectedUnitSummary : MonoBehaviour
+    public class SelectedUnitSummaryWindow : MonoBehaviour
     {
         #region UI Components
 
         public Canvas WindowCanvas;
 
+        public Image Window;
+
         public TextMeshProUGUI UnitNameText;
+        public TextMeshProUGUI UnitHPText;
+        public TextMeshProUGUI UnitSPText;
 
         #endregion
 
@@ -53,7 +57,12 @@ namespace SizeEmblem.Scripts.UI
             }
 
             IsVisible = true;
-            UnitNameText.text = SelectedUnit.UnitName;
+            if(UnitNameText != null)
+                UnitNameText.text = SelectedUnit.UnitName;
+            if (UnitHPText != null)
+                UnitHPText.text = string.Format("HP: {0} / {1}", SelectedUnit.HP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxHP));
+            if(UnitSPText != null)
+                UnitSPText.text = string.Format("SP: {0} / {1}", SelectedUnit.SP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxSP));
         }
 
         public void ChangeCanvasEnabled(bool isEnabled)
