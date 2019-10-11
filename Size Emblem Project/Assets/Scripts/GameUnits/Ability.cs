@@ -63,7 +63,9 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public AbilityRangeDistanceRule RangeDistanceRule { get { return Data.RangeDistanceRule; } }
         public RangeValue<int> RangeMinMax { get { return new RangeValue<int>(Data.MinRange, Data.MaxRange); } }
 
-
+        // Cost Properties
+        public int HPCost { get { return Data.HPCost; } }
+        public int SPCost { get { return Data.SPCost; } }
 
 
 

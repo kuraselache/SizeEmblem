@@ -299,6 +299,18 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public List<IAbility> Abilities { get; } = new List<IAbility>();
 
+        public bool CanUseAbility(IAbility ability)
+        {
+            // Units that can't act can't use any abilities
+            if (!CanAct()) return false;
+            // Make sure this unit owns this ability instance
+            if (!Abilities.Contains(ability)) return false;
+
+            // Ask the ability itself if it can be used. It'll check HP/SP cost, cooldown/warmup state, etc.
+            return ability.CanUseAbility();
+        }
+
+
         // Dictionary to hold stat-up items used for this unit
         public Dictionary<UnitAttribute, int> AttributesGains { get; } = new Dictionary<UnitAttribute, int>();
 

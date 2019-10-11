@@ -20,6 +20,8 @@ namespace SizeEmblem.Scripts.UI
         public TextMeshProUGUI UnitHPText;
         public TextMeshProUGUI UnitSPText;
 
+        public float margin = 30;
+
         #endregion
 
 
@@ -57,12 +59,21 @@ namespace SizeEmblem.Scripts.UI
             }
 
             IsVisible = true;
-            if(UnitNameText != null)
+
+            var targetWidth = 100f;
+
+            if (UnitNameText != null)
+            {
                 UnitNameText.text = SelectedUnit.UnitName;
+                targetWidth = Mathf.Max(targetWidth, UnitNameText.preferredWidth);
+            }
             if (UnitHPText != null)
                 UnitHPText.text = string.Format("HP: {0} / {1}", SelectedUnit.HP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxHP));
             if(UnitSPText != null)
                 UnitSPText.text = string.Format("SP: {0} / {1}", SelectedUnit.SP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxSP));
+
+            targetWidth += margin * 2;
+            Window.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
         }
 
         public void ChangeCanvasEnabled(bool isEnabled)
@@ -75,6 +86,8 @@ namespace SizeEmblem.Scripts.UI
 
         void Start()
         {
+            _isVisible = WindowCanvas.enabled;
+            RefreshUI();
         }
 
         #endregion

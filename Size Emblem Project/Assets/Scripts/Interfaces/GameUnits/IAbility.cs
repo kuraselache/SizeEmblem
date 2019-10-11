@@ -38,10 +38,14 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         RangeValue<int> RangeMinMax { get; }
 
-        
-        
 
-        
+        // Ability Cost
+        int HPCost { get; }
+        int SPCost { get; }
+
+
+
+
 
 
         void ResetBattleUsages();

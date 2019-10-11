@@ -32,7 +32,9 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         int SP { get; }
         int GetAttribute(UnitAttribute attribue);
 
+        // Abilities
         List<IAbility> Abilities { get; }
+        bool CanUseAbility(IAbility ability);
 
 
         
