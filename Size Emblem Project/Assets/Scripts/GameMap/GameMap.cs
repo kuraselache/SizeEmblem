@@ -550,7 +550,6 @@ namespace SizeEmblem.Scripts.GameMap
         {
             // Get the position of the mouse in world coordinates
             var point = _mapcamera.ScreenToWorldPoint(Input.mousePosition);
-            Debug.Log(String.Format("Cursor at point: {0}, {1}", point.x, point.y));
             // And convert it to tile coordinates
             var tilePosition = objectTileMap.WorldToCell(point);
 
@@ -700,6 +699,7 @@ namespace SizeEmblem.Scripts.GameMap
         public void UpdateMapCursor()
         {
             // Get the position of the mouse in world coordinates
+            
             var point = _mapcamera.ScreenToWorldPoint(Input.mousePosition);
             // And convert it to tile coordinates
             var tilePosition = objectTileMap.WorldToCell(point);

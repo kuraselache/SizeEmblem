@@ -109,6 +109,11 @@ namespace SizeEmblem.Assets.Scripts.UI
             IsHovering = false;
         }
 
+        public void OnSelected()
+        {
+            Debug.Log("button selected");
+        }
+
 
 
         private bool _isVisible = false;
@@ -134,7 +139,7 @@ namespace SizeEmblem.Assets.Scripts.UI
             GetDependencies();
 
             _isVisible = ButtonCanvas.enabled;
-            RefreshUI();
+            //RefreshUI();
         }
     }
 }

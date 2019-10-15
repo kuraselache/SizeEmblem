@@ -60,6 +60,7 @@ namespace SizeEmblem.Scripts.UI
 
             IsVisible = true;
 
+            // Minimum width of the hover summary window is 100f units
             var targetWidth = 100f;
 
             if (UnitNameText != null)
@@ -72,6 +73,7 @@ namespace SizeEmblem.Scripts.UI
             if(UnitSPText != null)
                 UnitSPText.text = string.Format("SP: {0} / {1}", SelectedUnit.SP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxSP));
 
+            // Add our margins to the width of the window
             targetWidth += margin * 2;
             Window.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
         }
