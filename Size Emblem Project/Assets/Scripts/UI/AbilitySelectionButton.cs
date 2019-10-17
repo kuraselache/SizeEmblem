@@ -1,4 +1,6 @@
-﻿using SizeEmblem.Assets.Scripts.Interfaces.Managers;
+﻿using SizeEmblem.Assets.Scripts.Events.UI;
+using SizeEmblem.Assets.Scripts.Interfaces.Managers;
+using SizeEmblem.Assets.Scripts.Interfaces.UI;
 using SizeEmblem.Assets.Scripts.Managers;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -12,7 +14,7 @@ using UnityEngine.UI;
 
 namespace SizeEmblem.Assets.Scripts.UI
 {
-    public class AbilitySelectionButton : MonoBehaviour
+    public class AbilitySelectionButton : MonoBehaviour, IAbilitySelectionButton
     {
         #region UI Components
 
@@ -37,6 +39,13 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         #endregion
 
+
+        public void ClearAbilityData()
+        {
+            User = null;
+            Ability = null;
+            RefreshUI();
+        }
 
         public void UpdateAbilityData(IGameUnit user, IAbility ability)
         {
@@ -109,10 +118,26 @@ namespace SizeEmblem.Assets.Scripts.UI
             IsHovering = false;
         }
 
+        /// <summary>
+        /// OnClick event handler. Just check if an appropriate input mode is enabled in the game system then pass this through to the OnSelected method
+        /// </summary>
+        public void OnClick()
+        {
+            if (!_gameSystem.IsMouseInputEnabled) return;
+            OnSelected();
+        }
+
+        /// <summary>
+        /// This button was selected: Check to make sure this is in a valid state then call the Selected event to make any listeners know this button was selected.
+        /// </summary>
         public void OnSelected()
         {
-            Debug.Log("button selected");
+            if (!IsEnabled || !IsVisible) return;
+
+            Selected?.Invoke(this, new AbilitySelectedEventArgs(User, Ability));
         }
+
+        public event AbilitySelectionButtonSelectedHandler Selected;
 
 
 

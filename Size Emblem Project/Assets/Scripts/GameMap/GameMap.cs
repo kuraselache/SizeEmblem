@@ -20,6 +20,8 @@ using System.Text;
 using SizeEmblem.Scripts.Interfaces.GameScenes;
 using SizeEmblem.Scripts.GameScenes;
 using SizeEmblem.Scripts.Events.GameMap;
+using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Assets.Scripts.UI;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -32,6 +34,7 @@ namespace SizeEmblem.Scripts.GameMap
 
 
         public SelectedUnitSummaryWindow uiSelectedUnitSummary;
+        public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
 
         public Tilemap baseTileMap;
         public Tilemap[] baseTileMaps;
@@ -576,6 +579,7 @@ namespace SizeEmblem.Scripts.GameMap
 
                 _selectedUnit = foundUnit;
                 ShowUnitMovementRange(_selectedUnit);
+                selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit);
                 return;
             }
 
@@ -612,6 +616,7 @@ namespace SizeEmblem.Scripts.GameMap
             _selectedUnit = null;
             _availableRoutes = null;
             ClearMovementOverlay();
+            selectedUnitAbilitiesWindow.ClearSelectedUnit();
         }
 
         public IEnumerator MoveUnitCoroutine(IGameUnit unit, IGameMapMovementRoute route)

@@ -2306,7 +2306,7 @@ PrefabInstance:
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 105
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
@@ -5506,7 +5506,7 @@ PrefabInstance:
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 105
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
@@ -9825,7 +9825,7 @@ PrefabInstance:
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 105
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
@@ -16464,6 +16464,7 @@ GameObject:
   - component: {fileID: 485135339}
   - component: {fileID: 485135338}
   - component: {fileID: 485135337}
+  - component: {fileID: 485135340}
   m_Layer: 5
   m_Name: SelectedUnitAbilitiesWindow
   m_TagString: Untagged
@@ -16551,6 +16552,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &485135340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485135335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7e2a648efce0e4dbf733ac76f7999d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &491265246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8110888395169642386, guid: 29057b877388c54469123424f4864e9b,
@@ -59555,7 +59568,7 @@ PrefabInstance:
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 105
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7708828217166139003, guid: 8b20dfeff96e7c84ca19dde458acf9eb,
         type: 3}
@@ -70786,6 +70799,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 8c3da0259437bb9498a411d123a696ab,
         type: 2}
+    - target: {fileID: 6692200929572916211, guid: 4439d020e8bff2d42a540b5070b07cfb,
+        type: 3}
+      propertyPath: selectedUnitAbilitiesWindow
+      value: 
+      objectReference: {fileID: 485135340}
     - target: {fileID: 770354984754403781, guid: 4439d020e8bff2d42a540b5070b07cfb,
         type: 3}
       propertyPath: m_Enabled
