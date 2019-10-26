@@ -1,4 +1,6 @@
 ﻿using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.GameData;
+using SizeEmblem.Scripts.GameUnits;
 using SizeEmblem.Scripts.Interfaces;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -9,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace SizeEmblem.Scripts.GameUnits
+namespace SizeEmblem.Assets.Scripts.GameUnits
 {
     public class GameUnit : MonoBehaviour, IGameUnit
     {
@@ -104,7 +106,7 @@ namespace SizeEmblem.Scripts.GameUnits
         public bool MovementActionConsumed { get; set; }
         public bool MinorActionConsumed { get; set; }
         public bool MajorActionConsumed { get; set; }
-        
+
         public bool ActionOver { get; set; }
 
 
@@ -250,7 +252,7 @@ namespace SizeEmblem.Scripts.GameUnits
 
         public ulong SetStatistic(UnitStatistic statistic, ulong value)
         {
-            if(!Statistics.ContainsKey(statistic))
+            if (!Statistics.ContainsKey(statistic))
                 _statistics.Add(statistic, value);
             else
                 _statistics[statistic] = value;
@@ -341,7 +343,7 @@ namespace SizeEmblem.Scripts.GameUnits
             return stat;
         }
 
-        public int GetAttributeBase(Constants.UnitAttribute attribute)
+        public int GetAttributeBase(UnitAttribute attribute)
         {
             switch (attribute)
             {
@@ -424,7 +426,7 @@ namespace SizeEmblem.Scripts.GameUnits
             if (spriteRenderer == null) return;
 
             // If the sprite tile is too small then turn it off and don't bother with alignment
-            if(TileWidth <= 0 || TileHeight <= 0)
+            if (TileWidth <= 0 || TileHeight <= 0)
             {
                 spriteRenderer.enabled = false;
                 return;
@@ -450,19 +452,85 @@ namespace SizeEmblem.Scripts.GameUnits
         {
             if (_spriteRenderer == null) return;
 
-            if(_lastActionOver != ActionOver)
+            if (_lastActionOver != ActionOver)
             {
                 _spriteRenderer.color = ActionOver ? Color.grey : Color.white;
                 _lastActionOver = ActionOver;
             }
-            
+
         }
 
         #endregion
 
 
-        
-        
+        public void Initialize()
+        {
+            // Initialize properties that are normally only updated on property changed
+            RefreshBounds();
+            RefreshMovementTypes();
+
+            var ability1Data = new AbilityData()
+            {
+                IDName = "STOMP",
+                FriendlyName = "Stomp",
+                FriendlyDescription = "Deal extra damage to smaller units",
+                AbilityCategory = AbilityCategory.Attack,
+                WeaponCategory = WeaponAdvantageCategory.Physical,
+                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                RangeSpecialRule = AbilityRangeSpecialRule.None,
+                MinRange = 1,
+                MaxRange = 1,
+                MinorActionConsumptionID = String.Empty,
+                HPCost = 0,
+                SPCost = 0,
+                DurabilityCost = 0,
+                Accuracy = 90,
+            };
+            var ability1 = new Ability(this, ability1Data);
+
+            var ability2Data = new AbilityData()
+            {
+                IDName = "SCHOOL_RapidJab",
+                FriendlyName = "Rapid Jab",
+                FriendlyDescription = "Attack multiple times",
+                AbilityCategory = AbilityCategory.Attack,
+                WeaponCategory = WeaponAdvantageCategory.Physical,
+                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                RangeSpecialRule = AbilityRangeSpecialRule.None,
+                MinRange = 1,
+                MaxRange = 1,
+                MinorActionConsumptionID = String.Empty,
+                HPCost = 0,
+                SPCost = 3,
+                DurabilityCost = 0,
+                Accuracy = 80,
+            };
+            var ability2 = new Ability(this, ability2Data);
+
+            var ability3Data = new AbilityData()
+            {
+                IDName = "SCHOOL_Roundhouse",
+                FriendlyName = "Roundhouse",
+                FriendlyDescription = "Hit all enemies around user",
+                AbilityCategory = AbilityCategory.Attack,
+                WeaponCategory = WeaponAdvantageCategory.Physical,
+                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                RangeSpecialRule = AbilityRangeSpecialRule.Directional,
+                MinRange = 1,
+                MaxRange = 1,
+                MinorActionConsumptionID = String.Empty,
+                HPCost = 0,
+                SPCost = 2,
+                DurabilityCost = 0,
+                Accuracy = 95,
+            };
+            var ability3 = new Ability(this, ability3Data);
+
+            Abilities.Add(ability1);
+            Abilities.Add(ability2);
+            Abilities.Add(ability3);
+        }
+
 
 
         public void Start()
@@ -474,9 +542,7 @@ namespace SizeEmblem.Scripts.GameUnits
                 AlignSpriteRenderer();
             }
 
-            // Initialize properties that are normally only updated on property changed
-            RefreshBounds();
-            RefreshMovementTypes();
+            Initialize();
         }
 
 

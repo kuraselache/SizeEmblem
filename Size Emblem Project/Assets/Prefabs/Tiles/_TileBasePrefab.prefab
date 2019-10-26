@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 895965328705054796}
   - component: {fileID: 191194818913562337}
   m_Layer: 0
-  m_Name: GrassTilePrefab
+  m_Name: _TileBasePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc9ac97df274feb4aafc5e39a467fda1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapTileData: {fileID: 0}
+  mapX: 0
+  mapY: 0
+  tileHealth: 0
+  isDestroyed: 0
+  destructionValue: 0
+  destructionBodyCount: 0
+  OverrideSprite: {fileID: 0}
+  mapTileData: {fileID: 0}
 --- !u!212 &191194818913562337
 SpriteRenderer:
   m_ObjectHideFlags: 0

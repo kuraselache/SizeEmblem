@@ -11,7 +11,17 @@ namespace SizeEmblem.Assets.Scripts.UI
 {
     public class SelectedUnitAbilitiesWindow : MonoBehaviour, ISelectedUnitAbilitiesWindow, IDisposable
     {
+        #region UI Components
+
+        public Canvas WindowCanvas;
+
+        #endregion
+
+        public AbilitySelectionButton abilitySelectionButtonPrefab;
+
+
         private List<IAbilitySelectionButton> _abilitySelectionButtons = new List<IAbilitySelectionButton>();
+
 
         public IGameUnit SelectedUnit { get; private set; }
 

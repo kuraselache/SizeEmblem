@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.UI;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameScenes;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -11,8 +12,17 @@ namespace SizeEmblem.Scripts.GameScenes
 {
     public class GameSceneBattle : MonoBehaviour, IGameSceneBattle
     {
+        #region Unity Dependencies
 
-        
+
+        public SelectedUnitSummaryWindow uiSelectedUnitSummary;
+        public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
+
+        #endregion
+
+
+
+
         // Simple state tracker. If we're busy then we're doing something, like an animation
         public bool IsBusy { get; private set; }
 

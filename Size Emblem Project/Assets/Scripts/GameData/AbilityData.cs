@@ -49,7 +49,9 @@ namespace SizeEmblem.Scripts.GameData
         public bool HasWarmup;
         public int WarmupTurns;
 
-        // 
+        // Base Accuracy
+        public int Accuracy;
+        public bool SkipAccuracyCheck;
 
     }
 }

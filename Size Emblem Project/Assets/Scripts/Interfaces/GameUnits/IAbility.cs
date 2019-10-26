@@ -14,7 +14,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         ILocalizationString NameLocal { get; }
 
 
-        AbilityData Data { get; }
+        //AbilityData Data { get; }
 
 
         WeaponAdvantageCategory WeaponCategory { get; }
@@ -29,7 +29,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         bool CanDouble { get; }
 
         // Ability Accuracy
-        bool SkipAccuracy { get; } // Flag if accuracy checks should be skipped, such as for healing abilities
+        bool SkipAccuracyCheck { get; } // Flag if accuracy checks should be skipped, such as for healing abilities
 
         int Accuracy { get; }
 

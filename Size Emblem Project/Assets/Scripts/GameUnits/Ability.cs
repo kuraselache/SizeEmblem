@@ -54,9 +54,9 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public bool CanDouble { get; }
 
         // Ability Accuracy
-        public bool SkipAccuracy { get; }
+        public bool SkipAccuracyCheck { get { return Data.SkipAccuracyCheck; } }
 
-        public int Accuracy { get; }
+        public int Accuracy { get { return Data.Accuracy; } }
 
 
         // Range Properties

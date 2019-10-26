@@ -8,8 +8,6 @@ using SizeEmblem.Scripts.Interfaces.GameMap.Factories;
 using SizeEmblem.Scripts.Interfaces.Managers;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using SizeEmblem.Scripts.Managers;
-using SizeEmblem.Scripts.UI;
-using SizeEmblem.Scripts.GameUnits;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +20,9 @@ using SizeEmblem.Scripts.GameScenes;
 using SizeEmblem.Scripts.Events.GameMap;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
 using SizeEmblem.Assets.Scripts.UI;
+using SizeEmblem.Assets.Scripts.GameUnits;
+using SizeEmblem.Assets.Scripts.Interfaces.Managers;
+using SizeEmblem.Assets.Scripts.Managers;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -32,9 +33,6 @@ namespace SizeEmblem.Scripts.GameMap
 
         private Camera _mapcamera;
 
-
-        public SelectedUnitSummaryWindow uiSelectedUnitSummary;
-        public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
 
         public Tilemap baseTileMap;
         public Tilemap[] baseTileMaps;
@@ -50,12 +48,14 @@ namespace SizeEmblem.Scripts.GameMap
 
         #region Code Dependencies
 
+        private IGameSystemManager _gameSystem;
         private IInputManager _inputManager;
         private IGameMapTileGroupFactory _gameMapTileGroupFactory;
 
         public void GetDepenencies()
         {
             // Add DI eventually here
+            _gameSystem = GameSystemManager.Instance;
             _inputManager = new UnityInputManager();
             _gameMapTileGroupFactory = new GameMapTileGroupFactory();
 
@@ -286,6 +286,7 @@ namespace SizeEmblem.Scripts.GameMap
 
         #endregion
 
+
         #region Movement
 
         private IEnumerable<IGameMapMovementRoute> _availableRoutes;
@@ -501,25 +502,29 @@ namespace SizeEmblem.Scripts.GameMap
 
         public void Update()
         {
-            gameMapCursor.CursorEnabled = true;
+            var mouseInView = IsMouseInView();
 
-            if(IsMouseInView())
+            if(IsCursorEnabled && mouseInView)
+            {
+                UpdateMapCursor();
+            }
+
+            if(mouseInView)
             {
                 UpdateMousePoint();
 
-                UpdateMapCursor();
+                
                 UpdateUserInput();
             }
         }
 
 
-        #region Unit Selection and Commands
+        #region Plyaer Input, Unit Selection and Commands
 
         private IGameUnit _selectedUnit;
 
         private MapPoint _lastMousePosition;
         private MapPoint _currentMousePosition;
-
 
 
         /// <summary>
@@ -531,6 +536,7 @@ namespace SizeEmblem.Scripts.GameMap
             var viewportPoint = _mapcamera.ScreenToViewportPoint(Input.mousePosition);
             return viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1;
         }
+
 
 
         public void UpdateMousePoint()
@@ -579,7 +585,7 @@ namespace SizeEmblem.Scripts.GameMap
 
                 _selectedUnit = foundUnit;
                 ShowUnitMovementRange(_selectedUnit);
-                selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit);
+                //selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit); //TODO
                 return;
             }
 
@@ -616,7 +622,7 @@ namespace SizeEmblem.Scripts.GameMap
             _selectedUnit = null;
             _availableRoutes = null;
             ClearMovementOverlay();
-            selectedUnitAbilitiesWindow.ClearSelectedUnit();
+            //selectedUnitAbilitiesWindow.ClearSelectedUnit(); TODO
         }
 
         public IEnumerator MoveUnitCoroutine(IGameUnit unit, IGameMapMovementRoute route)
@@ -701,6 +707,50 @@ namespace SizeEmblem.Scripts.GameMap
         private Vector3 _cursorOffsetVector = new Vector3(0f, 1f);
 
 
+        private bool _isCursorEnabled;
+        public bool IsCursorEnabled
+        {
+            get { return _isCursorEnabled; }
+            set
+            {
+                if (value == _isCursorEnabled) return;
+                _isCursorEnabled = value;
+                RefreshMapCursor();
+            }
+        }
+
+
+        private IGameMapObject _cursorHoverObject;
+        public IGameMapObject CursorHoverObject
+        {
+            get { return _cursorHoverObject; }
+            set
+            {
+                if (value == _cursorHoverObject) return;
+                _cursorHoverObject = value;
+            }
+        }
+
+        private IGameUnit _cursorHoverUnit;
+        public IGameUnit CursorHoverUnit
+        {
+            get { return _cursorHoverUnit; }
+            set
+            {
+                if (value == _cursorHoverUnit) return;
+                _cursorHoverUnit = value;
+
+            }
+        }
+
+
+        public void RefreshMapCursor()
+        {
+            gameMapCursor.CursorEnabled = IsCursorEnabled;
+        }
+
+
+
         public void UpdateMapCursor()
         {
             // Get the position of the mouse in world coordinates
@@ -719,10 +769,9 @@ namespace SizeEmblem.Scripts.GameMap
             if (FindMapObjectInBounds(out var foundObject, mapX, mapY))
             {
                 var foundUnit = foundObject as GameUnit;
-                SetCursorPosition(new Vector3(foundUnit.transform.position.x, foundUnit.transform.position.y + foundUnit.TileHeight - 1, gameMapCursor.transform.position.z));
-                gameMapCursor.transform.localScale = new Vector3(foundUnit.TileWidth, foundUnit.TileHeight, 1f);
+                SetCursorPositionOnUnit(foundUnit);
 
-                uiSelectedUnitSummary.SelectedUnit = foundUnit;
+                //uiSelectedUnitSummary.SelectedUnit = foundUnit; TODO
             }
             else
             {
@@ -730,13 +779,18 @@ namespace SizeEmblem.Scripts.GameMap
                 var cursorPostion = objectTileMap.CellToWorld(tilePosition);
                 SetCursorPosition(cursorPostion);
                 gameMapCursor.transform.localScale = Vector3.one;
-                uiSelectedUnitSummary.SelectedUnit = null;
+                //uiSelectedUnitSummary.SelectedUnit = null; TODO
             }
 
             // Remember our cell cordinates to try and avoid doing extra work next update
             _lastCursorCellPosition = tilePosition;
         }
 
+        public void SetCursorPositionOnUnit(GameUnit unit)
+        {
+            SetCursorPosition(new Vector3(unit.transform.position.x, unit.transform.position.y + unit.TileHeight - 1, gameMapCursor.transform.position.z));
+            gameMapCursor.transform.localScale = new Vector3(unit.TileWidth, unit.TileHeight, 1f);
+        }
 
 
         public void SetCursorPosition(Vector3 newPosition)

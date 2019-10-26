@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.GameUnits;
+﻿using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.GameUnits;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SizeEmblem.Scripts.UI
+namespace SizeEmblem.Assets.Scripts.UI
 {
     public class SelectedUnitSummaryWindow : MonoBehaviour
     {
@@ -52,7 +53,7 @@ namespace SizeEmblem.Scripts.UI
 
         public void RefreshUI()
         {
-            if(SelectedUnit == null)
+            if (SelectedUnit == null)
             {
                 IsVisible = false;
                 return;
@@ -69,9 +70,9 @@ namespace SizeEmblem.Scripts.UI
                 targetWidth = Mathf.Max(targetWidth, UnitNameText.preferredWidth);
             }
             if (UnitHPText != null)
-                UnitHPText.text = string.Format("HP: {0} / {1}", SelectedUnit.HP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxHP));
-            if(UnitSPText != null)
-                UnitSPText.text = string.Format("SP: {0} / {1}", SelectedUnit.SP, SelectedUnit.GetAttribute(Constants.UnitAttribute.MaxSP));
+                UnitHPText.text = string.Format("HP: {0} / {1}", SelectedUnit.HP, SelectedUnit.GetAttribute(UnitAttribute.MaxHP));
+            if (UnitSPText != null)
+                UnitSPText.text = string.Format("SP: {0} / {1}", SelectedUnit.SP, SelectedUnit.GetAttribute(UnitAttribute.MaxSP));
 
             // Add our margins to the width of the window
             targetWidth += margin * 2;
