@@ -25,6 +25,18 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         #endregion
 
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set
+            {
+                if (value == _isEnabled) return;
+                _isEnabled = value;
+                RefreshVisibility();
+            }
+        }
+
 
         private IGameUnit _selectedUnit;
         public IGameUnit SelectedUnit
@@ -47,12 +59,14 @@ namespace SizeEmblem.Assets.Scripts.UI
             {
                 if (value == _isVisible) return;
                 _isVisible = value;
-                ChangeCanvasEnabled(_isVisible);
+                RefreshVisibility();
             }
         }
 
         public void RefreshUI()
         {
+            if (!IsEnabled) return;
+
             if (SelectedUnit == null)
             {
                 IsVisible = false;
@@ -79,6 +93,12 @@ namespace SizeEmblem.Assets.Scripts.UI
             Window.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
         }
 
+
+        public void RefreshVisibility()
+        {
+            ChangeCanvasEnabled(IsEnabled & IsVisible);
+        }
+
         public void ChangeCanvasEnabled(bool isEnabled)
         {
             WindowCanvas.enabled = isEnabled;
@@ -89,7 +109,7 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         void Start()
         {
-            _isVisible = WindowCanvas.enabled;
+            ChangeCanvasEnabled(IsVisible);
             RefreshUI();
         }
 

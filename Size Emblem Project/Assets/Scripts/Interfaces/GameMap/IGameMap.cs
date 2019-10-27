@@ -53,6 +53,15 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         void TranslateUnityXYToMapXY(int unityX, int unityY, out int mapX, out int mapY);
         void TranslateUnityXYToMapXY(Vector3Int unityPosition, out int mapX, out int mapY);
         void Update();
+
+
+        // Cursor Methods
+        bool IsCursorEnabled { get; set; }
         void UpdateMapCursor();
+
+        IGameUnit CursorHoverUnit { get; }
+        IGameMapObject CursorHoverObject { get; }
+
+        event SelectedUnitChangedHandler HoverUnitChanged;
     }
 }

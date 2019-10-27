@@ -1,8 +1,11 @@
-﻿using SizeEmblem.Assets.Scripts.UI;
+﻿using SizeEmblem.Assets.Scripts.Constants;
+using SizeEmblem.Assets.Scripts.UI;
 using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Events.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameScenes;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +23,24 @@ namespace SizeEmblem.Scripts.GameScenes
 
         #endregion
 
+        public BattleSceneState State { get; private set; } = BattleSceneState.Initialize;
 
+        public void UpdateState(BattleSceneState newState)
+        {
+            if (State == newState) return;
+            State = newState;
+
+            if(State == BattleSceneState.PlayerPhase)
+            {
+                _gameMap.IsCursorEnabled = true;
+                uiSelectedUnitSummary.IsEnabled = true;
+            }
+            else
+            {
+                _gameMap.IsCursorEnabled = false;
+                uiSelectedUnitSummary.IsEnabled = false;
+            }
+        }
 
 
         // Simple state tracker. If we're busy then we're doing something, like an animation
@@ -28,6 +48,10 @@ namespace SizeEmblem.Scripts.GameScenes
 
         // 
         public bool IsActive { get; private set; }
+
+
+        #region Turn & Phase Control
+
 
         public int TurnCount { get; set; }
 
@@ -62,6 +86,7 @@ namespace SizeEmblem.Scripts.GameScenes
 
         public void EndBattle()
         {
+            UpdateState(BattleSceneState.BattleComplete);
             IsActive = false;
 
             Debug.Log("Battle is now over!");
@@ -86,6 +111,9 @@ namespace SizeEmblem.Scripts.GameScenes
         /// </summary>
         public void EndTurn()
         {
+            // Update our state to turn change
+            UpdateState(BattleSceneState.TurnChange);
+
             // Increment the battle turn counter
             TurnCount++;
 
@@ -102,6 +130,15 @@ namespace SizeEmblem.Scripts.GameScenes
             BattleUnits[faction].ForEach(x => x.ProcessPhaseStart());
 
             Debug.Log(string.Format("Current phase is: {0} on turn {1}", CurrentPhase, TurnCount));
+
+            // Insert animation co-routine here
+            // but for now we'll jump straight to the start phase complete bit to enable user input
+            StartPhaseComplete();
+        }
+
+        public void StartPhaseComplete()
+        {
+            UpdateState(IsPlayerEnabledPhase() ? BattleSceneState.PlayerPhase : BattleSceneState.AITurn);
         }
 
 
@@ -110,6 +147,9 @@ namespace SizeEmblem.Scripts.GameScenes
         /// </summary>
         public void EndPhase()
         {
+            // Update our state to phase change
+            UpdateState(BattleSceneState.PhaseChange);
+
             // Tell all current faction units to do post-phase work
             BattleUnits[CurrentPhase].ForEach(x => x.ProcessPhaseEnd());
 
@@ -148,6 +188,8 @@ namespace SizeEmblem.Scripts.GameScenes
         {
 
         }
+
+        #endregion
 
 
         public bool CanUnitAct(IGameUnit unit)
@@ -202,6 +244,23 @@ namespace SizeEmblem.Scripts.GameScenes
             return IsPlayerFaction(unit.UnitFaction);
         }
 
+
+        #region UI
+
+
+        private void GameMap_HoverUnitChanged(IGameMap gameMap, UnitSelectedEventArgs e)
+        {
+            if(uiSelectedUnitSummary.IsEnabled)
+            {
+                uiSelectedUnitSummary.SelectedUnit = e.Unit;
+            }
+        }
+
+
+        #endregion
+
+
+
         #region Loading
 
         // Current game map reference
@@ -224,9 +283,9 @@ namespace SizeEmblem.Scripts.GameScenes
                 }
                 
             }
-        }
+        } 
 
-        private void GameMapLoaded(IGameMap map, System.EventArgs e)
+        private void GameMapLoaded(IGameMap map, EventArgs e)
         {
             _gameMap.Loaded -= GameMapLoaded;
 
@@ -236,11 +295,17 @@ namespace SizeEmblem.Scripts.GameScenes
 
         public void LoadMap(IGameMap map)
         {
+            UpdateState(BattleSceneState.Initialize);
+            // Load the current map data
             RefreshUnits(map);
+
+            // Hook up events
+            map.HoverUnitChanged += GameMap_HoverUnitChanged;
 
             StartBattle();
         }
 
+        
 
         public void RefreshUnits(IGameMap mapSource)
         {

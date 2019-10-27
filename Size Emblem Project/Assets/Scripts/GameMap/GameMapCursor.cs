@@ -30,6 +30,7 @@ namespace SizeEmblem.Scripts.GameMap
         public void Start()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            UpdateVisibility(_cursorEnabled);
         }
 
         

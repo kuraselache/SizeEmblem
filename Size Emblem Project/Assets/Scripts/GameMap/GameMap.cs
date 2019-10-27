@@ -495,6 +495,7 @@ namespace SizeEmblem.Scripts.GameMap
             // Populate our internal data structures to track what's going on in the map
             RefreshGameMapTileArray();
             RefreshMapUnits();
+            RefreshMapCursor();
 
             IsLoaded = true;
         }
@@ -724,25 +725,34 @@ namespace SizeEmblem.Scripts.GameMap
         public IGameMapObject CursorHoverObject
         {
             get { return _cursorHoverObject; }
-            set
+            private set
             {
                 if (value == _cursorHoverObject) return;
                 _cursorHoverObject = value;
             }
         }
 
+        
+
         private IGameUnit _cursorHoverUnit;
         public IGameUnit CursorHoverUnit
         {
             get { return _cursorHoverUnit; }
-            set
+            private set
             {
                 if (value == _cursorHoverUnit) return;
                 _cursorHoverUnit = value;
+                OnHoverUnitChanged(_cursorHoverUnit);
 
             }
         }
 
+        public event SelectedUnitChangedHandler HoverUnitChanged;
+
+        private void OnHoverUnitChanged(IGameUnit unit)
+        {
+            HoverUnitChanged?.Invoke(this, new UnitSelectedEventArgs(unit));
+        }
 
         public void RefreshMapCursor()
         {
@@ -771,15 +781,15 @@ namespace SizeEmblem.Scripts.GameMap
                 var foundUnit = foundObject as GameUnit;
                 SetCursorPositionOnUnit(foundUnit);
 
-                //uiSelectedUnitSummary.SelectedUnit = foundUnit; TODO
+                CursorHoverUnit = foundUnit;
             }
             else
             {
                 // If no unit was found move the cursor to the cell that's highlighted
                 var cursorPostion = objectTileMap.CellToWorld(tilePosition);
                 SetCursorPosition(cursorPostion);
-                gameMapCursor.transform.localScale = Vector3.one;
-                //uiSelectedUnitSummary.SelectedUnit = null; TODO
+
+                CursorHoverUnit = null;
             }
 
             // Remember our cell cordinates to try and avoid doing extra work next update
@@ -788,15 +798,20 @@ namespace SizeEmblem.Scripts.GameMap
 
         public void SetCursorPositionOnUnit(GameUnit unit)
         {
-            SetCursorPosition(new Vector3(unit.transform.position.x, unit.transform.position.y + unit.TileHeight - 1, gameMapCursor.transform.position.z));
-            gameMapCursor.transform.localScale = new Vector3(unit.TileWidth, unit.TileHeight, 1f);
+            SetCursorPosition(new Vector3(unit.transform.position.x, unit.transform.position.y + unit.TileHeight - 1, gameMapCursor.transform.position.z), new Vector3(unit.TileWidth, unit.TileHeight, 1f));
         }
-
 
         public void SetCursorPosition(Vector3 newPosition)
         {
+            SetCursorPosition(newPosition, Vector3.one);
+        }
+
+        public void SetCursorPosition(Vector3 newPosition, Vector3 scale)
+        {
             var adjustedVector = newPosition + _cursorOffsetVector;
             gameMapCursor.transform.position = adjustedVector;
+
+            gameMapCursor.transform.localScale = scale;
         }
 
         #endregion
