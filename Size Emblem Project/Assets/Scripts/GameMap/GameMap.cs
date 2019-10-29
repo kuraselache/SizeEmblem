@@ -23,6 +23,7 @@ using SizeEmblem.Assets.Scripts.UI;
 using SizeEmblem.Assets.Scripts.GameUnits;
 using SizeEmblem.Assets.Scripts.Interfaces.Managers;
 using SizeEmblem.Assets.Scripts.Managers;
+using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -463,6 +464,9 @@ namespace SizeEmblem.Scripts.GameMap
         public List<IGameMapObject> MapObjects { get; } = new List<IGameMapObject>();
         public List<IGameUnit> MapUnits { get; } = new List<IGameUnit>();
 
+
+        #region Load Events
+
         private bool _isLoaded = false;
         public bool IsLoaded
         {
@@ -482,6 +486,10 @@ namespace SizeEmblem.Scripts.GameMap
             Loaded?.Invoke(this, EventArgs.Empty);
         }
 
+        #endregion
+
+
+        #region Unity Start & Update
 
         // Start is called before the first frame update
         public void Start()
@@ -518,6 +526,8 @@ namespace SizeEmblem.Scripts.GameMap
                 UpdateUserInput();
             }
         }
+
+        #endregion
 
 
         #region Plyaer Input, Unit Selection and Commands
@@ -574,6 +584,55 @@ namespace SizeEmblem.Scripts.GameMap
         {
             if (!_gameSceneBattle.IsPlayerEnabledPhase()) return;
 
+            // Back button hit
+            if(Input.GetMouseButtonDown(1))
+            {
+                OnBackButton();
+                return;
+            }
+
+            if (!Input.GetMouseButtonDown(0)) return;
+
+
+
+
+            // If the player selected a game object
+            if (FindMapObjectInBounds(out var foundObject, _currentMousePosition.X, _currentMousePosition.Y))
+            {
+                var foundUnit = foundObject as IGameUnit;
+                OnSelectedUnit(foundUnit);
+                return;
+            }
+
+            // If the player selected a game route
+            if(_availableRoutes != null)
+            {
+                var selectedRoute = _availableRoutes.FirstOrDefault(x => x.EndX == _currentMousePosition.X && x.EndY == _currentMousePosition.Y);
+                if(selectedRoute != null)
+                {
+                    OnSelectedRoute(selectedRoute);
+                    return;
+                }
+            }
+
+            // Fallthrough: If the player selected empty space
+            OnSelectedEmptySpace();
+
+        }
+
+
+        public event EventHandler BackButton;
+
+        public void OnBackButton()
+        {
+            BackButton?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        public void UpdateUserInput2()
+        {
+            if (!_gameSceneBattle.IsPlayerEnabledPhase()) return;
+
             if (!Input.GetMouseButtonDown(0)) return;
 
 
@@ -626,6 +685,43 @@ namespace SizeEmblem.Scripts.GameMap
             //selectedUnitAbilitiesWindow.ClearSelectedUnit(); TODO
         }
 
+
+        public event SelectedUnitHandler PlayerSelectedUnit;
+
+        public void OnSelectedUnit(IGameUnit unit)
+        {
+            PlayerSelectedUnit?.Invoke(this, new UnitSelectedEventArgs(unit));
+        }
+
+        public void OnSelectedEmptySpace()
+        {
+            PlayerSelectedUnit?.Invoke(this, UnitSelectedEventArgs.Empty);
+        }
+
+
+        public event SelectedRouteHandler PlayerSelectedRoute;
+
+        public void OnSelectedRoute(IGameMapMovementRoute route)
+        {
+            PlayerSelectedRoute?.Invoke(this, new RouteSelectedEventArgs(route));
+        }
+
+        public void OnSelectedNoRoute()
+        {
+            PlayerSelectedRoute?.Invoke(this, RouteSelectedEventArgs.Empty);
+        }
+
+        public void MoveUnit(IGameUnit unit, IGameMapMovementRoute route)
+        {
+            StartCoroutine(MoveUnitCoroutine(unit, route));
+        }
+
+        //public async Task MoveUnitAsync(IGameUnit unit, IGameMapMovementRoute route)
+        //{
+        //    await MoveUnitCoroutine(unit, route);
+        //}
+
+
         public IEnumerator MoveUnitCoroutine(IGameUnit unit, IGameMapMovementRoute route)
         {
             // Unselect the unit we're moving
@@ -669,6 +765,14 @@ namespace SizeEmblem.Scripts.GameMap
             unit.WorldPosition = TranslateMapXYToUnityXY(unit.MapX, unit.MapY);
             // And tell them to consume movement for this route
             unit.AddRouteCost(route);
+            // Trigger the MoveCompleted event now that we're done animating the move
+            OnUnitMoveCompleted();
+        }
+
+        public event EventHandler UnitMoveCompleted;
+        public void OnUnitMoveCompleted()
+        {
+            UnitMoveCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         public void ApplyWalkingDamage(IGameUnit unit, int mapX, int mapY, int areaWidth, int areaHeight)
@@ -747,7 +851,7 @@ namespace SizeEmblem.Scripts.GameMap
             }
         }
 
-        public event SelectedUnitChangedHandler HoverUnitChanged;
+        public event SelectedUnitHandler HoverUnitChanged;
 
         private void OnHoverUnitChanged(IGameUnit unit)
         {
@@ -757,6 +861,14 @@ namespace SizeEmblem.Scripts.GameMap
         public void RefreshMapCursor()
         {
             gameMapCursor.CursorEnabled = IsCursorEnabled;
+
+            // WHen the cursor is turned off then remove any hovered units too
+            if(!IsCursorEnabled)
+            {
+                CursorHoverObject = null;
+                CursorHoverUnit = null;
+                _lastCursorCellPosition = Vector3Int.one; // v3int.one is an impossible value so it's good as an always-invalid value for comparison when the cursor is enabled later on
+            }
         }
 
 

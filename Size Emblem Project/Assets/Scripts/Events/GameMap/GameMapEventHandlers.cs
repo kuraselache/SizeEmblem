@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.Events.GameMap
 {
+    // Map Loaded Event
     public delegate void GameMapLoadedHandler(IGameMap map, EventArgs e);
 
 
-    public delegate void SelectedUnitChangedHandler(IGameMap map, UnitSelectedEventArgs e);
+    // Selected Unit Event
+    public delegate void SelectedUnitHandler(IGameMap map, UnitSelectedEventArgs e);
 
     public class UnitSelectedEventArgs : EventArgs
     {
+        public static new UnitSelectedEventArgs Empty = new UnitSelectedEventArgs();
+
         public readonly IGameUnit Unit;
 
-        public UnitSelectedEventArgs()
+        protected UnitSelectedEventArgs()
         {
 
         }
@@ -25,6 +29,26 @@ namespace SizeEmblem.Scripts.Events.GameMap
         public UnitSelectedEventArgs(IGameUnit unit)
         {
             Unit = unit;
+        }
+    }
+
+    // Selected Route Event
+    public delegate void SelectedRouteHandler(IGameMap map, RouteSelectedEventArgs e);
+
+    public class RouteSelectedEventArgs : EventArgs
+    {
+        public static new RouteSelectedEventArgs Empty = new RouteSelectedEventArgs();
+
+        public readonly IGameMapMovementRoute Route;
+
+        protected RouteSelectedEventArgs()
+        {
+
+        }
+
+        public RouteSelectedEventArgs(IGameMapMovementRoute route)
+        {
+            Route = route;
         }
     }
 }

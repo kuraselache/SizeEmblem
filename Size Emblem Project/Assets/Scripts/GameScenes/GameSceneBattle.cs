@@ -44,7 +44,8 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
         // Simple state tracker. If we're busy then we're doing something, like an animation
-        public bool IsBusy { get; private set; }
+        public bool IsBusy { get { return _busyCounter > 0; } }
+        private int _busyCounter;
 
         // 
         public bool IsActive { get; private set; }
@@ -129,10 +130,18 @@ namespace SizeEmblem.Scripts.GameScenes
             // Reset the actions consumed for all units of this phase
             BattleUnits[faction].ForEach(x => x.ProcessPhaseStart());
 
-            Debug.Log(string.Format("Current phase is: {0} on turn {1}", CurrentPhase, TurnCount));
+            Debug.Log(String.Format("Current phase is: {0} on turn {1}", CurrentPhase, TurnCount));
 
             // Insert animation co-routine here
-            // but for now we'll jump straight to the start phase complete bit to enable user input
+            StartCoroutine(StartPhaseCoroutine());
+        }
+
+        public IEnumerator StartPhaseCoroutine()
+        {
+            yield return new WaitForSeconds(1);
+
+            Debug.Log("PHASE START!");
+
             StartPhaseComplete();
         }
 
@@ -257,7 +266,102 @@ namespace SizeEmblem.Scripts.GameScenes
         }
 
 
+        private void GameMap_PlayerSelectedUnit(IGameMap map, UnitSelectedEventArgs e)
+        {
+            SelectedUnit(e.Unit);
+        }
+
+
+        private void GameMap_PlayerSelectedRoute(IGameMap map, RouteSelectedEventArgs e)
+        {
+            MoveSelectedUnit(e.Route);
+        }
+
+        private void Map_UnitMoveCompleted(object sender, EventArgs e)
+        {
+            MoveUnitCompleted();
+        }
+
+        private void GameMap_BackButton(object sender, EventArgs e)
+        {
+            GoBackState();
+        }
+
         #endregion
+
+        private IGameUnit _selectedUnit;
+
+        public void SelectedUnit(IGameUnit unit)
+        {
+            // If selected a new unit when none was selected
+            if(_selectedUnit == null && unit != null)
+            {
+                _selectedUnit = unit;
+                _gameMap.ShowUnitMovementRange(_selectedUnit);
+                return;
+            }
+
+
+        }
+
+        private bool _isMovingUnit;
+        private bool _movingCursorEnabledState;
+
+        public void MoveSelectedUnit(IGameMapMovementRoute route)
+        {
+            if (_selectedUnit == null) return;
+
+            MoveUnit(_selectedUnit, route);
+            _selectedUnit = null;
+        }
+
+        public void MoveUnit(IGameUnit unit, IGameMapMovementRoute route)
+        {
+            // Input sanity checks
+            if(unit == null || route == null)
+            {
+                Debug.Log("Invalid state for SelectedRoute");
+                return;
+            }
+            if(_isMovingUnit)
+            {
+                Debug.Log("Duplicate attempt to move unit");
+                return;
+            }
+
+            // Make sure the passed unit can act if it is the player's phase state. Otherwise we're being controlled by a command or AI
+            if (State == BattleSceneState.PlayerPhase && !CanUnitAct(unit)) return;
+
+            // Mark ourselves as busy and disable inputs for the duration of the move
+            _busyCounter++;
+            _isMovingUnit = true;
+            _movingCursorEnabledState = _gameMap.IsCursorEnabled;
+            _gameMap.IsCursorEnabled = false;
+
+            // Move the unit
+            
+            _gameMap.MoveUnit(_selectedUnit, route);
+        }
+
+        public void MoveUnitCompleted()
+        {
+            if (!_isMovingUnit) return;
+            _isMovingUnit = false;
+            _busyCounter--;
+            _gameMap.IsCursorEnabled = _movingCursorEnabledState;
+            _selectedUnit = null;
+        }
+
+
+        
+        public void GoBackState()
+        {
+            if(_selectedUnit != null)
+            {
+                _gameMap.ClearMovementOverlay();
+                _selectedUnit = null;
+            }
+        }
 
 
 
@@ -301,11 +405,14 @@ namespace SizeEmblem.Scripts.GameScenes
 
             // Hook up events
             map.HoverUnitChanged += GameMap_HoverUnitChanged;
+            map.PlayerSelectedUnit += GameMap_PlayerSelectedUnit;
+            map.PlayerSelectedRoute += GameMap_PlayerSelectedRoute;
+            map.UnitMoveCompleted += Map_UnitMoveCompleted;
+
+            map.BackButton += GameMap_BackButton;
 
             StartBattle();
         }
-
-        
 
         public void RefreshUnits(IGameMap mapSource)
         {
