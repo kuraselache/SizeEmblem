@@ -59,8 +59,6 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         event SelectedUnitHandler PlayerSelectedUnit;
         event SelectedRouteHandler PlayerSelectedRoute;
 
-        event EventHandler BackButton;
-
         // Unit Movement Related
         void ShowUnitMovementRange(IGameUnit unit);
         void ClearMovementOverlay();

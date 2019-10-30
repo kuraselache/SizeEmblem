@@ -233,7 +233,6 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             // Units can only move once for now
             SpentMovement = 0;
             MovementActionConsumed = true;
-            ActionOver = true; // Temp flag since units don't have abilities to end their action with
         }
 
         public void RefreshMovementTypes()
@@ -468,6 +467,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             // Initialize properties that are normally only updated on property changed
             RefreshBounds();
             RefreshMovementTypes();
+
+
 
             var ability1Data = new AbilityData()
             {

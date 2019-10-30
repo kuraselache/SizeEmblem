@@ -20,6 +20,7 @@ namespace SizeEmblem.Scripts.GameScenes
 
         public SelectedUnitSummaryWindow uiSelectedUnitSummary;
         public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
+        public UnitActionWindow unitActionWindow;
 
         #endregion
 
@@ -33,11 +34,13 @@ namespace SizeEmblem.Scripts.GameScenes
             if(State == BattleSceneState.PlayerPhase)
             {
                 _gameMap.IsCursorEnabled = true;
+                ResetInputState();
                 uiSelectedUnitSummary.IsEnabled = true;
             }
             else
             {
                 _gameMap.IsCursorEnabled = false;
+                _inputState = InputState.None;
                 uiSelectedUnitSummary.IsEnabled = false;
             }
         }
@@ -268,7 +271,7 @@ namespace SizeEmblem.Scripts.GameScenes
 
         private void GameMap_PlayerSelectedUnit(IGameMap map, UnitSelectedEventArgs e)
         {
-            SelectedUnit(e.Unit);
+            SelectUnit(e.Unit);
         }
 
 
@@ -282,27 +285,57 @@ namespace SizeEmblem.Scripts.GameScenes
             MoveUnitCompleted();
         }
 
-        private void GameMap_BackButton(object sender, EventArgs e)
-        {
-            GoBackState();
-        }
 
         #endregion
 
+
+        private readonly Stack<Action> BackActions = new Stack<Action>();
+
+        
+        private enum InputState { None, SelectUnit, MoveUnit, UnitAction };
+        private InputState _inputState = InputState.None;
+
+        private bool CheckInputState(InputState inputState)
+        {
+            if (State != BattleSceneState.PlayerPhase) return InputState.None == inputState;
+            return _inputState == inputState;
+        }
+
+
         private IGameUnit _selectedUnit;
 
-        public void SelectedUnit(IGameUnit unit)
+        public void SelectUnit(IGameUnit unit)
         {
+            if (State != BattleSceneState.PlayerPhase) return;
+
             // If selected a new unit when none was selected
-            if(_selectedUnit == null && unit != null)
+            if (_selectedUnit == null && unit != null && CheckInputState(InputState.SelectUnit))
             {
                 _selectedUnit = unit;
                 _gameMap.ShowUnitMovementRange(_selectedUnit);
+                BackActions.Push(CancelSelectedUnit);
+                _inputState = InputState.MoveUnit;
                 return;
             }
 
 
+            // The user selected the same unit while moving, so we'll skip the movement part of input and go straight to action
+            if(_selectedUnit != null && _selectedUnit == unit && CheckInputState(InputState.MoveUnit))
+            {
+                BackActions.Push(CancelMoveUnitSimple);
+                ShowActionMenu();
+            }
+
+
         }
+
+        public void CancelSelectedUnit()
+        {
+            _selectedUnit = null;
+            _gameMap.ClearMovementOverlay();
+            _inputState = InputState.SelectUnit;
+        }
+
 
         private bool _isMovingUnit;
         private bool _movingCursorEnabledState;
@@ -312,7 +345,6 @@ namespace SizeEmblem.Scripts.GameScenes
             if (_selectedUnit == null) return;
 
             MoveUnit(_selectedUnit, route);
-            _selectedUnit = null;
         }
 
         public void MoveUnit(IGameUnit unit, IGameMapMovementRoute route)
@@ -349,21 +381,64 @@ namespace SizeEmblem.Scripts.GameScenes
             _isMovingUnit = false;
             _busyCounter--;
             _gameMap.IsCursorEnabled = _movingCursorEnabledState;
-            _selectedUnit = null;
+
+            // TODO: We need to support undo-ing a unit movement, but for now we'll clear the back stack
+            BackActions.Clear();
+
+            ShowActionMenu();
         }
 
 
-        
-        public void GoBackState()
+        public void CancelMoveUnitSimple()
         {
-            if(_selectedUnit != null)
+            _gameMap.ShowUnitMovementRange(_selectedUnit);
+            _gameMap.IsCursorEnabled = true;
+            _inputState = InputState.MoveUnit;
+            if (unitActionWindow.IsVisible) unitActionWindow.IsVisible = false;
+        }
+
+
+        public void ShowActionMenu()
+        {
+            unitActionWindow.IsVisible = true;
+
+            _gameMap.ClearMovementOverlay();
+            _gameMap.IsCursorEnabled = false;
+            _inputState = InputState.UnitAction;
+        }
+
+        public void CancelActionMenu()
+        {
+            unitActionWindow.IsVisible = false;
+        }
+
+
+
+        public void DefendSelected()
+        {
+            if(CheckInputState(InputState.UnitAction) && _selectedUnit != null)
             {
-                _gameMap.ClearMovementOverlay();
-                _selectedUnit = null;
+                // For now "Defend" is EndAction
+                _selectedUnit.EndAction();
+
+                ResetInputState();
             }
         }
 
+        public void ResetInputState()
+        {
+            if (State != BattleSceneState.PlayerPhase) return;
 
+            _selectedUnit = null;
+            _gameMap.ClearMovementOverlay();
+            _gameMap.IsCursorEnabled = true;
+
+            unitActionWindow.IsVisible = false;
+            //selectedUnitAbilitiesWindow.IsVisible = false;
+
+            BackActions.Clear();
+            _inputState = InputState.SelectUnit;
+        }
 
         #region Loading
 
@@ -409,8 +484,6 @@ namespace SizeEmblem.Scripts.GameScenes
             map.PlayerSelectedRoute += GameMap_PlayerSelectedRoute;
             map.UnitMoveCompleted += Map_UnitMoveCompleted;
 
-            map.BackButton += GameMap_BackButton;
-
             StartBattle();
         }
 
@@ -451,6 +524,8 @@ namespace SizeEmblem.Scripts.GameScenes
         void Start()
         {
             FindGameMap();
+
+            unitActionWindow.DefendSelected = DefendSelected;
         }
 
         #endregion
@@ -458,6 +533,12 @@ namespace SizeEmblem.Scripts.GameScenes
 
         void Update()
         {
+            if(Input.GetMouseButtonDown(1) && BackActions.Any())
+            {
+                var action = BackActions.Pop();
+                action.Invoke();
+            }
+
             if(Input.GetKeyDown(KeyCode.Z))
             {
                 EndPhase();

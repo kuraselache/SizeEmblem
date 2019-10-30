@@ -584,12 +584,6 @@ namespace SizeEmblem.Scripts.GameMap
         {
             if (!_gameSceneBattle.IsPlayerEnabledPhase()) return;
 
-            // Back button hit
-            if(Input.GetMouseButtonDown(1))
-            {
-                OnBackButton();
-                return;
-            }
 
             if (!Input.GetMouseButtonDown(0)) return;
 
@@ -620,51 +614,6 @@ namespace SizeEmblem.Scripts.GameMap
 
         }
 
-
-        public event EventHandler BackButton;
-
-        public void OnBackButton()
-        {
-            BackButton?.Invoke(this, EventArgs.Empty);
-        }
-
-
-        public void UpdateUserInput2()
-        {
-            if (!_gameSceneBattle.IsPlayerEnabledPhase()) return;
-
-            if (!Input.GetMouseButtonDown(0)) return;
-
-
-            // If we selected a game object
-            if (FindMapObjectInBounds(out var foundObject, _currentMousePosition.X, _currentMousePosition.Y))
-            {
-                var foundUnit = foundObject as IGameUnit;
-                if (_selectedUnit == foundUnit) return;
-                if (_selectedUnit != null && _selectedUnit != foundUnit) ClearMovementOverlay();
-
-                _selectedUnit = foundUnit;
-                ShowUnitMovementRange(_selectedUnit);
-                //selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit); //TODO
-                return;
-            }
-
-            // The user didn't select a unit, see if they clicked on a visible route and move them if they can
-            if(_selectedUnit != null && _availableRoutes != null && _selectedUnit.CanMoveAction() && _gameSceneBattle.CanUnitAct(_selectedUnit))
-            {
-                var selectedRoute = _availableRoutes.FirstOrDefault(x => x.EndX == _currentMousePosition.X && x.EndY == _currentMousePosition.Y);
-                if(selectedRoute != null)
-                {
-                    // They clicked on a route for a unit so move them!
-                    StartCoroutine(MoveUnitCoroutine(_selectedUnit, selectedRoute));
-                    return;
-                }
-            }
-            
-            // Otherwise they selected empty space
-            SelectEmptySpace();
-
-        }
 
         public void SelectEmptySpace()
         {

@@ -15,6 +15,32 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         #endregion
 
+        public Action AttackSelected;
+        public Action SpecialSelected;
+        public Action DefendSelected;
+
+        public Action ItemSelected;
+
+        public void OnAttackSelected()
+        {
+            AttackSelected?.Invoke();
+        }
+
+        public void OnSpecialSelected()
+        {
+            SpecialSelected?.Invoke();
+        }
+
+        public void OnDefendSelected()
+        {
+            DefendSelected?.Invoke();
+        }
+
+        public void OnItemSelected()
+        {
+            ItemSelected?.Invoke();
+        }
+
 
         private bool _isVisible = false;
         public bool IsVisible
@@ -36,7 +62,7 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         public void Start()
         {
-            _isVisible = UICanvas.enabled;
+            ChangeCanvasEnabled(IsVisible);
         }
     }
 }
