@@ -397,6 +397,13 @@ namespace SizeEmblem.Scripts.GameScenes
             if (unitActionWindow.IsVisible) unitActionWindow.IsVisible = false;
         }
 
+        public void CancelActionMenu()
+        {
+            unitActionWindow.IsVisible = false;
+        }
+
+
+        #region Action Window Commands
 
         public void ShowActionMenu()
         {
@@ -407,14 +414,48 @@ namespace SizeEmblem.Scripts.GameScenes
             _inputState = InputState.UnitAction;
         }
 
-        public void CancelActionMenu()
+
+        private void SetUpUnitActionWindow()
+        {
+            if (unitActionWindow == null)
+            {
+                var errorMessage = String.Format("{0} does not have reference to: {1}", nameof(GameSceneBattle), nameof(unitActionWindow));
+                Debug.Log(errorMessage, this);
+                throw new NullReferenceException(errorMessage);
+            }
+            unitActionWindow.AttackSelected = ActionAttackSelected;
+            unitActionWindow.SpecialSelected = ActionSpecialSelected;
+            unitActionWindow.DefendSelected = ActionDefendSelected;
+        }
+
+        public void ActionAttackSelected()
         {
             unitActionWindow.IsVisible = false;
+
+            selectedUnitAbilitiesWindow.IsVisible = true;
+            selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit, AbilityCategory.Attack);
+
+            BackActions.Push(CancelAbilitySelection);
+        }
+
+        public void ActionSpecialSelected()
+        {
+            unitActionWindow.IsVisible = false;
+
+            selectedUnitAbilitiesWindow.IsVisible = true;
+            selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit, AbilityCategory.Special);
+
+            BackActions.Push(CancelAbilitySelection);
+        }
+
+        public void CancelAbilitySelection()
+        {
+            selectedUnitAbilitiesWindow.IsVisible = false;
+            unitActionWindow.IsVisible = true;
         }
 
 
-
-        public void DefendSelected()
+        public void ActionDefendSelected()
         {
             if(CheckInputState(InputState.UnitAction) && _selectedUnit != null)
             {
@@ -424,6 +465,10 @@ namespace SizeEmblem.Scripts.GameScenes
                 ResetInputState();
             }
         }
+
+
+        #endregion
+
 
         public void ResetInputState()
         {
@@ -524,9 +569,11 @@ namespace SizeEmblem.Scripts.GameScenes
         void Start()
         {
             FindGameMap();
+            SetUpUnitActionWindow();
 
-            unitActionWindow.DefendSelected = DefendSelected;
         }
+
+        
 
         #endregion
 

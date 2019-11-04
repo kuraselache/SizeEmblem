@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.Constants
 {
+    [Flags]
     public enum DirectionFlags
     {
-        None  = 0,
-        North = 0x1,
-        East  = 0x2,
-        South = 0x4,
-        West  = 0x8
+        None  = 0b_0000,
+        North = 0b_0001,
+        East  = 0b_0010,
+        South = 0b_0100,
+        West  = 0b_1000
     }
 
     public static class DirectionFlagsHelper

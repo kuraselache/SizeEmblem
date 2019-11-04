@@ -8,9 +8,9 @@ namespace SizeEmblem.Scripts.Constants
 {
     public enum AbilityCategory
     {
-        Base, // Flag for actions that don't appear under a subcategory, such as Stay or Defend or Use Item
-        Attack, // Abilities that appear under the Attack category
-        Special, // Abilities that appear under the Special category
+        Base    = 0b_001, // Flag for actions that don't appear under a subcategory, such as Stay or Defend or Use Item
+        Attack  = 0b_010, // Abilities that appear under the Attack category
+        Special = 0b_100, // Abilities that appear under the Special category
     }
 
     // Rules for determining the Min/Max range of an ability

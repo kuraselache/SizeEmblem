@@ -469,67 +469,92 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             RefreshMovementTypes();
 
 
-
-            var ability1Data = new AbilityData()
+            if(this.UnitFaction == Faction.PlayerFaction)
             {
-                IDName = "STOMP",
-                FriendlyName = "Stomp",
-                FriendlyDescription = "Deal extra damage to smaller units",
-                AbilityCategory = AbilityCategory.Attack,
-                WeaponCategory = WeaponAdvantageCategory.Physical,
-                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
-                RangeSpecialRule = AbilityRangeSpecialRule.None,
-                MinRange = 1,
-                MaxRange = 1,
-                MinorActionConsumptionID = String.Empty,
-                HPCost = 0,
-                SPCost = 0,
-                DurabilityCost = 0,
-                Accuracy = 90,
-            };
-            var ability1 = new Ability(this, ability1Data);
+                var ability1Data = new AbilityData()
+                {
+                    IDName = "STOMP",
+                    FriendlyName = "Stomp",
+                    FriendlyDescription = "Deal extra damage to smaller units",
+                    AbilityCategory = AbilityCategory.Attack,
+                    WeaponCategory = WeaponAdvantageCategory.Physical,
+                    RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                    RangeSpecialRule = AbilityRangeSpecialRule.None,
+                    MinRange = 1,
+                    MaxRange = 1,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 0,
+                    DurabilityCost = 0,
+                    Accuracy = 90,
+                };
+                var ability1 = new Ability(this, ability1Data);
+                Abilities.Add(ability1);
 
-            var ability2Data = new AbilityData()
+                var ability2Data = new AbilityData()
+                {
+                    IDName = "SCHOOL_RapidJab",
+                    FriendlyName = "Rapid Jab",
+                    FriendlyDescription = "Attack multiple times",
+                    AbilityCategory = AbilityCategory.Special,
+                    WeaponCategory = WeaponAdvantageCategory.Physical,
+                    RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                    RangeSpecialRule = AbilityRangeSpecialRule.None,
+                    MinRange = 1,
+                    MaxRange = 1,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 3,
+                    DurabilityCost = 0,
+                    Accuracy = 80,
+                };
+                var ability2 = new Ability(this, ability2Data);
+                Abilities.Add(ability2);
+
+                var ability3Data = new AbilityData()
+                {
+                    IDName = "SCHOOL_Roundhouse",
+                    FriendlyName = "Roundhouse",
+                    FriendlyDescription = "Hit all enemies around user",
+                    AbilityCategory = AbilityCategory.Special,
+                    WeaponCategory = WeaponAdvantageCategory.Physical,
+                    RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                    RangeSpecialRule = AbilityRangeSpecialRule.Directional,
+                    MinRange = 1,
+                    MaxRange = 1,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 2,
+                    DurabilityCost = 0,
+                    Accuracy = 95,
+                };
+                var ability3 = new Ability(this, ability3Data);
+                Abilities.Add(ability3);
+            }
+            else
             {
-                IDName = "SCHOOL_RapidJab",
-                FriendlyName = "Rapid Jab",
-                FriendlyDescription = "Attack multiple times",
-                AbilityCategory = AbilityCategory.Attack,
-                WeaponCategory = WeaponAdvantageCategory.Physical,
-                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
-                RangeSpecialRule = AbilityRangeSpecialRule.None,
-                MinRange = 1,
-                MaxRange = 1,
-                MinorActionConsumptionID = String.Empty,
-                HPCost = 0,
-                SPCost = 3,
-                DurabilityCost = 0,
-                Accuracy = 80,
-            };
-            var ability2 = new Ability(this, ability2Data);
+                var ability1Data = new AbilityData()
+                {
+                    IDName = "TANK_SHOT",
+                    FriendlyName = "Cannon Fire",
+                    FriendlyDescription = "Not canon fire",
+                    AbilityCategory = AbilityCategory.Attack,
+                    WeaponCategory = WeaponAdvantageCategory.Weapon,
+                    RangeDistanceRule = AbilityRangeDistanceRule.Basic,
+                    RangeSpecialRule = AbilityRangeSpecialRule.None,
+                    MinRange = 1,
+                    MaxRange = 3,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 0,
+                    DurabilityCost = 0,
+                    Accuracy = 90,
+                };
+                var ability1 = new Ability(this, ability1Data);
+                Abilities.Add(ability1);
+            }
 
-            var ability3Data = new AbilityData()
-            {
-                IDName = "SCHOOL_Roundhouse",
-                FriendlyName = "Roundhouse",
-                FriendlyDescription = "Hit all enemies around user",
-                AbilityCategory = AbilityCategory.Attack,
-                WeaponCategory = WeaponAdvantageCategory.Physical,
-                RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
-                RangeSpecialRule = AbilityRangeSpecialRule.Directional,
-                MinRange = 1,
-                MaxRange = 1,
-                MinorActionConsumptionID = String.Empty,
-                HPCost = 0,
-                SPCost = 2,
-                DurabilityCost = 0,
-                Accuracy = 95,
-            };
-            var ability3 = new Ability(this, ability3Data);
-
-            Abilities.Add(ability1);
-            Abilities.Add(ability2);
-            Abilities.Add(ability3);
+            
         }
 
 

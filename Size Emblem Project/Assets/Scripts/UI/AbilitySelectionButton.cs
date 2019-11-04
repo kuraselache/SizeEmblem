@@ -67,6 +67,7 @@ namespace SizeEmblem.Assets.Scripts.UI
                 return;
             }
 
+            IsVisible = true;
             // Ability icons aren't supported yet but don't forget they exist!
 
             if(abilityNameText != null)
@@ -75,7 +76,10 @@ namespace SizeEmblem.Assets.Scripts.UI
             }
             if(abilityCostText != null)
             {
-                abilityCostText.text = String.Format("SP: {0}", Ability.SPCost);
+                if (Ability.SPCost > 0)
+                    abilityCostText.text = String.Format("SP: {0}", Ability.SPCost);
+                else
+                    abilityCostText.text = String.Empty;
             }
 
             IsEnabled = User.CanUseAbility(Ability);
@@ -163,7 +167,7 @@ namespace SizeEmblem.Assets.Scripts.UI
         {
             GetDependencies();
 
-            _isVisible = ButtonCanvas.enabled;
+            ChangeCanvasEnabled(_isVisible);
             //RefreshUI();
         }
     }

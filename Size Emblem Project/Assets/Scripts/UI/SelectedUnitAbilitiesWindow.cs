@@ -1,4 +1,5 @@
 ﻿using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Extensions;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -13,7 +14,7 @@ namespace SizeEmblem.Assets.Scripts.UI
     {
         #region UI Components
 
-        public Canvas WindowCanvas;
+        public Canvas UICanvas;
 
         #endregion
 
@@ -26,16 +27,18 @@ namespace SizeEmblem.Assets.Scripts.UI
         public IGameUnit SelectedUnit { get; private set; }
 
 
-        public void UpdateSelectedUnit(IGameUnit newUnit)
+        public void UpdateSelectedUnit(IGameUnit newUnit, AbilityCategory category)
         {
+            var abilities = newUnit.Abilities.Where(x => x.AbilityCategory == category).ToList();
+
             for(var i = 0; i < _abilitySelectionButtons.Count; i++)
             {
-                if(i >= newUnit.Abilities.Count)
+                if(i >= abilities.Count)
                 {
                     _abilitySelectionButtons[i].ClearAbilityData();
                     continue;
                 }
-                _abilitySelectionButtons[i].UpdateAbilityData(newUnit, newUnit.Abilities[i]);
+                _abilitySelectionButtons[i].UpdateAbilityData(newUnit, abilities[i]);
             }
 
         }
@@ -51,10 +54,28 @@ namespace SizeEmblem.Assets.Scripts.UI
         }
 
 
+        private bool _isVisible = false;
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (value == _isVisible) return;
+                _isVisible = value;
+                ChangeCanvasEnabled(_isVisible);
+            }
+        }
+
+        public void ChangeCanvasEnabled(bool isEnabled)
+        {
+            UICanvas.enabled = isEnabled;
+        }
+
+
         // Start is called before the first frame update
         void Start()
         {
-            var childrenButtons = this.GetComponentsInChildren<IAbilitySelectionButton>();
+            var childrenButtons = GetComponentsInChildren<IAbilitySelectionButton>();
             foreach(var button in childrenButtons)
             {
                 button.Selected += AbilityButtonSelected;
