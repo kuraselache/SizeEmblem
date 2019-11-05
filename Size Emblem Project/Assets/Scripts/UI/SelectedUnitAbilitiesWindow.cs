@@ -24,11 +24,16 @@ namespace SizeEmblem.Assets.Scripts.UI
         private List<IAbilitySelectionButton> _abilitySelectionButtons = new List<IAbilitySelectionButton>();
 
 
-        public IGameUnit SelectedUnit { get; private set; }
+        private IGameUnit _unit;
+        private AbilityCategory _category = AbilityCategory.None;
 
 
         public void UpdateSelectedUnit(IGameUnit newUnit, AbilityCategory category)
         {
+            if (_unit == newUnit && _category == category) return;
+            _unit = newUnit;
+            _category = category;
+
             var abilities = newUnit.Abilities.Where(x => x.AbilityCategory == category).ToList();
 
             for(var i = 0; i < _abilitySelectionButtons.Count; i++)

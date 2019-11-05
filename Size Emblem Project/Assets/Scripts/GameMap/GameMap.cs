@@ -24,6 +24,7 @@ using SizeEmblem.Assets.Scripts.GameUnits;
 using SizeEmblem.Assets.Scripts.Interfaces.Managers;
 using SizeEmblem.Assets.Scripts.Managers;
 using System.Threading.Tasks;
+using SizeEmblem.Assets.Scripts.GameMap;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -42,6 +43,9 @@ namespace SizeEmblem.Scripts.GameMap
 
         public Tilemap movementOverlay;
         public TileBase overlayTile;
+
+        public Tilemap abilityRangeOverlay;
+        public TileBase abilityRangeTile;
 
         public GameMapCursor gameMapCursor;
 
@@ -937,6 +941,23 @@ namespace SizeEmblem.Scripts.GameMap
             }
         }
 
+
+
+        #region Abilty Range Indicators
+
+
+
+        public void DrawAbilityRange(GameMapAbilityRange abilityRange)
+        {
+
+        }
+
+        public void ClearAbilityRange()
+        {
+            abilityRangeOverlay.ClearAllTiles();
+        }
+
+        #endregion
     }
 
 }

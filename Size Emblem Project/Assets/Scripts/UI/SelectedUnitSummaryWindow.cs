@@ -25,6 +25,8 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         #endregion
 
+        private bool _isDirty = true;
+
         private bool _isEnabled;
         public bool IsEnabled
         {
@@ -46,7 +48,7 @@ namespace SizeEmblem.Assets.Scripts.UI
             {
                 if (value == _selectedUnit) return;
                 _selectedUnit = value;
-                RefreshUI();
+                _isDirty = true;
             }
         }
 
@@ -111,6 +113,16 @@ namespace SizeEmblem.Assets.Scripts.UI
         {
             ChangeCanvasEnabled(IsVisible);
             RefreshUI();
+        }
+
+        public void FixedUpdate()
+        {
+            // If we had a state change or are otherwise dirty we need to refresh the UI
+            if(_isDirty)
+            {
+                RefreshUI();
+                _isDirty = false;
+            }
         }
 
         #endregion

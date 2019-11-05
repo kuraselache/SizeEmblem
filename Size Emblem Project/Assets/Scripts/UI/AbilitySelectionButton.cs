@@ -40,18 +40,20 @@ namespace SizeEmblem.Assets.Scripts.UI
         #endregion
 
 
+        private bool _isDirty = true;
+
         public void ClearAbilityData()
         {
             User = null;
             Ability = null;
-            RefreshUI();
+            _isDirty = true;
         }
 
         public void UpdateAbilityData(IGameUnit user, IAbility ability)
         {
             User = user;
             Ability = ability;
-            RefreshUI();
+            _isDirty = true;
         }
 
         public IGameUnit User { get; protected set; }
@@ -169,6 +171,15 @@ namespace SizeEmblem.Assets.Scripts.UI
 
             ChangeCanvasEnabled(_isVisible);
             //RefreshUI();
+        }
+
+        public void Update()
+        {
+            if(_isDirty)
+            {
+                RefreshUI();
+                _isDirty = false;
+            }
         }
     }
 }

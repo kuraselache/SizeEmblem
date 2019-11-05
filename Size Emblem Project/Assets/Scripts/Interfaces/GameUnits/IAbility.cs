@@ -35,6 +35,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         // Ability Range
         AbilityRangeDistanceRule RangeDistanceRule { get; }
+        AbilityRangeSpecialRule RangeSpecialRule { get; }
 
         RangeValue<int> RangeMinMax { get; }
 
