@@ -61,7 +61,52 @@ namespace SizeEmblem.Assets.Scripts.Calculators
 
         }
 
+
         public static IEnumerable<MapPoint> GetMapPointsAbilityTargets(IAbility ability, RangeValue<int> abilityRange, int casterX, int casterY, int casterWidth, int casterHeight)
+        {
+            // Quick get the edges of our unit
+            var casterLeft   = casterX;
+            var casterRight  = casterX + casterWidth - 1;
+            var casterBottom = casterY;
+            var casterTop    = casterY + casterHeight - 1;
+
+            // Get our drawing areas and points
+            var drawWidth = casterWidth;
+
+            var drawXStart = casterLeft;
+            var drawXEnd = casterRight;
+            var drawYStart = casterTop + abilityRange.maxValue;
+            var drawYEnd = casterBottom - abilityRange.maxValue;
+
+            var skipXStart = casterLeft;
+            var skipXEnd = casterRight;
+            var skipDepth = abilityRange.maxValue - abilityRange.minValue;
+
+
+            for(var y = drawYStart; y >= drawYEnd; y--)
+            {
+                for(var x = drawXStart; x <= drawXEnd; x++)
+                {
+                    yield return new MapPoint(x, y, 1, 1);
+                }
+
+                // Adjust our drawXStart&End based on if we're on top approach the caster (expanding our area) or below the caster (shrinking our area)
+                if(y > casterTop)
+                {
+                    drawXStart--;
+                    drawXEnd++;
+                }
+                if(y <= casterBottom)
+                {
+                    drawXStart++;
+                    drawXEnd--;
+                }
+            }
+
+            
+        }
+
+        public static IEnumerable<MapPoint> GetMapPointsAbilityTargets2(IAbility ability, RangeValue<int> abilityRange, int casterX, int casterY, int casterWidth, int casterHeight)
         {
             // Quick get the edges of our unit
             var casterLeft   = casterX;
