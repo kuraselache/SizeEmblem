@@ -945,11 +945,32 @@ namespace SizeEmblem.Scripts.GameMap
 
         #region Abilty Range Indicators
 
+        private GameMapAbilityRange _abilityRange;
+
+        public void SetAbilityRange(GameMapAbilityRange abilityRange)
+        {
+            if (abilityRange == _abilityRange) return;
+
+            // Clear any old ability range
+            ClearAbilityRange();
+            // Update our internal remembered value
+            _abilityRange = abilityRange;
+
+            // If we were set a null ability range then there's no work to do
+            if (abilityRange == null) return;
+
+            // And draw the given range
+            DrawAbilityRange(abilityRange);
+        }
 
 
         public void DrawAbilityRange(GameMapAbilityRange abilityRange)
         {
-
+            abilityRange.Points.ForEach(point => 
+            {
+                var tilePosition = TranslateMapXYToUnityXY(point.X, point.Y);
+                movementOverlay.SetTile(tilePosition, abilityRangeTile);
+            });
         }
 
         public void ClearAbilityRange()

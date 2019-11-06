@@ -65,9 +65,9 @@ namespace SizeEmblem.Assets.Scripts.Calculators
         {
             // Quick get the edges of our unit
             var casterLeft   = casterX;
-            var casterRight  = casterX + casterWidth;
+            var casterRight  = casterX + casterWidth - 1;
             var casterBottom = casterY;
-            var casterTop    = casterY + casterHeight;
+            var casterTop    = casterY + casterHeight - 1;
             
 
             var startX = Math.Max(casterLeft - abilityRange.maxValue, 0);

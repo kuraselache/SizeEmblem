@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Containers;
+﻿using SizeEmblem.Assets.Scripts.GameMap;
+using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.Events.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -74,5 +75,10 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         IGameMapObject CursorHoverObject { get; }
 
         event SelectedUnitHandler HoverUnitChanged;
+
+        // Ability Range
+        void SetAbilityRange(GameMapAbilityRange abilityRange);
+        void DrawAbilityRange(GameMapAbilityRange abilityRange);
+        void ClearAbilityRange();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Constants;
+using SizeEmblem.Assets.Scripts.Events.UI;
+using SizeEmblem.Assets.Scripts.GameMap;
 using SizeEmblem.Assets.Scripts.UI;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Events.GameMap;
@@ -470,6 +472,29 @@ namespace SizeEmblem.Scripts.GameScenes
         #endregion
 
 
+
+        #region Abilities Window
+
+        public void SetUpSelectedUnitAbilitiesWindow()
+        {
+            if (selectedUnitAbilitiesWindow == null)
+            {
+                var errorMessage = String.Format("{0} does not have reference to: {1}", nameof(GameSceneBattle), nameof(selectedUnitAbilitiesWindow));
+                Debug.Log(errorMessage, this);
+                throw new NullReferenceException(errorMessage);
+            }
+            selectedUnitAbilitiesWindow.SelectedAbility += SelectedUnitAbilitiesWindow_SelectedAbility;
+        }
+
+        private void SelectedUnitAbilitiesWindow_SelectedAbility(object sender, AbilitySelectedEventArgs e)
+        {
+            var abilityRange = new GameMapAbilityRange(e.User, e.Ability);
+            _gameMap.SetAbilityRange(abilityRange);
+        }
+
+        #endregion
+
+
         public void ResetInputState()
         {
             if (State != BattleSceneState.PlayerPhase) return;
@@ -570,7 +595,7 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             FindGameMap();
             SetUpUnitActionWindow();
-
+            SetUpSelectedUnitAbilitiesWindow();
         }
 
         

@@ -37,7 +37,7 @@ namespace SizeEmblem.Assets.Scripts.GameMap
             return points;
         }
 
-        public void GenerateDirectionalPoints(IGameMapObject mapObject, IAbility ability, IList<MapPoint>)
+        public void GenerateDirectionalPoints(IGameMapObject mapObject, IAbility ability)
         {
 
         }

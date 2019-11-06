@@ -21,10 +21,10 @@ namespace SizeEmblem.Scripts.GameUnits
         // Unit categorization
         [Header("Categories")]
         public SizeCategory sizeCategory;
-        public SizeCategory SizeCategory { get { return SizeCategory; } }
+        public SizeCategory SizeCategory { get { return sizeCategory; } }
 
         public UnitCategory unitCategory;
-        public UnitCategory UnitCategory { get { return UnitCategory; } }
+        public UnitCategory UnitCategory { get { return unitCategory; } }
 
         public WeaponAdvantageCategory weaponType;
         public WeaponAdvantageCategory WeaponType { get { return weaponType; } }

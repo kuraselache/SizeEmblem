@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Assets.Scripts.Interfaces.UI;
+﻿using SizeEmblem.Assets.Scripts.Events.UI;
+using SizeEmblem.Assets.Scripts.Interfaces.UI;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Extensions;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -53,10 +54,15 @@ namespace SizeEmblem.Assets.Scripts.UI
             _abilitySelectionButtons.ForEach(x => x.ClearAbilityData());
         }
 
-        private void AbilityButtonSelected(IAbilitySelectionButton button, Events.UI.AbilitySelectedEventArgs e)
+        private void AbilityButtonSelected(IAbilitySelectionButton button, AbilitySelectedEventArgs e)
         {
             Debug.Log(string.Format("Unit: {0} wants to use ability: {1}", e.User.UnitName, e.Ability.FriendlyName));
+
+            SelectedAbility?.Invoke(this, e);
         }
+
+        public event EventHandler<AbilitySelectedEventArgs> SelectedAbility;
+
 
 
         private bool _isVisible = false;
