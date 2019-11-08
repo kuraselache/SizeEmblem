@@ -969,7 +969,7 @@ namespace SizeEmblem.Scripts.GameMap
             abilityRange.Points.ForEach(point => 
             {
                 var tilePosition = TranslateMapXYToUnityXY(point.X, point.Y);
-                movementOverlay.SetTile(tilePosition, abilityRangeTile);
+                abilityRangeOverlay.SetTile(tilePosition, abilityRangeTile);
             });
         }
 

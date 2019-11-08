@@ -294,7 +294,7 @@ namespace SizeEmblem.Scripts.GameScenes
         private readonly Stack<Action> BackActions = new Stack<Action>();
 
         
-        private enum InputState { None, SelectUnit, MoveUnit, UnitAction };
+        private enum InputState { None, SelectUnit, MoveUnit, UnitAction, AbilityTarget };
         private InputState _inputState = InputState.None;
 
         private bool CheckInputState(InputState inputState)
@@ -434,27 +434,17 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             unitActionWindow.IsVisible = false;
 
-            selectedUnitAbilitiesWindow.IsVisible = true;
-            selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit, AbilityCategory.Attack);
-
-            BackActions.Push(CancelAbilitySelection);
+            ShowAbilityWindow(_selectedUnit, AbilityCategory.Attack, true);
         }
 
         public void ActionSpecialSelected()
         {
             unitActionWindow.IsVisible = false;
 
-            selectedUnitAbilitiesWindow.IsVisible = true;
-            selectedUnitAbilitiesWindow.UpdateSelectedUnit(_selectedUnit, AbilityCategory.Special);
-
-            BackActions.Push(CancelAbilitySelection);
+            ShowAbilityWindow(_selectedUnit, AbilityCategory.Special, true);
         }
 
-        public void CancelAbilitySelection()
-        {
-            selectedUnitAbilitiesWindow.IsVisible = false;
-            unitActionWindow.IsVisible = true;
-        }
+        
 
 
         public void ActionDefendSelected()
@@ -475,6 +465,8 @@ namespace SizeEmblem.Scripts.GameScenes
 
         #region Abilities Window
 
+        private AbilityCategory _lastAbilityCategory;
+
         public void SetUpSelectedUnitAbilitiesWindow()
         {
             if (selectedUnitAbilitiesWindow == null)
@@ -486,13 +478,56 @@ namespace SizeEmblem.Scripts.GameScenes
             selectedUnitAbilitiesWindow.SelectedAbility += SelectedUnitAbilitiesWindow_SelectedAbility;
         }
 
+        private void ShowAbilityWindow(IGameUnit unit, AbilityCategory abilityCategory, bool addBackAction)
+        {
+            selectedUnitAbilitiesWindow.IsVisible = true;
+            selectedUnitAbilitiesWindow.UpdateSelectedUnit(unit, abilityCategory);
+            _lastAbilityCategory = abilityCategory;
+
+            BackActions.Push(CancelAbilitySelection);
+        }
+
+        public void CancelAbilitySelection()
+        {
+            selectedUnitAbilitiesWindow.IsVisible = false;
+            unitActionWindow.IsVisible = true;
+        }
+
         private void SelectedUnitAbilitiesWindow_SelectedAbility(object sender, AbilitySelectedEventArgs e)
         {
-            var abilityRange = new GameMapAbilityRange(e.User, e.Ability);
-            _gameMap.SetAbilityRange(abilityRange);
+            ShowAbilityRange(e.User, e.Ability);
+
+            selectedUnitAbilitiesWindow.IsVisible = false;
         }
 
         #endregion
+
+
+        #region Ability Range & Targeting Selection
+
+        private IGameUnit _abilityRangeUnit;
+
+        public void ShowAbilityRange(IGameUnit unit, IAbility ability)
+        {
+            _abilityRangeUnit = unit;
+
+            var abilityRange = new GameMapAbilityRange(unit, ability);
+            _gameMap.SetAbilityRange(abilityRange);
+            
+            BackActions.Push(CancelShowAbilityRange);
+
+            _inputState = InputState.AbilityTarget;
+        }
+
+        public void CancelShowAbilityRange()
+        {
+            _gameMap.ClearAbilityRange();
+            _inputState = InputState.UnitAction;
+            ShowAbilityWindow(_abilityRangeUnit, _lastAbilityCategory, false);
+        }
+
+        #endregion
+
 
 
         public void ResetInputState()

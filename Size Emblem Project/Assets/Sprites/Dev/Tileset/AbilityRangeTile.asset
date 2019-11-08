@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AbilityRangeTile
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: cfbe14947247fa94a853b97b99b52573, type: 3}
-  m_Color: {r: 0.28368637, g: 0.8018868, b: 0.378674, a: 1}
+  m_Color: {r: 0.8, g: 0.3528773, b: 0.28235298, a: 1}
   m_Transform:
     e00: 1
     e01: 0

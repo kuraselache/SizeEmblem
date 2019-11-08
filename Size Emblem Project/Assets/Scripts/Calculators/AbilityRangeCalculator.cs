@@ -71,8 +71,6 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             var casterTop    = casterY + casterHeight - 1;
 
             // Get our drawing areas and points
-            var drawWidth = casterWidth;
-
             var drawXStart = casterLeft;
             var drawXEnd = casterRight;
             var drawYStart = casterTop + abilityRange.maxValue;
@@ -80,13 +78,14 @@ namespace SizeEmblem.Assets.Scripts.Calculators
 
             var skipXStart = casterLeft;
             var skipXEnd = casterRight;
-            var skipDepth = abilityRange.maxValue - abilityRange.minValue;
+            var skipDepth = abilityRange.minValue - abilityRange.maxValue;
 
 
             for(var y = drawYStart; y >= drawYEnd; y--)
             {
                 for(var x = drawXStart; x <= drawXEnd; x++)
                 {
+                    if (skipDepth > 0 && x >= skipXStart && x <= skipXEnd) continue;
                     yield return new MapPoint(x, y, 1, 1);
                 }
 
@@ -95,70 +94,29 @@ namespace SizeEmblem.Assets.Scripts.Calculators
                 {
                     drawXStart--;
                     drawXEnd++;
+                    
+                    if(skipDepth > 0)
+                    {
+                        skipXStart--;
+                        skipXEnd++;
+                    }
+                    skipDepth++;
                 }
                 if(y <= casterBottom)
                 {
                     drawXStart++;
                     drawXEnd--;
+                    
+                    if(skipDepth > 0)
+                    {
+                        skipXStart++;
+                        skipXEnd--;
+                    }
+                    skipDepth--;
                 }
             }
 
             
-        }
-
-        public static IEnumerable<MapPoint> GetMapPointsAbilityTargets2(IAbility ability, RangeValue<int> abilityRange, int casterX, int casterY, int casterWidth, int casterHeight)
-        {
-            // Quick get the edges of our unit
-            var casterLeft   = casterX;
-            var casterRight  = casterX + casterWidth - 1;
-            var casterBottom = casterY;
-            var casterTop    = casterY + casterHeight - 1;
-            
-
-            var startX = Math.Max(casterLeft - abilityRange.maxValue, 0);
-            var endX = casterRight + abilityRange.maxValue;
-
-            var startY = Math.Max(casterBottom - abilityRange.maxValue, 0);
-            var endY = casterTop + abilityRange.maxValue;
-
-            
-            for(var x = startX; x <= endX; x++)
-            {
-                // Is the current X-position inside the caster?
-                var isXInCaster = (x >= casterLeft && x <= casterRight);
-                var casterXClosest = x < casterLeft ? casterLeft : casterRight;
-
-                for(var y = startY; y <= endY; y++)
-                {
-                    // Is the current Y-position inside the caster?
-                    var isYInCaster = (y >= casterBottom && y <= casterTop);
-
-                    float fDistance;
-                    // Check if we're inside of our caster. That's a special edge case of distance zero!
-                    if(isXInCaster && isYInCaster)
-                    {
-                        fDistance = 0;
-                    }
-                    // Otherwise just use a normal distance algorithm to find the distance from the current X,Y to the closest tile of the caster
-                    else
-                    {
-                        var casterYClosest = y < casterBottom ? casterBottom : casterTop;
-
-                        var xDistance = x - casterXClosest;
-                        var yDistance = y - casterYClosest;
-                        fDistance = (float)Math.Sqrt(xDistance * xDistance + yDistance * yDistance);
-                    }
-
-                    // Final distance always rounds up
-                    var distance = (int)Math.Ceiling(fDistance);
-
-                    // Check our distance. If it's within our ability range then 
-                    if(distance >= abilityRange.minValue && distance <= abilityRange.maxValue)
-                    {
-                        yield return new MapPoint(x, y, 1, 1);
-                    }
-                }
-            }
         }
 
     }
