@@ -20,12 +20,7 @@ namespace SizeEmblem.Assets.Scripts.GameMap
         {
             List<MapPoint> points;
 
-            switch(ability.RangeSpecialRule)
-            {
-                case AbilityRangeSpecialRule.None: points = GenerateRadiusPoints(unit, ability); break;
-                case AbilityRangeSpecialRule.Directional: throw new NotImplementedException(); break;
-                default: throw new Exception();
-            }
+            points = GenerateRadiusPoints(unit, ability); 
 
             Points = points.AsReadOnly();
         }

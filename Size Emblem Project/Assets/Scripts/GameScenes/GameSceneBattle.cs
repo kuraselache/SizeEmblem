@@ -23,6 +23,7 @@ namespace SizeEmblem.Scripts.GameScenes
         public SelectedUnitSummaryWindow uiSelectedUnitSummary;
         public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
         public UnitActionWindow unitActionWindow;
+        public EndPhaseWindow endPhaseWindow;
 
         #endregion
 
@@ -161,6 +162,9 @@ namespace SizeEmblem.Scripts.GameScenes
         /// </summary>
         public void EndPhase()
         {
+            // Clear our window UI on phase change
+            HideAllWindows();
+
             // Update our state to phase change
             UpdateState(BattleSceneState.PhaseChange);
 
@@ -294,7 +298,7 @@ namespace SizeEmblem.Scripts.GameScenes
         private readonly Stack<Action> BackActions = new Stack<Action>();
 
         
-        private enum InputState { None, SelectUnit, MoveUnit, UnitAction, AbilityTarget };
+        private enum InputState { None, WindowPrompt, SelectUnit, MoveUnit, UnitAction, AbilityTarget };
         private InputState _inputState = InputState.None;
 
         private bool CheckInputState(InputState inputState)
@@ -313,11 +317,22 @@ namespace SizeEmblem.Scripts.GameScenes
             // If selected a new unit when none was selected
             if (_selectedUnit == null && unit != null && CheckInputState(InputState.SelectUnit))
             {
-                _selectedUnit = unit;
-                _gameMap.ShowUnitMovementRange(_selectedUnit);
-                BackActions.Push(CancelSelectedUnit);
-                _inputState = InputState.MoveUnit;
-                return;
+                _gameMap.ClearMovementOverlay();
+
+                if(unit.UnitFaction == CurrentPhase)
+                {
+                    _selectedUnit = unit;
+                    _gameMap.ShowUnitMovementRange(_selectedUnit);
+                    BackActions.Push(CancelSelectedUnit);
+                    _inputState = InputState.MoveUnit;
+                    return;
+                }
+                else
+                {
+                    _gameMap.ShowUnitMovementRange(unit);
+                }
+
+                
             }
 
 
@@ -513,7 +528,8 @@ namespace SizeEmblem.Scripts.GameScenes
 
             var abilityRange = new GameMapAbilityRange(unit, ability);
             _gameMap.SetAbilityRange(abilityRange);
-            
+            _gameMap.IsCursorEnabled = true;
+
             BackActions.Push(CancelShowAbilityRange);
 
             _inputState = InputState.AbilityTarget;
@@ -522,12 +538,74 @@ namespace SizeEmblem.Scripts.GameScenes
         public void CancelShowAbilityRange()
         {
             _gameMap.ClearAbilityRange();
+            _gameMap.IsCursorEnabled = false;
             _inputState = InputState.UnitAction;
             ShowAbilityWindow(_abilityRangeUnit, _lastAbilityCategory, false);
         }
 
         #endregion
 
+
+        #region End Phase Window
+
+        private InputState _lastInputState;
+
+        public void SetupEndPhaseWindow()
+        {
+            endPhaseWindow.IsVisible = false;
+            endPhaseWindow.OKAction = EndTurnWindowConfirm;
+            endPhaseWindow.CancelAction = EndPhaseWindowCancel;
+        }
+
+
+        public void EnterEndPhaseWindowState()
+        {
+            BackActions.Push(CancelEndPhaseWindow);
+
+            ShowEndPhaseWindow();
+        }
+
+        public void ShowEndPhaseWindow()
+        {
+            _gameMap.IsCursorEnabled = false;
+            endPhaseWindow.IsVisible = true;
+
+            _lastInputState = _inputState;
+            _inputState = InputState.WindowPrompt;
+        }
+
+        public void CancelEndPhaseWindow()
+        {
+            _gameMap.IsCursorEnabled = true;
+            endPhaseWindow.IsVisible = false;
+
+            _inputState = _lastInputState;
+        }
+
+        public void EndTurnWindowConfirm()
+        {
+            // Remember when ending a turn it's actually the player ENDING THEIR PHASE, _not_ the battle turn!
+            EndPhase();
+        }
+
+        public void EndPhaseWindowCancel()
+        {
+            ExecuteBackAction();
+        }
+
+        #endregion
+
+        public void HideAllWindows()
+        {
+            uiSelectedUnitSummary.IsVisible = false;
+            selectedUnitAbilitiesWindow.IsVisible = false;
+            unitActionWindow.IsVisible = false;
+            endPhaseWindow.IsVisible = false;
+
+            _gameMap.ClearMovementOverlay();
+            _gameMap.ClearAbilityRange();
+            
+        }
 
 
         public void ResetInputState()
@@ -543,6 +621,12 @@ namespace SizeEmblem.Scripts.GameScenes
 
             BackActions.Clear();
             _inputState = InputState.SelectUnit;
+        }
+
+        public void ExecuteBackAction()
+        {
+            if (!BackActions.Any()) return;
+            BackActions.Pop().Invoke();
         }
 
         #region Loading
@@ -626,11 +710,12 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
         // Start is called before the first frame update
-        void Start()
+        public void Start()
         {
             FindGameMap();
             SetUpUnitActionWindow();
             SetUpSelectedUnitAbilitiesWindow();
+            SetupEndPhaseWindow();
         }
 
         
@@ -640,10 +725,17 @@ namespace SizeEmblem.Scripts.GameScenes
 
         void Update()
         {
-            if(Input.GetMouseButtonDown(1) && BackActions.Any())
+            if(Input.GetMouseButtonDown(1) && State == BattleSceneState.PlayerPhase && _inputState != InputState.None)
             {
-                var action = BackActions.Pop();
-                action.Invoke();
+                if(BackActions.Any())
+                {
+                    ExecuteBackAction();
+                }
+                else
+                {
+                    EnterEndPhaseWindowState();
+                }
+                
             }
 
             if(Input.GetKeyDown(KeyCode.Z))

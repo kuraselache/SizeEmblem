@@ -81,11 +81,15 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             var skipDepth = abilityRange.minValue - abilityRange.maxValue;
 
 
+
             for(var y = drawYStart; y >= drawYEnd; y--)
             {
                 for(var x = drawXStart; x <= drawXEnd; x++)
                 {
+                    // Skip this point if we're in our skip draw range. This is how minimum-range is done
                     if (skipDepth > 0 && x >= skipXStart && x <= skipXEnd) continue;
+                    // If this abilty has the direction flag then skip if we aren't aligned with the caster
+                    if (ability.RangeSpecialRule == AbilityRangeSpecialRule.Directional && ((y > casterTop || y < casterBottom) && (x < casterLeft || x > casterRight))) continue;
                     yield return new MapPoint(x, y, 1, 1);
                 }
 
