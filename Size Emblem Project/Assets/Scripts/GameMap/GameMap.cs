@@ -15,7 +15,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Text;
-using SizeEmblem.Scripts.Interfaces.GameScenes;
 using SizeEmblem.Scripts.GameScenes;
 using SizeEmblem.Scripts.Events.GameMap;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
@@ -25,6 +24,7 @@ using SizeEmblem.Assets.Scripts.Interfaces.Managers;
 using SizeEmblem.Assets.Scripts.Managers;
 using System.Threading.Tasks;
 using SizeEmblem.Assets.Scripts.GameMap;
+using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -67,13 +67,13 @@ namespace SizeEmblem.Scripts.GameMap
             FindGameSceneBattle();
         }
 
-        private IGameSceneBattle _gameSceneBattle;
+        private IGameBattle _gameSceneBattle;
 
         public void FindGameSceneBattle()
         {
             if (_gameSceneBattle == null)
             {
-                var sceneBattle = Component.FindObjectOfType<GameSceneBattle>();
+                var sceneBattle = Component.FindObjectOfType<GameBattle>();
                 _gameSceneBattle = sceneBattle;
             }
         }
@@ -881,6 +881,14 @@ namespace SizeEmblem.Scripts.GameMap
 
         #endregion
 
+
+        public bool GetUnitAtCursor(out IGameUnit foundUnit)
+        {
+            var result = FindMapObjectInBounds(out var gameMapObject, _currentMousePosition.X, _currentMousePosition.Y);
+            
+            foundUnit = gameMapObject as IGameUnit;
+            return foundUnit != null;
+        }
 
         public bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY)
         {

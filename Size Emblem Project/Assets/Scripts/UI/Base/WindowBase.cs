@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.UI.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace SizeEmblem.Assets.Scripts.UI.Base
 {
-    public abstract class WindowBase : MonoBehaviour
+    public abstract class WindowBase : MonoBehaviour, IWindowBase
     {
         public Canvas UICanvas;
 
@@ -15,9 +16,9 @@ namespace SizeEmblem.Assets.Scripts.UI.Base
 
 
         protected bool _isVisible;
-        public bool IsVisible
+        public virtual bool IsVisible
         {
-            get { return _isVisible; }
+             get { return _isVisible; }
             set
             {
                 if (value == _isVisible) return;
@@ -50,7 +51,6 @@ namespace SizeEmblem.Assets.Scripts.UI.Base
             if(_isDirty)
             {
                 RefreshUI();
-                _isDirty = false;
             }
         }
     }

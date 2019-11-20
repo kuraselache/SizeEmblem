@@ -36,7 +36,8 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         bool CanUnitEndMoveHere(IGameUnit unit, int mapX, int mapY);
         
         void FindGameSceneBattle();
-        bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY);
+
+        
         IEnumerable<IGameMapMovementRoute> GetAllRoutesForUnit(IGameUnit unit);
         void GetDepenencies();
         void GetRoutesForLocationBreadthSearch(Dictionary<int, IGameMapMovementRoute> routesFound, IGameMapMovementRoute baseRoute, IGameUnit unit, int availableMovement);
@@ -55,6 +56,10 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         void TranslateUnityXYToMapXY(Vector3Int unityPosition, out int mapX, out int mapY);
         void Update();
 
+
+        // Finding Map Objects
+        bool GetUnitAtCursor(out IGameUnit foundUnit);
+        bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY);
 
         // Player Input
         event SelectedUnitHandler PlayerSelectedUnit;

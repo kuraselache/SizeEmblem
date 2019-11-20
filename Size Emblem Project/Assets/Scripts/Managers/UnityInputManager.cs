@@ -25,5 +25,13 @@ namespace SizeEmblem.Scripts.Managers
 
             return _mainCamera.ScreenToWorldPoint(Input.mousePosition);
         }
+
+
+        public bool IsFocused()
+        {
+            return Application.isFocused;
+        }
+
+
     }
 }

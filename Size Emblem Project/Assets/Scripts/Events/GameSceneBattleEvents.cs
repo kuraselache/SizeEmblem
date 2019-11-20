@@ -1,5 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
-using SizeEmblem.Scripts.Interfaces.GameScenes;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
+using SizeEmblem.Scripts.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Assets.Scripts.Events
 {
-    public delegate void BattleSceneTurnChangedEventHandler(IGameSceneBattle battleScene, TurnChangedEventArgs e);
+    public delegate void BattleSceneTurnChangedEventHandler(IGameBattle battleScene, TurnChangedEventArgs e);
 
     public class TurnChangedEventArgs : EventArgs
     {
@@ -21,7 +21,7 @@ namespace SizeEmblem.Assets.Scripts.Events
     }
 
 
-    public delegate void BattleScenePhaseChangedEventHandler(IGameSceneBattle battleScene, PhaseChangedEventArgs e);
+    public delegate void BattleScenePhaseChangedEventHandler(IGameBattle battleScene, PhaseChangedEventArgs e);
 
     public class PhaseChangedEventArgs : EventArgs
     {

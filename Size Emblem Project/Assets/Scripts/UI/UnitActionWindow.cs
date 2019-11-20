@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Assets.Scripts.UI.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,19 +9,14 @@ using UnityEngine;
 
 namespace SizeEmblem.Assets.Scripts.UI
 {
-    public class UnitActionWindow : MonoBehaviour
+    public class UnitActionWindow : WindowBase, IUnitActionWindow
     {
-        #region Unitiy Dependencies
 
-        public Canvas UICanvas;
+        public event Action AttackSelected;
+        public event Action SpecialSelected;
+        public event Action DefendSelected;
 
-        #endregion
-
-        public Action AttackSelected;
-        public Action SpecialSelected;
-        public Action DefendSelected;
-
-        public Action ItemSelected;
+        public event Action ItemSelected;
 
         public void OnAttackSelected()
         {
@@ -42,27 +39,5 @@ namespace SizeEmblem.Assets.Scripts.UI
         }
 
 
-        private bool _isVisible = false;
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set
-            {
-                if (value == _isVisible) return;
-                _isVisible = value;
-                ChangeCanvasEnabled(_isVisible);
-            }
-        }
-
-        public void ChangeCanvasEnabled(bool isEnabled)
-        {
-            UICanvas.enabled = isEnabled;
-        }
-
-
-        public void Start()
-        {
-            ChangeCanvasEnabled(IsVisible);
-        }
     }
 }

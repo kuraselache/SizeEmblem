@@ -1,20 +1,21 @@
-﻿using SizeEmblem.Assets.Scripts.UI.Base;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Assets.Scripts.UI.Base;
 using System;
 
 namespace SizeEmblem.Assets.Scripts.UI
 {
-    public class EndPhaseWindow : WindowBase
+    public class EndPhaseWindow : WindowBase, IEndPhaseWindow
     {
 
 
-        public Action OKAction;
+        public event Action OKAction;
 
         public void OKClicked()
         {
             OKAction?.Invoke();
         }
 
-        public Action CancelAction;
+        public event Action CancelAction;
 
         public void CancelClicked()
         {

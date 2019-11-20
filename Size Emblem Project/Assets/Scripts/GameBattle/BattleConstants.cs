@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizeEmblem.Assets.Scripts.Constants
+namespace SizeEmblem.Assets.Scripts.GameBattle
 {
-    public enum BattleSceneState
+    public enum BattleStates
     {
         Initialize,
         PhaseChange,

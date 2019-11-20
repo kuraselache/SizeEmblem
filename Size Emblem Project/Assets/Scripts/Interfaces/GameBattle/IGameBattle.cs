@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizeEmblem.Scripts.Interfaces.GameScenes
+namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
 {
-    public interface IGameSceneBattle
+    public interface IGameBattle
     {
         IReadOnlyList<IGameUnit> ImmediateActionQueue { get; }
 
@@ -31,9 +31,12 @@ namespace SizeEmblem.Scripts.Interfaces.GameScenes
 
         bool IsPlayerEnabledPhase();
 
-        //bool IsTurnComplete();
 
-        //bool RoundTick();
-        //bool TurnTick();
+        // Input Management
+        void AddInputState(IInputState nextInputState);
+        bool CurrentInputState(out IInputState currentState);
+
+        void ClearInputStack();
+        void ClearTopInputState();
     }
 }
