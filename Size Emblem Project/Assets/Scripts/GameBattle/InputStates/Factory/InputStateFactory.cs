@@ -55,7 +55,17 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
 
         public IInputState ResolveMoveUnitState(IGameUnit unit)
         {
-            return new MoveUnitState(_gameBattle, _gameMap, unit, _unitSummaryWindow);
+            return new MoveUnitState(_gameBattle, _gameMap, unit, _unitSummaryWindow, this);
+        }
+
+        public IInputState ResolveMovingUnitState(IGameUnit unit, IGameMapMovementRoute route)
+        {
+            return new MovingUnitState(_gameBattle, _gameMap, unit, route, this);
+        }
+
+        public IInputState ResolveUnitSelectActionState(IGameUnit unit)
+        {
+            return new UnitSelectActionState();
         }
 
 

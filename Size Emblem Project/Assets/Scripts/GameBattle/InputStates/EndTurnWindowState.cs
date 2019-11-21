@@ -23,7 +23,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public bool IsActive { get; set; }
 
-        public void BeginState()
+        public void Activate()
         {
             _endPhaseWindow.IsVisible = true;
             _endPhaseWindow.OKAction     += EndPhaseWindow_OKAction;
@@ -39,13 +39,9 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             }
         }
 
-        public void AdvanceState(IInputState nextState)
-        {
-            // This is a leaf-state, it shouldn't advance
-        }
 
 
-        public void DisposeState(IInputState nextState)
+        public void Deactivate()
         {
             _endPhaseWindow.IsVisible = false;
             _endPhaseWindow.OKAction     -= EndPhaseWindow_OKAction;

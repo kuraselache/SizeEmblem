@@ -575,6 +575,7 @@ namespace SizeEmblem.Scripts.GameScenes
         public void HideAllWindows()
         {
             uiUnitSummaryWindow.IsVisible = false;
+            uiUnitSummaryWindow.IsEnabled = false;
             selectedUnitAbilitiesWindow.IsVisible = false;
             unitActionWindow.IsVisible = false;
             endPhaseWindow.IsVisible = false;
@@ -714,14 +715,12 @@ namespace SizeEmblem.Scripts.GameScenes
             if(_inputStateStack.Any())
             {
                 var lastState = _inputStateStack.Peek();
-                lastState.AdvanceState(nextInputState);
-                lastState.IsActive = false;
+                lastState.Deactivate();
             }
 
             // Add the new state to the stack and 
             _inputStateStack.Push(nextInputState);
-            nextInputState.IsActive = true;
-            nextInputState.BeginState();
+            nextInputState.Activate();
         }
 
 
@@ -753,6 +752,8 @@ namespace SizeEmblem.Scripts.GameScenes
 
         public void ClearTopInputState()
         {
+            // TODO: Account for a state change in the middle of a state change
+
             ClearTopInputState(true);
         }
 
@@ -762,17 +763,13 @@ namespace SizeEmblem.Scripts.GameScenes
             if (!_inputStateStack.Any()) return;
 
             var topState = _inputStateStack.Pop();
-            topState.IsActive = false;
-
-            var nextTopState = _inputStateStack.Any() ? _inputStateStack.Peek() : null;
-
-            topState.DisposeState(nextTopState);
+            topState.Deactivate();
             _inputStateFactory.DisposeState(topState);
 
             if(activateNextState)
             {
-                nextTopState.IsActive = true;
-                nextTopState.BeginState();
+                var nextTopState = _inputStateStack.Any() ? _inputStateStack.Peek() : null;
+                nextTopState.Activate();
             }
         }
 

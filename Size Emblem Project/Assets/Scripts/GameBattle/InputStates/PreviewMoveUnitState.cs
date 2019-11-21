@@ -29,12 +29,14 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             _unitSummaryWindow = unitSummaryWindow;
         }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; private set; }
 
         
 
-        public void BeginState()
+        public void Activate()
         {
+            IsActive = true;
+
             _gameMap.ShowUnitMovementRange(_unit);
             _gameMap.IsCursorEnabled = true;
             _unitSummaryWindow.IsEnabled = true;
@@ -50,13 +52,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         }
 
 
-        public void AdvanceState(IInputState nextState)
-        {
-            // This is a leaf-state so far so there's no advancement to be done here
-        }
 
-
-        public void DisposeState(IInputState nextState)
+        public void Deactivate()
         {
             _gameMap.ClearMovementOverlay();
             _gameMap.IsCursorEnabled = false;

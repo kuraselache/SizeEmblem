@@ -29,7 +29,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public bool IsActive { get; set; }
 
-        public void BeginState()
+        public void Activate()
         {
             _gameMap.IsCursorEnabled = true;
             _unitSummaryWindow.IsEnabled = true;
@@ -65,13 +65,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         }
 
-        public void AdvanceState(IInputState nextState)
-        {
-            _gameMap.IsCursorEnabled = false;
-            _unitSummaryWindow.IsEnabled = false;
-        }
 
-        public void DisposeState(IInputState nextTopState)
+        public void Deactivate()
         {
             _gameMap.IsCursorEnabled = false;
             _unitSummaryWindow.IsEnabled = false;
