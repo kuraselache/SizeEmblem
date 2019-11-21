@@ -741,6 +741,11 @@ namespace SizeEmblem.Scripts.GameScenes
             return true;
         }
 
+        public void ResetInputStack()
+        {
+            ClearInputStack();
+            InitializeInputStateStack();
+        }
 
         public void ClearInputStack()
         {
@@ -784,7 +789,7 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             if (_inputStateFactory != null) return;
 
-            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, endPhaseWindow);
+            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, unitActionWindow, endPhaseWindow);
         }
 
 

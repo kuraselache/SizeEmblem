@@ -19,18 +19,22 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
 
         // Windows, this should be cleaned up into a manager or something
         private IUnitSummaryWindow _unitSummaryWindow;
+        private IUnitActionWindow _unitActionWindow;
         private IEndPhaseWindow _endPhaseWindow;
+        
 
         public InputStateFactory(
             IGameBattle gameBattle, 
             IGameMap gameMap, 
             IUnitSummaryWindow unitSummaryWindow,
+            IUnitActionWindow unitActionWindow,
             IEndPhaseWindow endPhaseWindow)
         {
             _gameBattle = gameBattle;
             _gameMap = gameMap;
 
             _unitSummaryWindow = unitSummaryWindow;
+            _unitActionWindow = unitActionWindow;
             _endPhaseWindow = endPhaseWindow;
         }
 
@@ -65,7 +69,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
 
         public IInputState ResolveUnitSelectActionState(IGameUnit unit)
         {
-            return new UnitSelectActionState();
+            return new UnitSelectActionState(_gameBattle, _gameMap, unit, _unitActionWindow, this);
         }
 
 

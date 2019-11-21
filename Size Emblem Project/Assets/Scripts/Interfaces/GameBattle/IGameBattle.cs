@@ -36,6 +36,7 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         void AddInputState(IInputState nextInputState);
         bool CurrentInputState(out IInputState currentState);
 
+        void ResetInputStack();
         void ClearInputStack();
         void ClearTopInputState();
     }
