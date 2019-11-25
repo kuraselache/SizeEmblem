@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.GameMap;
+﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Scripts.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,13 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         GameMapTileData MapTileData { get; }
 
         int TileHealth { get; }
+        bool IsDestroyed { get; }
 
         ulong GetInhibitionScore(IGameUnit unit);
 
-        void InflictDamage(int damage, IGameUnit attackingUnit);
+        //void TakeDamage(int damage, IGameUnit attackingUnit);
+        void TakeDamage(int damage, IGameUnit attackingUnit, MoveUnitChangeContainer moveChangeContainer);
+
+        void UndoChange(TileStateChangeContainer changeContainer);
     }
 }

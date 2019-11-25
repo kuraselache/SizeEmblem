@@ -31,10 +31,13 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Activate()
         {
+            IsActive = true;
             _gameMap.IsCursorEnabled = true;
+            _unitSummaryWindow.IsVisible = true;
             _unitSummaryWindow.IsEnabled = true;
 
             _gameMap.HoverUnitChanged += GameMap_HoverUnitChanged;
+            _unitSummaryWindow.SelectedUnit = null;
         }
 
         public void UpdateState()
@@ -68,10 +71,14 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Deactivate()
         {
+            IsActive = false;
+
             _gameMap.IsCursorEnabled = false;
+            _unitSummaryWindow.IsVisible = false;
             _unitSummaryWindow.IsEnabled = false;
 
             _gameMap.HoverUnitChanged -= GameMap_HoverUnitChanged;
+            _unitSummaryWindow.SelectedUnit = null;
         }
 
 

@@ -26,6 +26,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get; }
         ulong SetStatistic(UnitStatistic statistic, ulong value);
         ulong IncrementStatistic(UnitStatistic statistic, ulong value);
+        ulong DecrementStatistic(UnitStatistic statistic, ulong value);
 
 
         int HP { get; }

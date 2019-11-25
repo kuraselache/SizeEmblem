@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Interfaces.GameMap;
+﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,17 @@ namespace SizeEmblem.Scripts.Events.GameMap
         public RouteSelectedEventArgs(IGameMapMovementRoute route)
         {
             Route = route;
+        }
+    }
+
+    // Unit Move Completed Event
+    public class UnitMoveCompletedEventArgs : EventArgs
+    {
+        public readonly MoveUnitChangeContainer MoveUnitChangeContainer;
+
+        public UnitMoveCompletedEventArgs(MoveUnitChangeContainer moveUnitChangeContainer)
+        {
+            MoveUnitChangeContainer = moveUnitChangeContainer;
         }
     }
 }

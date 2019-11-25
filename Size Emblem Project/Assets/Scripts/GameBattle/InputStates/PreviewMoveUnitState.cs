@@ -40,6 +40,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             _gameMap.ShowUnitMovementRange(_unit);
             _gameMap.IsCursorEnabled = true;
             _unitSummaryWindow.IsEnabled = true;
+            _unitSummaryWindow.IsVisible = true;
+            _unitSummaryWindow.SelectedUnit = _unit;
         }
 
         public void UpdateState()
@@ -58,6 +60,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             _gameMap.ClearMovementOverlay();
             _gameMap.IsCursorEnabled = false;
             _unitSummaryWindow.IsEnabled = false;
+            _unitSummaryWindow.IsVisible = false;
+            _unitSummaryWindow.SelectedUnit = null;
         }
     }
 }

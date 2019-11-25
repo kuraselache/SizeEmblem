@@ -25,6 +25,7 @@ using SizeEmblem.Assets.Scripts.Managers;
 using System.Threading.Tasks;
 using SizeEmblem.Assets.Scripts.GameMap;
 using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
+using SizeEmblem.Assets.Scripts.Containers;
 
 namespace SizeEmblem.Scripts.GameMap
 {
@@ -635,7 +636,6 @@ namespace SizeEmblem.Scripts.GameMap
             _selectedUnit = null;
             _availableRoutes = null;
             ClearMovementOverlay();
-            //selectedUnitAbilitiesWindow.ClearSelectedUnit(); TODO
         }
 
 
@@ -664,6 +664,13 @@ namespace SizeEmblem.Scripts.GameMap
             PlayerSelectedRoute?.Invoke(this, RouteSelectedEventArgs.Empty);
         }
 
+        public void SetUnitLocation(IGameUnit unit, int x, int y)
+        {
+            unit.MapX = x;
+            unit.MapY = y;
+            unit.WorldPosition = TranslateMapXYToUnityXY(unit.MapX, unit.MapY);
+        }
+
         public void MoveUnit(IGameUnit unit, IGameMapMovementRoute route)
         {
             StartCoroutine(MoveUnitCoroutine(unit, route));
@@ -675,20 +682,29 @@ namespace SizeEmblem.Scripts.GameMap
         //}
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="route"></param>
+        /// <returns></returns>
         public IEnumerator MoveUnitCoroutine(IGameUnit unit, IGameMapMovementRoute route)
         {
-            // Unselect the unit we're moving
-            UnselectUnit();
+            // Create a container for our move unit
+            var moveUnitChangeContainer = new MoveUnitChangeContainer(unit);
 
+            // Quick pre-calculation if we need to do walking damage 
             var hasWalkingDamage = unit.GetAttribute(UnitAttribute.WalkingDamage) > 0;
 
+            // Move the unit each step in the given route, excluding None direction steps
             foreach (var routeStep in route.Route.Where(x => x != Direction.None))
             {
                 var startPosition = unit.WorldPosition;
                 var directionVector = DirectionHelper.GetDirectionVector(routeStep);
                 var targetPosition = unit.WorldPosition + directionVector;
 
-                var duration = 0.15f;
+                // Animate the unit moving this step
+                var duration = 0.15f; // 0.15f seconds
                 var stepTime = 0f;
 
                 while (stepTime < duration)
@@ -706,9 +722,10 @@ namespace SizeEmblem.Scripts.GameMap
                 unit.MapX = newX;
                 unit.MapY = newY;
 
+                // Apply walking damage to the tiles the unit now occupies
                 if(hasWalkingDamage)
                 {
-                    ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight);
+                    ApplyWalkingDamage(unit, newX, newY, unit.TileWidth, unit.TileHeight, moveUnitChangeContainer);
                 }
             }
 
@@ -719,16 +736,16 @@ namespace SizeEmblem.Scripts.GameMap
             // And tell them to consume movement for this route
             unit.AddRouteCost(route);
             // Trigger the MoveCompleted event now that we're done animating the move
-            OnUnitMoveCompleted();
+            OnUnitMoveCompleted(moveUnitChangeContainer);
         }
 
-        public event EventHandler UnitMoveCompleted;
-        public void OnUnitMoveCompleted()
+        public event EventHandler<UnitMoveCompletedEventArgs> UnitMoveCompleted;
+        public void OnUnitMoveCompleted(MoveUnitChangeContainer moveUnitChangeContainer)
         {
-            UnitMoveCompleted?.Invoke(this, EventArgs.Empty);
+            UnitMoveCompleted?.Invoke(this, new UnitMoveCompletedEventArgs(moveUnitChangeContainer));
         }
 
-        public void ApplyWalkingDamage(IGameUnit unit, int mapX, int mapY, int areaWidth, int areaHeight)
+        public void ApplyWalkingDamage(IGameUnit unit, int mapX, int mapY, int areaWidth, int areaHeight, MoveUnitChangeContainer moveUnitChangeContainer)
         {
             var damage = unit.GetAttribute(UnitAttribute.WalkingDamage);
             if (damage == 0) return;
@@ -750,7 +767,7 @@ namespace SizeEmblem.Scripts.GameMap
 
                     foreach (var tile in tileGroup.Tiles.Where(z => z != null))
                     {
-                        tile.InflictDamage(damage, unit);
+                        tile.TakeDamage(damage, unit, moveUnitChangeContainer);
                     }
                 }
             }

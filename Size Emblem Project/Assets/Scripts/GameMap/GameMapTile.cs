@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using SizeEmblem.Scripts.Interfaces.Managers;
@@ -91,6 +92,8 @@ namespace SizeEmblem.Scripts.GameMap
             }
         }
 
+        public int TileDefense => 0;
+
         public bool isDestroyed;
         public bool IsDestroyed
         {
@@ -110,32 +113,40 @@ namespace SizeEmblem.Scripts.GameMap
 
 
 
-        public void InflictDamage(int damage, IGameUnit attackingUnit)
+        public void TakeDamage(int damage, IGameUnit attackingUnit, MoveUnitChangeContainer moveUnitChangeContainer)
         {
             // Can't inflict damage to non-destructable tiles so check that first
-            if (!MapTileData.Destructable) return;
+            if (!MapTileData.Destructable || TileHealth <= 0) return;
 
             // For now only handle dealing positive damage
             if (damage <= 0) return;
 
             // Change tile health to inflict damage
+            var startingHealth = TileHealth;
             TileHealth = Mathf.Clamp(TileHealth - damage, 0, MapTileData.TileMaxHealth);
 
             // Check if this tile has been destroyed aka HP = 0
-            if(tileHealth <= 0 && !IsDestroyed)
+            if (tileHealth <= 0 && !IsDestroyed)
             {
+                // Create a container for our state change
+                var tileChange = new TileStateChangeContainer(this, IsDestroyed, startingHealth, MapTileData);
+                moveUnitChangeContainer.TileChanges.Add(tileChange);
+
                 // If we have an attacking unit then count our destruction value and body count towards them
-                if(attackingUnit != null)
+                if (attackingUnit != null)
                 {
                     attackingUnit.IncrementStatistic(UnitStatistic.PropertyDamage, DestructionValue);
+                    moveUnitChangeContainer.ApplyStatisticOffset(UnitStatistic.PropertyDamage, DestructionValue);
+
                     attackingUnit.IncrementStatistic(UnitStatistic.BodyCount, DestructionBodyCount);
+                    moveUnitChangeContainer.ApplyStatisticOffset(UnitStatistic.BodyCount, DestructionBodyCount);
                 }
 
                 // If we have a tile to become when we're destroyed then we'll change to that
                 if(MapTileData.OnDestroyedTile != null)
                 {
                     // Update the backing map tile data for this tile, this should trigger a refresh of this tile
-                    MapTileData = MapTileData.OnDestroyedTile;
+                    ChangeMapTileData(MapTileData.OnDestroyedTile);
                 }
                 else
                 {
@@ -159,6 +170,25 @@ namespace SizeEmblem.Scripts.GameMap
             return 0;
         }
 
+
+        public void UndoChange(TileStateChangeContainer changeContainer)
+        {
+            if(changeContainer.DestroyedFlag.HasValue)
+            {
+                IsDestroyed = changeContainer.DestroyedFlag.Value;
+            }
+
+            if(changeContainer.OriginalHealth.HasValue)
+            {
+                TileHealth = changeContainer.OriginalHealth.Value;
+            }
+
+            if(changeContainer.OriginalTileData != null && changeContainer.OriginalTileData is GameMapTileData) // oh no why am I doing this
+            {
+                ChangeMapTileData(changeContainer.OriginalTileData as GameMapTileData);
+            }
+        }
+
         #endregion
 
 
@@ -170,12 +200,19 @@ namespace SizeEmblem.Scripts.GameMap
         public GameMapTileData MapTileData
         {
             get { return mapTileData; }
-            set
+            private set
             {
                 if (value == mapTileData) return;
                 mapTileData = value;
-                RefreshMapTileData();
             }
+        }
+
+        public void ChangeMapTileData(GameMapTileData newMapTileData)
+        {
+            if (MapTileData == newMapTileData) return;
+
+            MapTileData = newMapTileData;
+            RefreshMapTileData();
         }
 
 

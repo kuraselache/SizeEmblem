@@ -272,6 +272,28 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             return newValue;
         }
 
+        public ulong DecrementStatistic(UnitStatistic statistic, ulong value)
+        {
+            // Check if we have a value for this statistic already. If we don't we can't decrement it so just assign it to zero and return it
+            if (!Statistics.ContainsKey(statistic))
+            {
+                _statistics.Add(statistic, 0);
+                return 0;
+            }
+
+            // Underflow check
+            if(value > _statistics[statistic])
+            {
+                _statistics[statistic] = 0;
+                return 0;
+            }
+
+            // Update value of the statistic but subtracting it from the given value
+            var newValue = _statistics[statistic] - value;
+            _statistics[statistic] = newValue;
+            return newValue;
+        }
+
         #endregion
 
 

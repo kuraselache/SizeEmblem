@@ -31,7 +31,6 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
 
 
 
-        void ApplyWalkingDamage(IGameUnit unit, int mapX, int mapY, int areaWidth, int areaHeight);
         MovementCost AreaMovementCostForUnit(IGameUnit unit, int mapX, int mapY, int areaWidth = 1, int areaHeight = 1);
         bool CanUnitEndMoveHere(IGameUnit unit, int mapX, int mapY);
         
@@ -69,8 +68,10 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         void ShowUnitMovementRange(IGameUnit unit);
         void ClearMovementOverlay();
 
+
+        void SetUnitLocation(IGameUnit unit, int x, int y);
         void MoveUnit(IGameUnit unit, IGameMapMovementRoute route);
-        event EventHandler UnitMoveCompleted;
+        event EventHandler<UnitMoveCompletedEventArgs> UnitMoveCompleted;
 
         // Cursor Methods
         bool IsCursorEnabled { get; set; }

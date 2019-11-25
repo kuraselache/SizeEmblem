@@ -1,4 +1,6 @@
-﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
+﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
+using SizeEmblem.Scripts.Events.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -32,6 +34,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         private bool _hasStarted;
         private bool _movingComplete;
+        private MoveUnitChangeContainer _moveUnitChangesContainer;
 
         public void Activate()
         {
@@ -46,6 +49,10 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             }
             else
             {
+                // Set our unit's location back to their original location
+                _gameMap.SetUnitLocation(_unit, _route.StartX, _route.StartY);
+                // Undo changes from their move
+                _moveUnitChangesContainer.Undo();
                 // We already ran once so we should quit this state immediately
                 _gameBattle.ClearTopInputState();
             }
@@ -64,9 +71,10 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         }
 
 
-        private void GameMap_UnitMoveCompleted(object sender, EventArgs e)
+        private void GameMap_UnitMoveCompleted(object sender, UnitMoveCompletedEventArgs e)
         {
             _movingComplete = true;
+            _moveUnitChangesContainer = e.MoveUnitChangeContainer;
             _gameMap.UnitMoveCompleted -= GameMap_UnitMoveCompleted;
 
             _gameBattle.AddInputState(_inputStateFactory.ResolveUnitSelectActionState(_unit));
