@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Assets.Scripts.Interfaces.UI.Base;
+﻿using SizeEmblem.Assets.Scripts.Events.UI;
+using SizeEmblem.Assets.Scripts.Interfaces.UI.Base;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -13,5 +14,7 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.UI
     {
         void UpdateSelectedUnit(IGameUnit newUnit, AbilityCategory category);
         void ClearSelectedUnit();
+
+        event EventHandler<AbilitySelectedEventArgs> SelectedAbility;
     }
 }

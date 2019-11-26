@@ -19,7 +19,7 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         IInputState ResolveMovingUnitState(IGameUnit unit, IGameMapMovementRoute route);
         IInputState ResolveUnitSelectActionState(IGameUnit unit);
         IInputState ResolveUnitSelectAbilityState(IGameUnit unit, AbilityCategory category);
-
+        IInputState ResolveTargetAbilityState(IGameUnit unit, IAbility ability);
 
 
         void DisposeState(IInputState state);

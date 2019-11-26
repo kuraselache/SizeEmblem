@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
+﻿using SizeEmblem.Assets.Scripts.Events.UI;
+using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -17,7 +18,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         private readonly IGameUnit _unit;
         private AbilityCategory _abilityCategory;
 
-        private readonly IUnitAbilitiesWindow _selectedUnitAbilitiesWindow;
+        private readonly IUnitAbilitiesWindow _unitAbilitiesWindow;
 
         private readonly IInputStateFactory _inputStateFactory;
 
@@ -26,7 +27,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             _gameBattle = gameBattle;
             _unit = unit;
             _abilityCategory = abilityCategory;
-            _selectedUnitAbilitiesWindow = selectedUnitAbilitiesWindow;
+            _unitAbilitiesWindow = selectedUnitAbilitiesWindow;
 
             _inputStateFactory = inputStateFactory;
 
@@ -40,11 +41,12 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         {
             IsActive = true;
 
-            _selectedUnitAbilitiesWindow.UpdateSelectedUnit(_unit, _abilityCategory);
-            _selectedUnitAbilitiesWindow.IsVisible = true;
+            _unitAbilitiesWindow.UpdateSelectedUnit(_unit, _abilityCategory);
+            _unitAbilitiesWindow.IsVisible = true;
+            _unitAbilitiesWindow.SelectedAbility += UnitAbilitiesWindow_SelectedAbility;
         }
 
-        
+
         public void UpdateState()
         {
             if (!IsActive) return;
@@ -57,13 +59,22 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             }
         }
 
-        
+        private void UnitAbilitiesWindow_SelectedAbility(object sender, AbilitySelectedEventArgs e)
+        {
+            if (!IsActive) return;
+            if (!e.User.CanUseAbility(e.Ability)) return;
+
+            _gameBattle.AddInputState(_inputStateFactory.ResolveTargetAbilityState(e.User, e.Ability));
+        }
+
+
         public void Deactivate()
         {
             IsActive = false;
 
-            _selectedUnitAbilitiesWindow.ClearSelectedUnit();
-            _selectedUnitAbilitiesWindow.IsVisible = false;
+            _unitAbilitiesWindow.ClearSelectedUnit();
+            _unitAbilitiesWindow.IsVisible = false;
+            _unitAbilitiesWindow.SelectedAbility -= UnitAbilitiesWindow_SelectedAbility;
         }
     }
 }

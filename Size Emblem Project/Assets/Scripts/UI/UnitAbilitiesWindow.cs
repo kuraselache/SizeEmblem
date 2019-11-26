@@ -63,8 +63,6 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         private void AbilityButtonSelected(IAbilitySelectionButton button, AbilitySelectedEventArgs e)
         {
-            Debug.Log(string.Format("Unit: {0} wants to use ability: {1}", e.User.UnitName, e.Ability.FriendlyName));
-
             SelectedAbility?.Invoke(this, e);
         }
 
