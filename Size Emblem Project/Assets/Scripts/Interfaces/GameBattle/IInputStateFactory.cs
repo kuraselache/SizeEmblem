@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Interfaces.GameMap;
+﻿using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         IInputState ResolveMoveUnitState(IGameUnit unit);
         IInputState ResolveMovingUnitState(IGameUnit unit, IGameMapMovementRoute route);
         IInputState ResolveUnitSelectActionState(IGameUnit unit);
+        IInputState ResolveUnitSelectAbilityState(IGameUnit unit, AbilityCategory category);
 
 
 

@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -69,12 +70,14 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         private void UnitActionWindow_AttackSelected()
         {
-            throw new NotImplementedException();
+            var nextInputState = _inputStateFactory.ResolveUnitSelectAbilityState(_unit, AbilityCategory.Attack);
+            _gameBattle.AddInputState(nextInputState);
         }
 
         private void UnitActionWindow_SpecialSelected()
         {
-            throw new NotImplementedException();
+            var nextInputState = _inputStateFactory.ResolveUnitSelectAbilityState(_unit, AbilityCategory.Special);
+            _gameBattle.AddInputState(nextInputState);
         }
 
 

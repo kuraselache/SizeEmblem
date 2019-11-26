@@ -19,7 +19,7 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
         public UnitSummaryWindow uiUnitSummaryWindow;
-        public SelectedUnitAbilitiesWindow selectedUnitAbilitiesWindow;
+        public UnitAbilitiesWindow unitAbilitiesWindow;
         public UnitActionWindow unitActionWindow;
         public EndPhaseWindow endPhaseWindow;
 
@@ -576,7 +576,7 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             uiUnitSummaryWindow.IsVisible = false;
             uiUnitSummaryWindow.IsEnabled = false;
-            selectedUnitAbilitiesWindow.IsVisible = false;
+            unitAbilitiesWindow.IsVisible = false;
             unitActionWindow.IsVisible = false;
             endPhaseWindow.IsVisible = false;
 
@@ -789,7 +789,7 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             if (_inputStateFactory != null) return;
 
-            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, unitActionWindow, endPhaseWindow);
+            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, unitActionWindow, unitAbilitiesWindow, endPhaseWindow);
         }
 
 

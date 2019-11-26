@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Events.UI;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Assets.Scripts.UI.Base;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Extensions;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -11,15 +12,13 @@ using UnityEngine;
 
 namespace SizeEmblem.Assets.Scripts.UI
 {
-    public class SelectedUnitAbilitiesWindow : MonoBehaviour, ISelectedUnitAbilitiesWindow, IDisposable
+    public class UnitAbilitiesWindow : WindowBase, IUnitAbilitiesWindow, IDisposable
     {
-        #region UI Components
 
-        public Canvas UICanvas;
-
-        #endregion
 
         public AbilitySelectionButton abilitySelectionButtonPrefab;
+
+
 
 
         private List<IAbilitySelectionButton> _abilitySelectionButtons = new List<IAbilitySelectionButton>();
@@ -34,20 +33,28 @@ namespace SizeEmblem.Assets.Scripts.UI
             if (_unit == newUnit && _category == category) return;
             _unit = newUnit;
             _category = category;
+        }
 
-            var abilities = newUnit.Abilities.Where(x => x.AbilityCategory == category).ToList();
 
-            for(var i = 0; i < _abilitySelectionButtons.Count; i++)
+        public override void RefreshUI()
+        {
+
+            var abilities = _unit.Abilities.Where(x => x.AbilityCategory == _category).ToList();
+
+            for (var i = 0; i < _abilitySelectionButtons.Count; i++)
             {
-                if(i >= abilities.Count)
+                if (i >= abilities.Count)
                 {
                     _abilitySelectionButtons[i].ClearAbilityData();
                     continue;
                 }
-                _abilitySelectionButtons[i].UpdateAbilityData(newUnit, abilities[i]);
+                _abilitySelectionButtons[i].UpdateAbilityData(_unit, abilities[i]);
             }
 
+
+            base.RefreshUI();
         }
+
 
         public void ClearSelectedUnit()
         {
@@ -65,26 +72,8 @@ namespace SizeEmblem.Assets.Scripts.UI
 
 
 
-        private bool _isVisible = false;
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set
-            {
-                if (value == _isVisible) return;
-                _isVisible = value;
-                ChangeCanvasEnabled(_isVisible);
-            }
-        }
-
-        public void ChangeCanvasEnabled(bool isEnabled)
-        {
-            UICanvas.enabled = isEnabled;
-        }
-
-
         // Start is called before the first frame update
-        void Start()
+        public new void Start()
         {
             var childrenButtons = GetComponentsInChildren<IAbilitySelectionButton>();
             foreach(var button in childrenButtons)
@@ -92,13 +81,11 @@ namespace SizeEmblem.Assets.Scripts.UI
                 button.Selected += AbilityButtonSelected;
             }
             _abilitySelectionButtons.AddRange(childrenButtons);
+
+            base.Start();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
 
-        }
 
         #region IDisposable Implementation
 

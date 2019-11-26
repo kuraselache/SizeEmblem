@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -20,6 +21,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
         // Windows, this should be cleaned up into a manager or something
         private IUnitSummaryWindow _unitSummaryWindow;
         private IUnitActionWindow _unitActionWindow;
+        private IUnitAbilitiesWindow _unitAbilitiesWindow;
         private IEndPhaseWindow _endPhaseWindow;
         
 
@@ -28,6 +30,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
             IGameMap gameMap, 
             IUnitSummaryWindow unitSummaryWindow,
             IUnitActionWindow unitActionWindow,
+            IUnitAbilitiesWindow selectedUnitAbilitiesWindow,
             IEndPhaseWindow endPhaseWindow)
         {
             _gameBattle = gameBattle;
@@ -35,6 +38,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
 
             _unitSummaryWindow = unitSummaryWindow;
             _unitActionWindow = unitActionWindow;
+            _unitAbilitiesWindow = selectedUnitAbilitiesWindow;
             _endPhaseWindow = endPhaseWindow;
         }
 
@@ -72,6 +76,10 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
             return new UnitSelectActionState(_gameBattle, _gameMap, unit, _unitActionWindow, this);
         }
 
+        public IInputState ResolveUnitSelectAbilityState(IGameUnit unit, AbilityCategory category)
+        {
+            return new UnitSelectAbilityState(_gameBattle, unit, category, _unitAbilitiesWindow, this);
+        }
 
 
         public void DisposeState(IInputState state)

@@ -27,7 +27,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             _inputStateFactory = inputStateFactory;
         }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; private set; }
 
         public void Activate()
         {
