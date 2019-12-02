@@ -66,6 +66,15 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
                 }
             }
 
+            if(Input.GetMouseButtonDown(2))
+            {
+                var result = _gameMap.GetUnitAtCursor(out var unit);
+                if (!result) return;
+
+                var nextInputState = _inputStateFactory.ResolveViewUnitDetailsState(unit);
+                _gameBattle.AddInputState(nextInputState);
+            }
+
         }
 
 

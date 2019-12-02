@@ -11,8 +11,6 @@ namespace SizeEmblem.Scripts.GameMap
     {
         public Sprite cursorSprite;
 
-        public Grid mapGrid;
-
         private bool _cursorEnabled;
         public bool CursorEnabled
         {

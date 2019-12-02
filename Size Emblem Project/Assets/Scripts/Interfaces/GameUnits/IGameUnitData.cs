@@ -41,6 +41,10 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         // Details
         double Height { get; }
+        bool ShowHeight { get; }
 
+        double Weight { get; }
+        bool ShowWeight { get; }
+        //bool ScaleWeight { get; }
     }
 }

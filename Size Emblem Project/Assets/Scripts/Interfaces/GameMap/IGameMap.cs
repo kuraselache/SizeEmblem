@@ -59,6 +59,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         // Finding Map Objects
         bool GetUnitAtCursor(out IGameUnit foundUnit);
         bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY);
+        bool FindAllMapObjectsInBounds(out IEnumerable<IGameMapObject> foundObjects, IEnumerable<MapPoint> mapPoints);
 
         // Player Input
         event SelectedUnitHandler PlayerSelectedUnit;

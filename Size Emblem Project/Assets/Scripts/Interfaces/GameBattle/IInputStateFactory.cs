@@ -21,6 +21,8 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         IInputState ResolveUnitSelectAbilityState(IGameUnit unit, AbilityCategory category);
         IInputState ResolveTargetAbilityState(IGameUnit unit, IAbility ability);
 
+        IInputState ResolveViewUnitDetailsState(IGameUnit unit);
+
 
         void DisposeState(IInputState state);
     }

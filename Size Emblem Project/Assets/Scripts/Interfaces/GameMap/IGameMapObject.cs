@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SizeEmblem.Scripts.Containers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,6 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         int TileWidth { get; }
         int TileHeight { get; }
 
-        Bounds Bounds { get; }
+        MapPoint MapPoint { get; }
     }
 }

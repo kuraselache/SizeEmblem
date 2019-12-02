@@ -29,4 +29,10 @@ namespace SizeEmblem.Scripts.Constants
         Directional, // Range is only applicable for edges of the unit in 4 directions. Still uses Min/Max values
 
     }
+
+    public enum AbilityTargetRule
+    {
+        Always,
+
+    }
 }

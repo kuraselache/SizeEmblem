@@ -30,7 +30,10 @@ MonoBehaviour:
   luck: 2
   bonusWalkingDamage: 0
   bonusWalkingDamageRange: 0
-  height: 15.25
+  height: 50
+  showHeight: 1
+  weight: 120
+  showWeight: 1
   tileWidth: 1
   tileHeight: 1
   unitSprite: {fileID: 2003752310263158026, guid: c8ced27c2ba1aea47a734fe88e662066,

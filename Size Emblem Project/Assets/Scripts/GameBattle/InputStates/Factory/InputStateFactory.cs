@@ -19,16 +19,18 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
         private IGameMap _gameMap;
 
         // Windows, this should be cleaned up into a manager or something
-        private IUnitSummaryWindow _unitSummaryWindow;
-        private IUnitActionWindow _unitActionWindow;
-        private IUnitAbilitiesWindow _unitAbilitiesWindow;
-        private IEndPhaseWindow _endPhaseWindow;
+        private readonly IUnitSummaryWindow _unitSummaryWindow;
+        private readonly IUnitDetailsWindow _unitDetailsWindow;
+        private readonly IUnitActionWindow _unitActionWindow;
+        private readonly IUnitAbilitiesWindow _unitAbilitiesWindow;
+        private readonly IEndPhaseWindow _endPhaseWindow;
         
 
         public InputStateFactory(
             IGameBattle gameBattle, 
             IGameMap gameMap, 
             IUnitSummaryWindow unitSummaryWindow,
+            IUnitDetailsWindow unitDetailsWindow,
             IUnitActionWindow unitActionWindow,
             IUnitAbilitiesWindow selectedUnitAbilitiesWindow,
             IEndPhaseWindow endPhaseWindow)
@@ -37,6 +39,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
             _gameMap = gameMap;
 
             _unitSummaryWindow = unitSummaryWindow;
+            _unitDetailsWindow = unitDetailsWindow;
             _unitActionWindow = unitActionWindow;
             _unitAbilitiesWindow = selectedUnitAbilitiesWindow;
             _endPhaseWindow = endPhaseWindow;
@@ -84,6 +87,12 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
         public IInputState ResolveTargetAbilityState(IGameUnit unit, IAbility ability)
         {
             return new TargetAbilityState(_gameBattle, _gameMap, unit, ability, this);
+        }
+
+
+        public IInputState ResolveViewUnitDetailsState(IGameUnit unit)
+        {
+            return new UnitDetailsState(_gameBattle, unit, _unitDetailsWindow);
         }
 
 

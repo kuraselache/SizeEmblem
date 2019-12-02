@@ -94,10 +94,19 @@ namespace SizeEmblem.Scripts.GameUnits
         // Details
         [Header("Details")]
 
-        [Tooltip("Height in meters")]
+        [Tooltip("Height in feet")]
         public double height;
         public double Height { get { return height; } }
 
+        public bool showHeight;
+        public bool ShowHeight { get { return showHeight; } }
+
+        [Tooltip("Base weight in lbs, measured from a 5'6 base")]
+        public double weight;
+        public double Weight { get { return weight; } }
+
+        public bool showWeight;
+        public bool ShowWeight { get { return showWeight; } }
 
         // Unit base dimensions
         [Header("Dimensions")]

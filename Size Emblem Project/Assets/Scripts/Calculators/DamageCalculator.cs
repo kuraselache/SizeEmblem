@@ -19,7 +19,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             damageContainer.BaseDamage = CalculateBaseDamage(ability, attacker, target);
 
             // See if this hit doubles
-            damageContainer.WillDouble = WillDouble(ability, attacker, target);
+            damageContainer.RepeatCount = WillDouble(ability, attacker, target) ? 2 : 1;
 
             // Apply weapon advantage
             var triangleModifier = GetWeaponAdvantageModifier(ability, attacker, target);

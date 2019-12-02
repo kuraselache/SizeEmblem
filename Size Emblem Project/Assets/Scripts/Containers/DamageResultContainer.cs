@@ -11,7 +11,7 @@ namespace SizeEmblem.Assets.Scripts.Containers
         public int BaseDamage;
         public readonly List<DamageModifierContainer> DamageModifiers = new List<DamageModifierContainer>();
 
-        public bool WillDouble;
+        public int RepeatCount; // Number of times the action repeats, 2 for double attack for example
 
         public int HitRate;
         public bool IsHit;

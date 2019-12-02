@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Containers;
 using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using SizeEmblem.Scripts.Interfaces.Managers;
@@ -51,7 +52,12 @@ namespace SizeEmblem.Scripts.GameMap
         public int MapX
         {
             get { return mapX; }
-            set { mapX = value; }
+            set 
+            {
+                if (value == mapX) return;
+                mapX = value;
+                _mapPoint.X = value;
+            }
         }
 
         public int mapY;
@@ -62,19 +68,39 @@ namespace SizeEmblem.Scripts.GameMap
             {
                 if (value == mapY) return;
                 mapY = value;
-                UpdateSortingOrder(-value);
+                _mapPoint.Y = value;
+                UpdateZLevel(-value);
             }
         }
 
-        public int TileWidth { get; set; }
-        public int TileHeight { get; set; }
-
-        public Bounds Bounds { get; private set; }
-
-        public void RefreshBounds()
+        private int _tileWidth;
+        public int TileWidth 
         {
-            Bounds = new Bounds(new Vector3(MapX + TileWidth / 2, MapY + TileHeight / 2), new Vector3(TileWidth, TileHeight));
+            get { return _tileWidth; }
+            set
+            {
+                if (value == _tileWidth) return;
+                _tileWidth = value;
+                _mapPoint.Width = value;
+            }
         }
+
+        private int _tileHeight;
+        public int TileHeight 
+        {
+            get { return _tileHeight; }
+            set
+            {
+                if (value == _tileHeight) return;
+                _tileHeight = value;
+                _mapPoint.Height = value;
+            }
+        }
+
+
+        private MapPoint _mapPoint = new MapPoint();
+        public MapPoint MapPoint { get { return _mapPoint; } }
+
 
         #endregion
 
@@ -216,7 +242,7 @@ namespace SizeEmblem.Scripts.GameMap
         }
 
 
-        public void UpdateSortingOrder(int newOrder)
+        public void UpdateZLevel(int newOrder)
         {
             if(_spriteRenderer == null)
                 _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -228,7 +254,6 @@ namespace SizeEmblem.Scripts.GameMap
         {
             RefreshMapTileData();
             // Initialize properties that are normally only updated on property changed
-            RefreshBounds();
         }
 
 

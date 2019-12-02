@@ -1,4 +1,7 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Calculators;
+using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.GameData;
 using SizeEmblem.Scripts.GameUnits;
 using SizeEmblem.Scripts.Interfaces;
@@ -51,7 +54,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             {
                 if (value == mapX) return;
                 mapX = value;
-                RefreshBounds();
+                _mapPoint.X = value;
             }
         }
 
@@ -63,8 +66,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             {
                 if (mapY == value) return;
                 mapY = value;
-                RefreshBounds();
-                UpdateSortingOrder(-value);
+                _mapPoint.Y = value;
+                UpdateZValue(-value);
             }
         }
 
@@ -88,11 +91,15 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             }
         }
 
-        public Bounds Bounds { get; private set; }
+        private MapPoint _mapPoint = new MapPoint();
+        public MapPoint MapPoint { get { return _mapPoint; } }
 
-        public void RefreshBounds()
+        public void RefreshMapPoint()
         {
-            Bounds = new Bounds(new Vector3(MapX + TileWidth / 2, MapY + TileHeight / 2), new Vector3(TileWidth, TileHeight));
+            _mapPoint.X = MapX;
+            _mapPoint.Y = MapY;
+            _mapPoint.Width = TileWidth;
+            _mapPoint.Height = TileHeight;
         }
 
         #endregion
@@ -304,6 +311,19 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public GameUnitData baseUnitData;
         public GameUnitData BaseUnitData { get { return baseUnitData; } }
 
+        public void SetBaseUnit(GameUnitData baseUnit)
+        {
+            baseUnitData = baseUnit;
+            RefreshUnit();
+        }
+
+        public void RefreshUnit()
+        {
+            RefreshMovementTypes();
+            RefreshSprite();
+            RefreshMapPoint();
+        }
+
 
         #region Attribute Functions
 
@@ -422,6 +442,19 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         #endregion
 
 
+        #region Details
+
+
+        public HeightContainer Height { get { return MeasurementCalculator.GetHeightContainer(BaseUnitData.Height); } }
+        public bool ShowHeight { get { return BaseUnitData.ShowHeight; } }
+
+        public WeightContainer Weight { get { return MeasurementCalculator.GetScaledWeightContainer(BaseUnitData.Weight, BaseUnitData.Height); } }
+        public bool ShowWeight { get { return BaseUnitData.ShowWeight; } }
+
+
+        #endregion
+
+
 
         #region Drawing & Graphics Related
 
@@ -433,7 +466,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             return _spriteRenderer;
         }
 
-        public void UpdateSortingOrder(int newOrder)
+        public void UpdateZValue(int newOrder)
         {
             var spriteRenderer = GetSpriteRenderer();
             if (spriteRenderer == null) return;
@@ -487,13 +520,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public void Initialize()
         {
             // Initialize properties that are normally only updated on property changed
-            RefreshBounds();
             RefreshMovementTypes();
+            RefreshMapPoint();
 
 
             if(this.UnitFaction == Faction.PlayerFaction)
             {
-                var ability1Data = new AbilityData()
+                var abilityStompData = new AbilityData()
                 {
                     IDName = "STOMP",
                     FriendlyName = "Stomp",
@@ -510,8 +543,29 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     DurabilityCost = 0,
                     Accuracy = 90,
                 };
-                var ability1 = new Ability(this, ability1Data);
-                Abilities.Add(ability1);
+                var abilityStomp = new Ability(this, abilityStompData);
+                Abilities.Add(abilityStomp);
+
+                var abilityKickData = new AbilityData()
+                {
+                    IDName = "KICK",
+                    FriendlyName = "Kick",
+                    FriendlyDescription = "Deal extra damage to larger units",
+                    AbilityCategory = AbilityCategory.Attack,
+                    WeaponCategory = WeaponAdvantageCategory.Physical,
+                    RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                    RangeSpecialRule = AbilityRangeSpecialRule.None,
+                    MinRange = 1,
+                    MaxRange = 1,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 0,
+                    DurabilityCost = 0,
+                    Accuracy = 90,
+                };
+                var abilityKick = new Ability(this, abilityKickData);
+                Abilities.Add(abilityKick);
+
 
                 var ability2Data = new AbilityData()
                 {

@@ -940,6 +940,27 @@ namespace SizeEmblem.Scripts.GameMap
             return false;
         }
 
+        public bool FindAllMapObjectsInBounds(out IEnumerable<IGameMapObject> foundObjects, IEnumerable<MapPoint> mapPoints)
+        {
+            var foundObjectsList = new List<IGameMapObject>();
+
+            foreach (var mapObject in MapObjects)
+            {
+                // Simple check: Object is not visible or hidden then skip checking this item
+                if (mapObject.TileWidth < 1 || mapObject.TileHeight < 1) continue;
+
+                if(mapPoints.Any(x => mapObject.MapPoint.CollidesWith(x)))
+                {
+                    foundObjectsList.Add(mapObject);
+                    continue;
+                }
+            }
+
+            // Fallthrough: No units were found
+            foundObjects = foundObjectsList;
+            return foundObjectsList.Any();
+        }
+
 
         public void RefreshMapUnits()
         {

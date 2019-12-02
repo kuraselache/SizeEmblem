@@ -19,9 +19,11 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
         public UnitSummaryWindow uiUnitSummaryWindow;
+        public UnitDetailsWindow unitDetailsWindow;
         public UnitAbilitiesWindow unitAbilitiesWindow;
         public UnitActionWindow unitActionWindow;
         public EndPhaseWindow endPhaseWindow;
+
 
         #endregion
 
@@ -488,7 +490,7 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             if (_inputStateFactory != null) return;
 
-            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, unitActionWindow, unitAbilitiesWindow, endPhaseWindow);
+            _inputStateFactory = new InputStateFactory(this, _gameMap, uiUnitSummaryWindow, unitDetailsWindow, unitActionWindow, unitAbilitiesWindow, endPhaseWindow);
         }
 
 

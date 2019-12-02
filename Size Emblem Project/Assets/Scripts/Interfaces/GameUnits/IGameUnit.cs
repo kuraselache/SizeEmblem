@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using System;
 using System.Collections.Generic;
@@ -29,9 +30,16 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         ulong DecrementStatistic(UnitStatistic statistic, ulong value);
 
 
+        int Level { get; }
         int HP { get; }
         int SP { get; }
         int GetAttribute(UnitAttribute attribue);
+
+        HeightContainer Height { get; }
+        bool ShowHeight { get; }
+
+        WeightContainer Weight { get; }
+        bool ShowWeight { get; }
 
         // Abilities
         List<IAbility> Abilities { get; }
