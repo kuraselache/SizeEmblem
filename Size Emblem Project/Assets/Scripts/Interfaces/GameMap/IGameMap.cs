@@ -77,6 +77,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         // Cursor Methods
         bool IsCursorEnabled { get; set; }
         void UpdateMapCursor();
+        MapPoint GetCursorPosition();
 
         IGameUnit CursorHoverUnit { get; }
         IGameMapObject CursorHoverObject { get; }

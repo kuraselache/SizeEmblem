@@ -33,12 +33,19 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         int Accuracy { get; }
 
+
+
+        // Ability Scope
+        public AbilityTargetRule TargetRule { get; }
+
         // Ability Range
         AbilityRangeDistanceRule RangeDistanceRule { get; }
         AbilityRangeSpecialRule RangeSpecialRule { get; }
 
         RangeValue<int> RangeMinMax { get; }
 
+        // Ability AoE/Area
+        IEnumerable<MapPoint> AreaPoints { get; }
 
         // Ability Cost
         int HPCost { get; }

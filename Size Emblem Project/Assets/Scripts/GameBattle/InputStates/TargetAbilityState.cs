@@ -31,6 +31,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         }
 
 
+        private GameMapAbilityRange _abilityRange;
 
         public bool IsActive { get; private set; }
 
@@ -39,9 +40,9 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         {
             IsActive = true;
 
-            var abilityRange = new GameMapAbilityRange(_unitCasting, _abilityTargeting);
+            _abilityRange = new GameMapAbilityRange(_unitCasting, _abilityTargeting);
 
-            _gameMap.SetAbilityRange(abilityRange);
+            _gameMap.SetAbilityRange(_abilityRange);
             _gameMap.IsCursorEnabled = true;
         }
 
@@ -53,6 +54,22 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             {
                 _gameBattle.ClearTopInputState();
                 return;
+            }
+
+            if(Input.GetMouseButtonDown(0))
+            {
+                // Get the current cursor position
+                var cursorPoint = _gameMap.GetCursorPosition();
+                // Then check if it lines up with the current abilty ranges
+                if(_abilityRange.Points.Any(x => x.SameOrigin(cursorPoint)))
+                {
+                    // Then see if there's any valid targets
+                    var foundTargets = _gameMap.FindAllMapObjectsInBounds(out var targets, null);
+                }
+                else
+                {
+                    Debug.Log("Clicked out of bounds!");
+                }
             }
         }
 

@@ -58,11 +58,16 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
         public int Accuracy { get { return Data.Accuracy; } }
 
+        // Scope Properties
+        public AbilityTargetRule TargetRule { get { return Data.TargetRule; } }
 
         // Range Properties
         public AbilityRangeDistanceRule RangeDistanceRule { get { return Data.RangeDistanceRule; } }
         public AbilityRangeSpecialRule RangeSpecialRule { get { return Data.RangeSpecialRule; } }
         public RangeValue<int> RangeMinMax { get { return new RangeValue<int>(Data.MinRange, Data.MaxRange); } }
+
+        // Area Properties
+        public IEnumerable<MapPoint> AreaPoints { get { return Data.AreaPoints.Select(x => new MapPoint(x / 100, x % 100, 1, 1)); } }
 
         // Cost Properties
         public int HPCost { get { return Data.HPCost; } }

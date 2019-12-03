@@ -32,7 +32,9 @@ namespace SizeEmblem.Scripts.Constants
 
     public enum AbilityTargetRule
     {
-        Always,
-
+        Always, // This ability can always be used on any target within range. 
+        AnyUnit, // This ability targets any unit in it's AoE
+        EnemiesOnly, // This ability can only target enemies (or non-same-faction units)
+        AlliesOnly, // This ability can only target allies
     }
 }

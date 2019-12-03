@@ -896,6 +896,14 @@ namespace SizeEmblem.Scripts.GameMap
             gameMapCursor.transform.localScale = scale;
         }
 
+        public MapPoint GetCursorPosition()
+        {
+            if (IsCursorEnabled) return new MapPoint();
+
+            TranslateUnityXYToMapXY(_lastCursorCellPosition, out var mapX, out var mapY);
+            return new MapPoint(mapX, mapY, 1, 1);
+        }
+
         #endregion
 
 

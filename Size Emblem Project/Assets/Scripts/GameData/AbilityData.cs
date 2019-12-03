@@ -24,7 +24,7 @@ namespace SizeEmblem.Scripts.GameData
         public WeaponAdvantageCategory WeaponCategory;
 
         // Scope of Ability
-
+        public AbilityTargetRule TargetRule;
 
         // Range
         public AbilityRangeDistanceRule RangeDistanceRule;
@@ -32,6 +32,9 @@ namespace SizeEmblem.Scripts.GameData
 
         public int MinRange;
         public int MaxRange;
+
+        // AoE
+        public int[] AreaPoints;
 
 
         // ID for what minor action this ability consumes, NULL for none
