@@ -66,8 +66,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public AbilityRangeSpecialRule RangeSpecialRule { get { return Data.RangeSpecialRule; } }
         public RangeValue<int> RangeMinMax { get { return new RangeValue<int>(Data.MinRange, Data.MaxRange); } }
 
-        // Area Properties
-        public IEnumerable<MapPoint> AreaPoints { get { return Data.AreaPoints.Select(x => new MapPoint(x / 100, x % 100, 1, 1)); } }
+        // Area of Effect Properties
+        public IEnumerable<MapPoint> AreaPoints { get { return Data.AreaPoints; } }
 
         // Cost Properties
         public int HPCost { get { return Data.HPCost; } }

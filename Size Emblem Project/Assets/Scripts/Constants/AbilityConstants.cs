@@ -36,5 +36,6 @@ namespace SizeEmblem.Scripts.Constants
         AnyUnit, // This ability targets any unit in it's AoE
         EnemiesOnly, // This ability can only target enemies (or non-same-faction units)
         AlliesOnly, // This ability can only target allies
+        CasterOnly, // This ability can only target itself
     }
 }

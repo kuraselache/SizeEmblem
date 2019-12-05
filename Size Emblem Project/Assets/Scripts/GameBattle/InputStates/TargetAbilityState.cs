@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Assets.Scripts.GameMap;
+﻿using SizeEmblem.Assets.Scripts.Calculators;
+using SizeEmblem.Assets.Scripts.GameMap;
 using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -63,8 +64,19 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
                 // Then check if it lines up with the current abilty ranges
                 if(_abilityRange.Points.Any(x => x.SameOrigin(cursorPoint)))
                 {
+                    // We have a cursor and our target offsets, convert the offsets to actual map points
+                    var targetPoints = _abilityTargeting.AreaPoints.Select(x => x.ApplyOffset(cursorPoint.X, cursorPoint.Y));
                     // Then see if there's any valid targets
-                    var foundTargets = _gameMap.FindAllMapObjectsInBounds(out var targets, null);
+                    var foundTargets = _gameMap.FindAllMapObjectsInBounds(out var targets, targetPoints);
+                    var validTarget = AbilityTargetCalculator.CheckForValidTargets(_unitCasting, _abilityTargeting, targets);
+                    if(validTarget)
+                    {
+                        Debug.Log("Valid target found");
+                    }
+                    else
+                    {
+                        Debug.Log("No valid targets found");
+                    }
                 }
                 else
                 {

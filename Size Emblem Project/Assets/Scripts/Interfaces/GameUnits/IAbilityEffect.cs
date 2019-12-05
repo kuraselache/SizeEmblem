@@ -1,4 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Assets.Scripts.GameMap;
+using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,6 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameUnits
     {
         DamageResultContainer PreviewResults();
 
-        DamageResultContainer CreateResults();
+        //DamageResultContainer CreateResults(IGameUnit user, IGameUnit target, IGameMapTileCover cover,);
     }
 }

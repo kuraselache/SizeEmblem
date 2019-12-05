@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Scripts.Containers
 {
+    [Serializable]
     public struct MapPoint
     {
         public int X;

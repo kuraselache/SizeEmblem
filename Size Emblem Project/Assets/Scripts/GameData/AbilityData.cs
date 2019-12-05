@@ -1,4 +1,5 @@
 ﻿using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Containers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace SizeEmblem.Scripts.GameData
         public int MaxRange;
 
         // AoE
-        public int[] AreaPoints;
+        public MapPoint[] AreaPoints;
 
 
         // ID for what minor action this ability consumes, NULL for none

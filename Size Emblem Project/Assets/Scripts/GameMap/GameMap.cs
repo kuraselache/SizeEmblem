@@ -898,7 +898,8 @@ namespace SizeEmblem.Scripts.GameMap
 
         public MapPoint GetCursorPosition()
         {
-            if (IsCursorEnabled) return new MapPoint();
+            // If the cursor is disabled then the cursor has no position
+            if (!IsCursorEnabled) return new MapPoint();
 
             TranslateUnityXYToMapXY(_lastCursorCellPosition, out var mapX, out var mapY);
             return new MapPoint(mapX, mapY, 1, 1);

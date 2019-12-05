@@ -526,7 +526,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
             if(this.UnitFaction == Faction.PlayerFaction)
             {
-                var abilityStompData = new AbilityData()
+                var abilityDataStomp = new AbilityData()
                 {
                     IDName = "STOMP",
                     FriendlyName = "Stomp",
@@ -542,11 +542,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 0,
                     DurabilityCost = 0,
                     Accuracy = 90,
+                    TargetRule = AbilityTargetRule.EnemiesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                 };
-                var abilityStomp = new Ability(this, abilityStompData);
+                var abilityStomp = new Ability(this, abilityDataStomp);
                 Abilities.Add(abilityStomp);
 
-                var abilityKickData = new AbilityData()
+                var abilityDataKick = new AbilityData()
                 {
                     IDName = "KICK",
                     FriendlyName = "Kick",
@@ -562,12 +564,14 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 0,
                     DurabilityCost = 0,
                     Accuracy = 90,
+                    TargetRule = AbilityTargetRule.EnemiesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                 };
-                var abilityKick = new Ability(this, abilityKickData);
+                var abilityKick = new Ability(this, abilityDataKick);
                 Abilities.Add(abilityKick);
 
 
-                var ability2Data = new AbilityData()
+                var abilityDataRapidJab = new AbilityData()
                 {
                     IDName = "SCHOOL_RapidJab",
                     FriendlyName = "Rapid Jab",
@@ -583,11 +587,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 3,
                     DurabilityCost = 0,
                     Accuracy = 80,
+                    TargetRule = AbilityTargetRule.EnemiesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                 };
-                var ability2 = new Ability(this, ability2Data);
-                Abilities.Add(ability2);
+                var abilityRapidJab = new Ability(this, abilityDataRapidJab);
+                Abilities.Add(abilityRapidJab);
 
-                var ability3Data = new AbilityData()
+                var abilityDataRoundhouse = new AbilityData()
                 {
                     IDName = "SCHOOL_Roundhouse",
                     FriendlyName = "Roundhouse",
@@ -603,13 +609,15 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 2,
                     DurabilityCost = 0,
                     Accuracy = 95,
+                    TargetRule = AbilityTargetRule.EnemiesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                 };
-                var ability3 = new Ability(this, ability3Data);
-                Abilities.Add(ability3);
+                var abilityRoundhouse = new Ability(this, abilityDataRoundhouse);
+                Abilities.Add(abilityRoundhouse);
             }
             else
             {
-                var ability1Data = new AbilityData()
+                var abilityDataTankShot = new AbilityData()
                 {
                     IDName = "TANK_SHOT",
                     FriendlyName = "Cannon Fire",
@@ -625,9 +633,11 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 0,
                     DurabilityCost = 0,
                     Accuracy = 90,
+                    TargetRule = AbilityTargetRule.EnemiesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                 };
-                var ability1 = new Ability(this, ability1Data);
-                Abilities.Add(ability1);
+                var abilityTankShot = new Ability(this, abilityDataTankShot);
+                Abilities.Add(abilityTankShot);
             }
 
             

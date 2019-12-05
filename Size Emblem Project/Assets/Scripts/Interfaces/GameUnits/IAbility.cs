@@ -36,7 +36,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
 
         // Ability Scope
-        public AbilityTargetRule TargetRule { get; }
+        AbilityTargetRule TargetRule { get; }
 
         // Ability Range
         AbilityRangeDistanceRule RangeDistanceRule { get; }
