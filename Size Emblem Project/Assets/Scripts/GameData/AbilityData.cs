@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using System;
 using System.Collections;
@@ -59,6 +60,9 @@ namespace SizeEmblem.Scripts.GameData
         // Base Accuracy
         public int Accuracy;
         public bool SkipAccuracyCheck;
+
+        // Ability Effects
+        public IAbilityEffect[] AbilityEffects;
 
     }
 }

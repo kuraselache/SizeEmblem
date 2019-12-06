@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Assets.Scripts.Containers
 {
-    public class DamageResultContainer
+    public class AbilityResultContainer
     {
+        public bool Successful;
+
         public int BaseDamage;
         public readonly List<DamageModifierContainer> DamageModifiers = new List<DamageModifierContainer>();
 

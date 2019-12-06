@@ -11,8 +11,8 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameUnits
 {
     public interface IAbilityEffect
     {
-        DamageResultContainer PreviewResults();
+        AbilityResultContainer PreviewResults(AbilityExecuteParameters parameters);
 
-        //DamageResultContainer CreateResults(IGameUnit user, IGameUnit target, IGameMapTileCover cover,);
+        AbilityResultContainer ExecuteEffect(AbilityExecuteParameters parameters);
     }
 }

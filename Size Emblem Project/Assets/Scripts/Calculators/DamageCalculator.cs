@@ -11,9 +11,9 @@ namespace SizeEmblem.Assets.Scripts.Calculators
 {
     public class DamageCalculator
     {
-        public DamageResultContainer CalculateDamage(IAbility ability, IGameUnit attacker, IGameUnit target)
+        public AbilityResultContainer CalculateDamage(IAbility ability, IGameUnit attacker, IGameUnit target)
         {
-            var damageContainer = new DamageResultContainer();
+            var damageContainer = new AbilityResultContainer();
 
             // Calculate our base damage:
             damageContainer.BaseDamage = CalculateBaseDamage(ability, attacker, target);
@@ -28,7 +28,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             return damageContainer;
         }
 
-        public DamageResultContainer CalculateEstimatedDamage()
+        public AbilityResultContainer CalculateEstimatedDamage()
         {
             return null;
         }

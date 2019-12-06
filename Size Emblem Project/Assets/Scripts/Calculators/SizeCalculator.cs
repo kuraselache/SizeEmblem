@@ -14,6 +14,11 @@ namespace SizeEmblem.Assets.Scripts.Calculators
     public static class SizeCalculator
     {
 
+        public static int GetSizeDifference(SizeCategory a, SizeCategory b)
+        {
+            return (int)a - (int)b;
+        }
+
         public static int GetMaxRangeBonusForSize(SizeCategory size)
         {
             switch (size)

@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Calculators;
 using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.GameData;
@@ -388,6 +389,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         {
             switch (attribute)
             {
+                case UnitAttribute.None:               return 0;
                 case UnitAttribute.MaxHP:              return BaseUnitData.HP; 
                 case UnitAttribute.MaxSP:              return BaseUnitData.SP; 
                 case UnitAttribute.Strength:           return BaseUnitData.Strength; 
@@ -526,6 +528,12 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
             if(this.UnitFaction == Faction.PlayerFaction)
             {
+                var stompDamageEffectParameters = new DamageEffectParameters();
+                stompDamageEffectParameters.SizeBiggerDamageMultiplier = 1.5f;
+                stompDamageEffectParameters.SizeSmallerDamageMultiplier = 0.8f;
+                stompDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Strength, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                stompDamageEffectParameters.TileDamage = 1;
+
                 var abilityDataStomp = new AbilityData()
                 {
                     IDName = "STOMP",
@@ -544,9 +552,17 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     Accuracy = 90,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AbilityEffects = new[] { new DamageEffect(stompDamageEffectParameters) },
                 };
                 var abilityStomp = new Ability(this, abilityDataStomp);
                 Abilities.Add(abilityStomp);
+
+
+                var kickDamageEffectParameters = new DamageEffectParameters();
+                kickDamageEffectParameters.SizeBiggerDamageMultiplier = 0.8f;
+                kickDamageEffectParameters.SizeSmallerDamageMultiplier = 1.5f;
+                kickDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Strength, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                kickDamageEffectParameters.TileDamage = 1;
 
                 var abilityDataKick = new AbilityData()
                 {
@@ -566,6 +582,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     Accuracy = 90,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AbilityEffects = new[] { new DamageEffect(kickDamageEffectParameters) },
                 };
                 var abilityKick = new Ability(this, abilityDataKick);
                 Abilities.Add(abilityKick);
