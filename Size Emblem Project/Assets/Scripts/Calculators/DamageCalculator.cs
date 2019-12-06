@@ -37,7 +37,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
 
         public int CalculateBaseDamage(IAbility ability, IGameUnit attacker, IGameUnit target)
         {
-            var strengthDamage = (int)Math.Max(ability.StrengthMultiplier * attacker.GetAttribute(UnitAttribute.Strength) - target.GetAttribute(UnitAttribute.Defense), 0);
+            var strengthDamage = (int)Math.Max(ability.StrengthMultiplier * attacker.GetAttribute(UnitAttribute.Physical) - target.GetAttribute(UnitAttribute.Defense), 0);
             // TODO: Physical damage mitigation
 
             var magicDamage    = (int)Math.Max(ability.MagicMultiplier * attacker.GetAttribute(UnitAttribute.Magic) - target.GetAttribute(UnitAttribute.Resistance), 0);

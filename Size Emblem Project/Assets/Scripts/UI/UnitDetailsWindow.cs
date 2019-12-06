@@ -72,7 +72,7 @@ namespace SizeEmblem.Assets.Scripts.UI
                 UnitMaxSPText.text = SelectedUnit.GetAttribute(UnitAttribute.MaxSP).ToString();
 
             if (UnitStrengthText != null)
-                UnitStrengthText.text = SelectedUnit.GetAttribute(UnitAttribute.Strength).ToString();
+                UnitStrengthText.text = SelectedUnit.GetAttribute(UnitAttribute.Physical).ToString();
             if (UnitMagicText != null)
                 UnitMagicText.text = SelectedUnit.GetAttribute(UnitAttribute.Magic).ToString();
             if (UnitDefenseText != null)

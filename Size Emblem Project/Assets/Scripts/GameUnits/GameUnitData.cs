@@ -56,8 +56,8 @@ namespace SizeEmblem.Scripts.GameUnits
         public int SP { get { return sp; } }
 
         [Range(0, 10000)]
-        public int strength;
-        public int Strength { get { return strength; } }
+        public int physical;
+        public int Physical { get { return physical; } }
 
         [Range(0, 10000)]
         public int magic;

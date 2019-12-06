@@ -21,7 +21,7 @@ MonoBehaviour:
   initialLevel: 0
   hp: 40
   sp: 4
-  strength: 4
+  physical: 4
   magic: 4
   skill: 4
   speed: 4

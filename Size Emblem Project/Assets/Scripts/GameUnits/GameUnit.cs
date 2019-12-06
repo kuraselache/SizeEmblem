@@ -392,7 +392,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                 case UnitAttribute.None:               return 0;
                 case UnitAttribute.MaxHP:              return BaseUnitData.HP; 
                 case UnitAttribute.MaxSP:              return BaseUnitData.SP; 
-                case UnitAttribute.Strength:           return BaseUnitData.Strength; 
+                case UnitAttribute.Physical:           return BaseUnitData.Physical; 
                 case UnitAttribute.Magic:              return BaseUnitData.Magic;
                 case UnitAttribute.Defense:            return BaseUnitData.Defense;
                 case UnitAttribute.Resistance:         return BaseUnitData.Resistance;
@@ -531,7 +531,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                 var stompDamageEffectParameters = new DamageEffectParameters();
                 stompDamageEffectParameters.SizeBiggerDamageMultiplier = 1.5f;
                 stompDamageEffectParameters.SizeSmallerDamageMultiplier = 0.8f;
-                stompDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Strength, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                stompDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Physical, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
                 stompDamageEffectParameters.TileDamage = 1;
 
                 var abilityDataStomp = new AbilityData()
@@ -561,7 +561,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                 var kickDamageEffectParameters = new DamageEffectParameters();
                 kickDamageEffectParameters.SizeBiggerDamageMultiplier = 0.8f;
                 kickDamageEffectParameters.SizeSmallerDamageMultiplier = 1.5f;
-                kickDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Strength, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                kickDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Physical, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
                 kickDamageEffectParameters.TileDamage = 1;
 
                 var abilityDataKick = new AbilityData()

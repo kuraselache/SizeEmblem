@@ -31,7 +31,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         int HP { get; }
         int SP { get; }
 
-        int Strength { get; }
+        int Physical { get; }
         int Magic { get; }
         int Skill { get; }
         int Speed { get; }

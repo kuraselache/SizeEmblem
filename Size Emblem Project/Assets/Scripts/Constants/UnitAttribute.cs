@@ -9,7 +9,7 @@ namespace SizeEmblem.Scripts.Constants
         None, // Special use-case flag for damage algorithms, don't use for setting stats of units
         MaxHP,
         MaxSP,
-        Strength,
+        Physical,
         Magic,
         Defense,
         Resistance,
