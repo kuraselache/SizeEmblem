@@ -25,6 +25,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Activate()
         {
+            IsActive = true;
+
             _endPhaseWindow.IsVisible = true;
             _endPhaseWindow.OKAction     += EndPhaseWindow_OKAction;
             _endPhaseWindow.CancelAction += EndPhaseWindow_CancelAction;
@@ -43,6 +45,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Deactivate()
         {
+            IsActive = false;
+
             _endPhaseWindow.IsVisible = false;
             _endPhaseWindow.OKAction     -= EndPhaseWindow_OKAction;
             _endPhaseWindow.CancelAction -= EndPhaseWindow_CancelAction;
@@ -52,11 +56,13 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         private void EndPhaseWindow_OKAction()
         {
+            if (!IsActive) return;
             _gameBattle.EndPhase();
         }
 
         private void EndPhaseWindow_CancelAction()
         {
+            if (!IsActive) return;
             _gameBattle.ClearTopInputState();
         }
 

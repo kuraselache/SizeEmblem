@@ -39,8 +39,9 @@ namespace SizeEmblem.Scripts.GameData
         public MapPoint[] AreaPoints;
 
 
-        // ID for what minor action this ability consumes, NULL for none
-        public string MinorActionConsumptionID;
+        // Action Consumption
+        public AbilityActionConsumption ActionConsumption;
+        public string MinorActionConsumptionID; // ID for what minor action this ability consumes, NULL/Empty for none
 
         // Ability Cost
         public int HPCost;

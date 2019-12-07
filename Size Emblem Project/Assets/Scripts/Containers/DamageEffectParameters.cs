@@ -16,8 +16,8 @@ namespace SizeEmblem.Assets.Scripts.Containers
         public DamageEffectPairParameter[] DamagePairs;
 
         // Bonus multipliers:
-        public float SizeBiggerDamageMultiplier = 1.2f; // Multiply damage by this value if the target is bigger than the target (1 means no effect). Default is x1.2 damage if the user is bigger than the target
-        public float SizeSmallerDamageMultiplier = 0.8f; // Multiply damage by this value if the target is smaller than the target (1 means no effect). Default is x0.8 damage if the user is smaller than the target
+        public float SizeBiggerDamageMultiplier = 1.0f; // Multiply damage by this value if the target is bigger than the target (1 means no effect)
+        public float SizeSmallerDamageMultiplier = 1.0f; // Multiply damage by this value if the target is smaller than the target (1 means no effect)
 
         // Tile damage
         public int TileDamage = 0;

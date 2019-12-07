@@ -32,7 +32,12 @@ namespace SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects
 
         public AbilityResultContainer ExecuteEffect(AbilityExecuteParameters parameters)
         {
-            throw new NotImplementedException();
+            var previewResults = PreviewResults(parameters);
+
+            // TODO: Actually add RNG/accuracy
+            previewResults.Successful = true;
+
+            return previewResults;
         }
 
 
@@ -68,27 +73,40 @@ namespace SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects
 
             var sizeDifference = SizeCalculator.GetSizeDifference(user.SizeCategory, target.SizeCategory);
 
+            // Static size difference modifiers
+            if(sizeDifference > 0)
+            {
+                var multiplier = Mathf.Pow(1.2f, sizeDifference);
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Bigger Size Bonus" });
+            }
+            else if(sizeDifference < 0)
+            {
+                var multiplier = Mathf.Pow(0.8f, sizeDifference);
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Smaller Size Bonus" });
+            }
+
+            // Ability-based Size Difference
             if (_damageParameters.SizeBiggerDamageMultiplier > 1 && sizeDifference > 0)
             {
                 var multiplier = Mathf.Pow(_damageParameters.SizeBiggerDamageMultiplier, sizeDifference);
-                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Bigger Size Bonus" });
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Ability Bigger Size Bonus" });
             }
             else if(_damageParameters.SizeBiggerDamageMultiplier < 1 && sizeDifference > 0)
             {
                 var multiplier = Mathf.Pow(_damageParameters.SizeBiggerDamageMultiplier, sizeDifference);
-                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Bigger Size Penalty" });
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Ability Bigger Size Penalty" });
             }
 
 
             if(_damageParameters.SizeSmallerDamageMultiplier > 1 && sizeDifference < 0)
             {
                 var multiplier = Mathf.Pow(_damageParameters.SizeSmallerDamageMultiplier, -sizeDifference);
-                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Smaller Size Bonus" });
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Ability Smaller Size Bonus" });
             }
             else if (_damageParameters.SizeSmallerDamageMultiplier < 1 && sizeDifference < 0)
             {
                 var multiplier = Mathf.Pow(_damageParameters.SizeSmallerDamageMultiplier, -sizeDifference);
-                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Smaller Size Penalty" });
+                abilityResultContainer.DamageModifiers.Add(new DamageModifierContainer { DamageMultiplier = multiplier, Name = "Ability Smaller Size Penalty" });
             }
         }
     }

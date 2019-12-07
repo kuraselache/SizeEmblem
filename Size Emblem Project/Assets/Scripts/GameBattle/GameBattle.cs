@@ -36,15 +36,10 @@ namespace SizeEmblem.Scripts.GameScenes
 
             if(State == BattleStates.PlayerPhase)
             {
-                _gameMap.IsCursorEnabled = true;
-                ResetInputState();
-                uiUnitSummaryWindow.IsEnabled = true;
+                InitializeInputStateStack();
             }
             else
             {
-                _gameMap.IsCursorEnabled = false;
-                InitializeInputStateStack();
-                uiUnitSummaryWindow.IsEnabled = false;
             }
         }
 
@@ -162,11 +157,11 @@ namespace SizeEmblem.Scripts.GameScenes
         /// </summary>
         public void EndPhase()
         {
-            // Clean up our input state, if any
-            if(CurrentInputState(out var _))
-            {
-                ClearInputStack();
-            }
+            // We can only end phase if we're in a player or AI phase state
+            if (!(State == BattleStates.PlayerPhase || State == BattleStates.AITurn)) return;
+
+            // Clean up our input states, if any
+            ClearInputStack();
 
             // Clear our window UI on phase change
             HideAllWindows();
@@ -270,9 +265,6 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
 
-        private readonly Stack<Action> BackActions = new Stack<Action>();
-
-
         public void HideAllWindows()
         {
             uiUnitSummaryWindow.IsVisible = false;
@@ -291,18 +283,9 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             if (State != BattleStates.PlayerPhase) return;
 
-            _gameMap.ClearMovementOverlay();
-
-            unitActionWindow.IsVisible = false;
-
             InitializeInputStateStack();
         }
 
-        public void ExecuteBackAction()
-        {
-            if (!BackActions.Any()) return;
-            BackActions.Pop().Invoke();
-        }
 
         #region Loading
 
@@ -424,6 +407,12 @@ namespace SizeEmblem.Scripts.GameScenes
             nextInputState.Activate();
         }
 
+        public void SetState(IInputState newInputState)
+        {
+            ClearInputStack();
+            AddInputState(newInputState);
+        }
+
 
         /// <summary>
         /// Get the current player input state of the battle controller.
@@ -444,6 +433,7 @@ namespace SizeEmblem.Scripts.GameScenes
 
         public void ResetInputStack()
         {
+
             ClearInputStack();
             InitializeInputStateStack();
         }
@@ -452,18 +442,14 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             while (_inputStateStack.Any())
             {
-                ClearTopInputState(false);
+                var topState = _inputStateStack.Pop();
+                if (topState.IsActive) topState.Deactivate();
+                _inputStateFactory.DisposeState(topState);
             }
         }
 
+
         public void ClearTopInputState()
-        {
-            // TODO: Account for a state change in the middle of a state change
-
-            ClearTopInputState(true);
-        }
-
-        public void ClearTopInputState(bool activateNextState)
         {
             // Sanity check: If the input state is empty then there's nothing to remove
             if (!_inputStateStack.Any()) return;
@@ -472,16 +458,15 @@ namespace SizeEmblem.Scripts.GameScenes
             topState.Deactivate();
             _inputStateFactory.DisposeState(topState);
 
-            if(activateNextState)
-            {
-                var nextTopState = _inputStateStack.Any() ? _inputStateStack.Peek() : null;
-                nextTopState.Activate();
-            }
+            var nextTopState = _inputStateStack.Any() ? _inputStateStack.Peek() : null;
+            nextTopState.Activate();
         }
 
 
         private void InitializeInputStateStack()
         {
+            if (_inputStateStack.Any()) return;
+
             AddInputState(_inputStateFactory.ResolveSelectUnitState());
         }
 

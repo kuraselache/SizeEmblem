@@ -38,4 +38,10 @@ namespace SizeEmblem.Scripts.Constants
         AlliesOnly, // This ability can only target allies
         CasterOnly, // This ability can only target itself
     }
+
+    public enum AbilityActionConsumption
+    {
+        MajorAction, // Major/Standard actions end the character's turn
+        MinorAction, // Minor actions do not consume a character's turn but they can't undo a minor action and MinorActionConsumptionID is used up to prevent reusing the same minor action (unless it isn't set)
+    }
 }
