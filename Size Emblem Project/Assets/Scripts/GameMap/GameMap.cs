@@ -594,6 +594,17 @@ namespace SizeEmblem.Scripts.GameMap
 
 
 
+            // If the player selected a game route
+            if (_availableRoutes != null)
+            {
+                var selectedRoute = _availableRoutes.FirstOrDefault(x => x.EndX == _currentMousePosition.X && x.EndY == _currentMousePosition.Y);
+                if (selectedRoute != null)
+                {
+                    OnSelectedRoute(selectedRoute);
+                    return;
+                }
+            }
+
 
             // If the player selected a game object
             if (FindMapObjectInBounds(out var foundObject, _currentMousePosition.X, _currentMousePosition.Y))
@@ -601,17 +612,6 @@ namespace SizeEmblem.Scripts.GameMap
                 var foundUnit = foundObject as IGameUnit;
                 OnSelectedUnit(foundUnit);
                 return;
-            }
-
-            // If the player selected a game route
-            if(_availableRoutes != null)
-            {
-                var selectedRoute = _availableRoutes.FirstOrDefault(x => x.EndX == _currentMousePosition.X && x.EndY == _currentMousePosition.Y);
-                if(selectedRoute != null)
-                {
-                    OnSelectedRoute(selectedRoute);
-                    return;
-                }
             }
 
             // Fallthrough: If the player selected empty space
