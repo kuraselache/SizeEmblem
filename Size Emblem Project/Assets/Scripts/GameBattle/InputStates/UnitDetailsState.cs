@@ -32,6 +32,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         {
             IsActive = true;
             _unitDetailsWindow.SelectedUnit = _unit;
+            _unitDetailsWindow.IsVisible = true;
         }
 
 
