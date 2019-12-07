@@ -36,6 +36,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Activate()
         {
+            IsActive = true;
+
             _unitActionWindow.IsVisible = true;
 
             _unitActionWindow.AttackSelected  += UnitActionWindow_AttackSelected;
@@ -58,6 +60,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
 
         public void Deactivate()
         {
+            IsActive = false;
+
             _unitActionWindow.IsVisible = false;
 
             _unitActionWindow.AttackSelected  -= UnitActionWindow_AttackSelected;
