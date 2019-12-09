@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.GameData;
 using SizeEmblem.Scripts.Interfaces;
@@ -47,11 +48,9 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public AbilityCategory AbilityCategory { get { return Data.AbilityCategory; } }
 
 
-        // Abiilty Damage / Healing
-        public float StrengthMultiplier { get; }
-        public float MagicMultiplier { get; }
+        // Ability Effects
+        public IAbilityEffect[] AbilityEffects { get { return Data.AbilityEffects; } }
 
-        public bool CanDouble { get; }
 
         // Ability Accuracy
         public bool SkipAccuracyCheck { get { return Data.SkipAccuracyCheck; } }
@@ -68,6 +67,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
         // Area of Effect Properties
         public IEnumerable<MapPoint> AreaPoints { get { return Data.AreaPoints; } }
+
+        // Repeat Count
+        public int RepeatCount { get { return Data.RepeatCount; } }
+        public int RepeatThreshold { get { return Data.RepeatThreshold; } }
+
+        public AbilityActionConsumption ActionConsumption { get { return Data.ActionConsumption; } }
+        public string MinorActionConsumptionID { get { return Data.MinorActionConsumptionID; } }
 
         // Cost Properties
         public int HPCost { get { return Data.HPCost; } }
@@ -96,7 +102,6 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         {
             DecrementUses(1);
             ReduceCooldown(1);
-
         }
 
 
@@ -138,7 +143,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
         public bool HasUsesPerBattle()
         {
-            return UsesRemaining >= 0;
+            return Data.HasPerBattleUses;
+            //return UsesRemaining >= 0;
         }
 
 

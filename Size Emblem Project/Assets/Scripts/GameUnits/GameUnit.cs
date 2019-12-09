@@ -257,6 +257,15 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         private Dictionary<UnitStatistic, ulong> _statistics = new Dictionary<UnitStatistic, ulong>();
         public IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get { return _statistics as IReadOnlyDictionary<UnitStatistic, ulong>; } }
 
+
+        public ulong GetStatistic(UnitStatistic statistic)
+        {
+            // If the statistic isn't set then assume it is zero
+            if (!_statistics.ContainsKey(statistic)) return 0;
+            // Otherwise just return the value
+            return _statistics[statistic];
+        }
+
         public ulong SetStatistic(UnitStatistic statistic, ulong value)
         {
             if (!Statistics.ContainsKey(statistic))
@@ -336,9 +345,21 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         private int _hp;
         public int HP { get { return _hp; } }
 
+        public int SetHP(int newHP)
+        {
+            _hp = Math.Max(newHP, 0);
+            return _hp;
+        }
+
         [SerializeField]
         private int _sp;
         public int SP { get { return _sp; } }
+
+        public int SetSP(int newSP)
+        {
+            _sp = Math.Max(newSP, 0);
+            return _sp;
+        }
 
 
         public List<IAbility> Abilities { get; } = new List<IAbility>();
@@ -352,6 +373,39 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
             // Ask the ability itself if it can be used. It'll check HP/SP cost, cooldown/warmup state, etc.
             return ability.CanUseAbility();
+        }
+
+
+        public void TakeDamage(int damage)
+        {
+            SetHP(HP - damage);
+            // TODO: Add Death state if HP hits zero
+            if (HP == 0) Die();
+        }
+
+        public void Die()
+        {
+            SetHP(0);
+        }
+
+        public bool IsDead()
+        {
+            return HP == 0;
+        }
+
+        public void ConsumeAbilityCost(IAbility ability)
+        {
+            // Deduct HP/SP
+            if (ability.HPCost > 0) SetHP(HP - ability.HPCost);
+            if (ability.SPCost > 0) SetSP(SP - ability.SPCost);
+            // Deduct ability state (uses, cooldown, etc.)
+            ability.ProcessUsed();
+            // Deduct actions
+            switch(ability.ActionConsumption)
+            {
+                case AbilityActionConsumption.MajorAction: MajorActionConsumed = true; EndAction(); break;
+                case AbilityActionConsumption.MinorAction: break; // TODO: Minor consumption dictionary
+            }
         }
 
 
@@ -439,6 +493,11 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         {
             _hp = GetAttribute(UnitAttribute.MaxHP);
             _sp = GetAttribute(UnitAttribute.MaxSP);
+        }
+
+        public void ConsumeAbility(IAbility ability)
+        {
+
         }
 
         #endregion
@@ -551,6 +610,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 0,
                     DurabilityCost = 0,
                     Accuracy = 90,
+                    RepeatCount = 2,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(stompDamageEffectParameters) },
@@ -582,6 +642,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 0,
                     DurabilityCost = 0,
                     Accuracy = 90,
+                    RepeatCount = 2,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(kickDamageEffectParameters) },
@@ -589,6 +650,10 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                 var abilityKick = new Ability(this, abilityDataKick);
                 Abilities.Add(abilityKick);
 
+
+                var rapidJabDamageEffectParameters = new DamageEffectParameters();
+                rapidJabDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Physical, OffensiveAttributeMultiplier = 1.4f, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                rapidJabDamageEffectParameters.TileDamage = 1;
 
                 var abilityDataRapidJab = new AbilityData()
                 {
@@ -607,11 +672,20 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     SPCost = 3,
                     DurabilityCost = 0,
                     Accuracy = 80,
+                    RepeatCount = 4,
+                    RepeatThreshold = 3,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AbilityEffects = new[] { new DamageEffect(rapidJabDamageEffectParameters) },
                 };
                 var abilityRapidJab = new Ability(this, abilityDataRapidJab);
                 Abilities.Add(abilityRapidJab);
+
+
+
+                var RoudnhouseDamageEffectParameters = new DamageEffectParameters();
+                RoudnhouseDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Physical, OffensiveAttributeMultiplier = 1.5f, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+                RoudnhouseDamageEffectParameters.TileDamage = 1;
 
                 var abilityDataRoundhouse = new AbilityData()
                 {
@@ -629,15 +703,49 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     HPCost = 0,
                     SPCost = 2,
                     DurabilityCost = 0,
+                    RepeatCount = 1,
                     Accuracy = 95,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
-                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AreaPoints = new[] { new MapPoint(-1, 0, 3, 1), new MapPoint(0, -1, 1, 3) },
+                    AbilityEffects = new[] { new DamageEffect(RoudnhouseDamageEffectParameters) },
                 };
                 var abilityRoundhouse = new Ability(this, abilityDataRoundhouse);
                 Abilities.Add(abilityRoundhouse);
+
+
+
+                var danceAbilityEffect = new RefreshActionEffect();
+
+                var abilityDataDance = new AbilityData()
+                {
+                    IDName = "DANCER_Dance",
+                    FriendlyName = "Dance",
+                    FriendlyDescription = "Grant an ally another action",
+                    AbilityCategory = AbilityCategory.Special,
+                    WeaponCategory = WeaponAdvantageCategory.None,
+                    RangeDistanceRule = AbilityRangeDistanceRule.SizeRangeSmall,
+                    RangeSpecialRule = AbilityRangeSpecialRule.None,
+                    MinRange = 1,
+                    MaxRange = 3,
+                    ActionConsumption = AbilityActionConsumption.MajorAction,
+                    MinorActionConsumptionID = String.Empty,
+                    HPCost = 0,
+                    SPCost = 2,
+                    DurabilityCost = 0,
+                    Accuracy = 100,
+                    SkipAccuracyCheck = true,
+                    TargetRule = AbilityTargetRule.AlliesOnly,
+                    AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AbilityEffects = new[] { danceAbilityEffect },
+                };
+                var abilityDance = new Ability(this, abilityDataDance);
+                Abilities.Add(abilityDance);
             }
             else
             {
+                var cannonFireDamageEffectParameters = new DamageEffectParameters();
+                cannonFireDamageEffectParameters.DamagePairs = new[] { new DamageEffectPairParameter { OffensiveAttribute = UnitAttribute.Physical, OffensiveAttributeMultiplier = 1, DefensiveAttribute = UnitAttribute.Defense, DefensiveAttributeMultiplier = 1 } };
+
                 var abilityDataTankShot = new AbilityData()
                 {
                     IDName = "TANK_SHOT",
@@ -654,9 +762,11 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     HPCost = 0,
                     SPCost = 0,
                     DurabilityCost = 0,
+                    RepeatCount = 2,
                     Accuracy = 90,
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
+                    AbilityEffects = new[] { new DamageEffect(cannonFireDamageEffectParameters) },
                 };
                 var abilityTankShot = new Ability(this, abilityDataTankShot);
                 Abilities.Add(abilityTankShot);
@@ -673,6 +783,9 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
             if (spriteRenderer != null)
             {
                 spriteRenderer.sprite = BaseUnitData.unitSprite;
+
+                var scale = SizeCalculator.SpriteScale(this.SizeCategory);
+                spriteRenderer.transform.localScale = new Vector3(scale, scale);
                 AlignSpriteRenderer();
             }
 

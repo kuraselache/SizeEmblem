@@ -21,15 +21,18 @@ namespace SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects
             return result;
         }
 
-        public AbilityResultContainer ExecuteEffect(AbilityExecuteParameters parameters)
+        public AbilityResultContainer CreateResults(AbilityExecuteParameters parameters)
         {
             var result = PreviewResults(parameters);
-            if(result.Successful)
+            return result;
+        }
+
+        public void ExecuteEffect(AbilityExecuteParameters parameters, AbilityResultContainer results)
+        {
+            if(results.Successful)
             {
                 (parameters.Target as IGameUnit)?.ResetActionsConsumed();
             }
-
-            return result;
         }
     }
 }

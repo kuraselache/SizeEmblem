@@ -30,7 +30,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects
             return results;
         }
 
-        public AbilityResultContainer ExecuteEffect(AbilityExecuteParameters parameters)
+        public AbilityResultContainer CreateResults(AbilityExecuteParameters parameters)
         {
             var previewResults = PreviewResults(parameters);
 
@@ -39,6 +39,16 @@ namespace SizeEmblem.Assets.Scripts.GameUnits.AbilityEffects
 
             return previewResults;
         }
+
+
+        public void ExecuteEffect(AbilityExecuteParameters parameters, AbilityResultContainer results)
+        {
+            if (!results.Successful) return;
+
+            var targetUnit = parameters.Target as IGameUnit;
+            targetUnit.TakeDamage(results.CalculateDamage());
+        }
+
 
 
         public int CalculateDamage(AbilityExecuteParameters parameters)

@@ -24,7 +24,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
 
 
-        IReadOnlyDictionary<UnitStatistic, ulong> Statistics { get; }
+        ulong GetStatistic(UnitStatistic statistic);
         ulong SetStatistic(UnitStatistic statistic, ulong value);
         ulong IncrementStatistic(UnitStatistic statistic, ulong value);
         ulong DecrementStatistic(UnitStatistic statistic, ulong value);
@@ -32,7 +32,21 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         int Level { get; }
         int HP { get; }
+        int SetHP(int newHP);
+
         int SP { get; }
+        int SetSP(int newSP);
+
+
+
+        // Combat Methods for HP/SP
+        void TakeDamage(int damage);
+        void Die();
+        bool IsDead();
+
+        void ConsumeAbilityCost(IAbility ability);
+
+        // Attributes
         int GetAttribute(UnitAttribute attribue);
 
         HeightContainer Height { get; }
@@ -45,8 +59,6 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         List<IAbility> Abilities { get; }
         bool CanUseAbility(IAbility ability);
 
-
-        
 
 
         // Combat State

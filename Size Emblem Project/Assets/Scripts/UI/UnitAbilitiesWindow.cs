@@ -51,6 +51,7 @@ namespace SizeEmblem.Assets.Scripts.UI
                 _abilitySelectionButtons[i].UpdateAbilityData(_unit, abilities[i]);
             }
 
+            _abilitySelectionButtons.ForEach(x => x.RefreshUI());
 
             base.RefreshUI();
         }

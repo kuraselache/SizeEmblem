@@ -20,7 +20,7 @@ namespace SizeEmblem.Assets.Scripts.Containers
 
         public new string ToString()
         {
-            return $"{Height:F2} {Metric}";
+            return $"{Height:N0} {Metric}";
         }
     }
 
@@ -37,7 +37,7 @@ namespace SizeEmblem.Assets.Scripts.Containers
 
         public new string ToString()
         {
-            return $"{Weight:F2} {Metric}";
+            return $"{Weight:N0} {Metric}";
         }
     }
 }

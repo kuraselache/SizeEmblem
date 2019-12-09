@@ -1,4 +1,5 @@
-﻿using SizeEmblem.Scripts.Constants;
+﻿using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
+using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.GameData;
 using System.Collections;
@@ -14,19 +15,15 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         ILocalizationString NameLocal { get; }
 
 
-        //AbilityData Data { get; }
 
 
         WeaponAdvantageCategory WeaponCategory { get; }
         AbilityCategory AbilityCategory { get; }
 
 
-        
-        // Abiilty Damage / Healing
-        float StrengthMultiplier { get; }
-        float MagicMultiplier { get; }
+        // Ability Effects
+        IAbilityEffect[] AbilityEffects { get; }
 
-        bool CanDouble { get; }
 
         // Ability Accuracy
         bool SkipAccuracyCheck { get; } // Flag if accuracy checks should be skipped, such as for healing abilities
@@ -47,18 +44,28 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         // Ability AoE/Area
         IEnumerable<MapPoint> AreaPoints { get; }
 
+
+        // Repeat Count
+        int RepeatCount { get; }
+        int RepeatThreshold { get; }
+
+
+        // Action Consumption Flags
+        AbilityActionConsumption ActionConsumption { get; }
+        string MinorActionConsumptionID { get; }
+
         // Ability Cost
         int HPCost { get; }
         int SPCost { get; }
 
 
 
-
-
-
         void ResetBattleUsages();
 
         void ProcessTurnEnd();
+
+        void ProcessUsed();
+
 
         bool CanUseAbility();
 

@@ -1,4 +1,5 @@
 ﻿using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Assets.Scripts.Interfaces.UI.Helpers;
 using SizeEmblem.Assets.Scripts.UI.Base;
 using SizeEmblem.Scripts.Constants;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
@@ -36,6 +37,8 @@ namespace SizeEmblem.Assets.Scripts.UI
 
         #endregion
 
+        private readonly List<IUnitTextHelper> unitTextHelpers = new List<IUnitTextHelper>();
+
         private IGameUnit _selectedUnit;
         public IGameUnit SelectedUnit
         {
@@ -46,12 +49,14 @@ namespace SizeEmblem.Assets.Scripts.UI
                 _selectedUnit = value;
                 _isDirty = true;
                 IsVisible = value != null;
+                unitTextHelpers.ForEach(x => x.SelectedUnit = value);
             }
         }
 
         public override void RefreshUI()
         {
             base.RefreshUI();
+            unitTextHelpers.ForEach(x => x.RefreshText());
 
             if (SelectedUnit == null) return;
 
@@ -91,6 +96,14 @@ namespace SizeEmblem.Assets.Scripts.UI
                 UnitHeightText.text = SelectedUnit.ShowHeight ? SelectedUnit.Height.ToString() : "N/A";
             if (UnitWeightText != null)
                 UnitWeightText.text = SelectedUnit.ShowWeight ? SelectedUnit.Weight.ToString() : "N/A";
+        }
+
+
+        protected override void Start()
+        {
+            base.Start();
+
+            unitTextHelpers.AddRange(GetComponentsInChildren<IUnitTextHelper>());
         }
     }
 }

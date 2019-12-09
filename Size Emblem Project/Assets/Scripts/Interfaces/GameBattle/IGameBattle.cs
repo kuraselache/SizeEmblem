@@ -1,4 +1,5 @@
 ﻿using SizeEmblem.Scripts.Constants;
+using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         void EndImmediateAction();
 
 
-        bool CanUnitAct(IGameUnit unit);
+        bool IsUnitsPhase(IGameUnit unit);
 
         bool IsPlayerEnabledPhase();
 
@@ -39,5 +40,8 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameBattle
         void ResetInputStack();
         void ClearInputStack();
         void ClearTopInputState();
+
+        // Execute Abilities
+        void ExecuteAbility(IGameUnit user, IAbility ability, MapPoint targetPoint);
     }
 }

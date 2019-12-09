@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SizeEmblem.Scripts.GameUnits
 {
-    [CreateAssetMenu(fileName = "New Faction Data", menuName = "Game Data/Unit Data", order = 10)]
+    [CreateAssetMenu(fileName = "New Faction Data", menuName = "Game Data/Faction Data", order = 10)]
     public class GameFactionData : ScriptableObject, IGameFactionData
     {
 

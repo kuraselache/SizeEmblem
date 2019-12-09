@@ -1,4 +1,5 @@
 ﻿using SizeEmblem.Assets.Scripts.Calculators;
+using SizeEmblem.Assets.Scripts.Containers;
 using SizeEmblem.Assets.Scripts.GameMap;
 using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Scripts.Interfaces.GameMap;
@@ -71,7 +72,8 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
                     var validTarget = AbilityTargetCalculator.CheckForValidTargets(_unitCasting, _abilityTargeting, targets);
                     if(validTarget)
                     {
-                        Debug.Log("Valid target found");
+                        _gameBattle.AddInputState(_inputStateFactory.ResolveExecuteAbilityState(_unitCasting, _abilityTargeting, cursorPoint.X, cursorPoint.Y));
+                        //Debug.Log("Valid target found");
                     }
                     else
                     {

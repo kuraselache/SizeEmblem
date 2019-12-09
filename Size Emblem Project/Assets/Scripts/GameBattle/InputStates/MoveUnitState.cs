@@ -58,6 +58,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
             // Check if the player is selecting the unit they're moving. If so then the user doesn't want to move the unit so we'll advance to the UnitSelectAction state
             if (Input.GetMouseButtonDown(0))
             {
+
                 var result = _gameMap.GetUnitAtCursor(out var unit);
                 if (!result) return;
 

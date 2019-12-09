@@ -61,6 +61,9 @@ namespace SizeEmblem.Scripts.Interfaces.GameMap
         bool FindMapObjectInBounds(out IGameMapObject foundObject, int mapX, int mapY);
         bool FindAllMapObjectsInBounds(out IEnumerable<IGameMapObject> foundObjects, IEnumerable<MapPoint> mapPoints);
 
+        // Updating Map Objects
+        void RemoveMapUnit(IGameMapObject mapObject);
+
         // Player Input
         event SelectedUnitHandler PlayerSelectedUnit;
         event SelectedRouteHandler PlayerSelectedRoute;

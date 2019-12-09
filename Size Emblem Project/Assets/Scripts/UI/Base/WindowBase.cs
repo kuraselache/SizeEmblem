@@ -41,12 +41,12 @@ namespace SizeEmblem.Assets.Scripts.UI.Base
 
 
 
-        protected void Start()
+        protected virtual void Start()
         {
             ChangeCanvasVisibility(IsVisible);
         }
 
-        protected void Update()
+        protected virtual void Update()
         {
             if(_isDirty)
             {

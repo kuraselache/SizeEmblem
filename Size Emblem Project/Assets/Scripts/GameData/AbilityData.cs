@@ -38,8 +38,11 @@ namespace SizeEmblem.Scripts.GameData
         // AoE
         public MapPoint[] AreaPoints;
 
+        // Repeat Count
+        public int RepeatCount;
+        public int RepeatThreshold;
 
-        // Action Consumption
+        // Action Consumption Flags
         public AbilityActionConsumption ActionConsumption;
         public string MinorActionConsumptionID; // ID for what minor action this ability consumes, NULL/Empty for none
 

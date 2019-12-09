@@ -996,6 +996,15 @@ namespace SizeEmblem.Scripts.GameMap
             }
         }
 
+        public void RemoveMapUnit(IGameMapObject mapObject)
+        {
+            if(MapObjects.Contains(mapObject))
+            {
+                MapObjects.Remove(mapObject);
+                mapObject.WorldPosition = new Vector3(-100, -100, -100);
+            }
+        }
+
 
 
         #region Abilty Range Indicators

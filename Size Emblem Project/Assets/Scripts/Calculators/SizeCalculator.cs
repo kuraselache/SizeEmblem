@@ -32,5 +32,17 @@ namespace SizeEmblem.Assets.Scripts.Calculators
                 default: return 1;
             }
         }
+
+        public static int SpriteScale(SizeCategory size)
+        {
+            switch(size)
+            {
+                case SizeCategory.ExtraSmall:
+                case SizeCategory.Small: return 1;
+                case SizeCategory.Medium: return 3;
+                case SizeCategory.Large: return 5;
+                default: return 1;
+            }
+        }
     }
 }

@@ -9,58 +9,30 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Assets.Scripts.Calculators
 {
-    public class DamageCalculator
+    public static class DamageCalculator
     {
-        public AbilityResultContainer CalculateDamage(IAbility ability, IGameUnit attacker, IGameUnit target)
+
+        private const int DefaultRepeatThreshold = 5;
+
+        public static int RepeatCount(IAbility ability, IGameUnit attacker, IGameUnit target)
         {
-            var damageContainer = new AbilityResultContainer();
-
-            // Calculate our base damage:
-            damageContainer.BaseDamage = CalculateBaseDamage(ability, attacker, target);
-
-            // See if this hit doubles
-            damageContainer.RepeatCount = WillDouble(ability, attacker, target) ? 2 : 1;
-
-            // Apply weapon advantage
-            var triangleModifier = GetWeaponAdvantageModifier(ability, attacker, target);
-            if (triangleModifier != null) damageContainer.DamageModifiers.Add(triangleModifier);
-
-            return damageContainer;
-        }
-
-        public AbilityResultContainer CalculateEstimatedDamage()
-        {
-            return null;
-        }
-
-
-
-        public int CalculateBaseDamage(IAbility ability, IGameUnit attacker, IGameUnit target)
-        {
-            var strengthDamage = (int)Math.Max(ability.StrengthMultiplier * attacker.GetAttribute(UnitAttribute.Physical) - target.GetAttribute(UnitAttribute.Defense), 0);
-            // TODO: Physical damage mitigation
-
-            var magicDamage    = (int)Math.Max(ability.MagicMultiplier * attacker.GetAttribute(UnitAttribute.Magic) - target.GetAttribute(UnitAttribute.Resistance), 0);
-            // TODO: Magical damage mitigation
-
-            return strengthDamage + magicDamage;
-        }
-
-
-        public bool WillDouble(IAbility ability, IGameUnit attacker, IGameUnit target)
-        {
-            if (!ability.CanDouble) return false;
+            if (ability.RepeatCount <= 1) return 1;
 
             var attackerSpeed = attacker.GetAttribute(UnitAttribute.Speed);
             var defenderSpeed = target.GetAttribute(UnitAttribute.Speed);
 
-            return (attackerSpeed - defenderSpeed) > 5;
+            var speedDiff = attackerSpeed - defenderSpeed;
+            if(speedDiff < 0) return 1;
+
+            var repeatThreshold = ability.RepeatThreshold <= 0 ? DefaultRepeatThreshold : ability.RepeatThreshold;
+
+            return Math.Min(speedDiff / repeatThreshold + 1, ability.RepeatCount);
         }
 
 
         #region Weapon Advantage Triangle
 
-        public DamageModifierContainer GetWeaponAdvantageModifier(IAbility ability, IGameUnit attacker, IGameUnit target)
+        public static DamageModifierContainer GetWeaponAdvantageModifier(IAbility ability, IGameUnit attacker, IGameUnit target)
         {
             // Get the direction of the advantage of this ability used by the attacker vs the target
             var direction = GetWeaponAdvantageDirection(GetCategoryForAbility(ability, attacker), target.WeaponAdvantageCategory);
@@ -86,7 +58,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
         }
 
 
-        public WeaponAdvantageCategory GetCategoryForAbility(IAbility ability, IGameUnit caster)
+        public static WeaponAdvantageCategory GetCategoryForAbility(IAbility ability, IGameUnit caster)
         {
             if (ability.WeaponCategory == WeaponAdvantageCategory.Inherit) return caster.WeaponAdvantageCategory;
             return ability.WeaponCategory;
@@ -99,7 +71,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
         /// <param name="attacker"></param>
         /// <param name="defender"></param>
         /// <returns>The direction of advantage. >0 means attackers advtange, <0 means defender's advantage, 0 means no advantage. Value 1 means normal triangle advantage, 2 means perfect/worst weapon category advantage.</returns>
-        public int GetWeaponAdvantageDirection(WeaponAdvantageCategory attacker, WeaponAdvantageCategory defender)
+        public static int GetWeaponAdvantageDirection(WeaponAdvantageCategory attacker, WeaponAdvantageCategory defender)
         {
             // First check: If the categories are equal then there's no advantage
             if (attacker == defender) return 0;
@@ -125,7 +97,7 @@ namespace SizeEmblem.Assets.Scripts.Calculators
         /// <param name="a">The category to check if it has advantage over B</param>
         /// <param name="b">The category to check if against A</param>
         /// <returns>1 if <paramref name="a"/> has advantage over <paramref name="b"/>. 0 Otherwise.</returns>
-        public int TriangleCheck(WeaponAdvantageCategory a, WeaponAdvantageCategory b)
+        public static int TriangleCheck(WeaponAdvantageCategory a, WeaponAdvantageCategory b)
         {
             if (a == WeaponAdvantageCategory.Physical && b == WeaponAdvantageCategory.Weapon) return 1;
             if (a == WeaponAdvantageCategory.Weapon && b == WeaponAdvantageCategory.Magic) return 1;

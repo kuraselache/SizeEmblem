@@ -22,5 +22,6 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.UI
 
         void ClearAbilityData();
         void UpdateAbilityData(IGameUnit user, IAbility ability);
+        void RefreshUI();
     }
 }

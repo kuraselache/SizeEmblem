@@ -89,6 +89,11 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory
             return new TargetAbilityState(_gameBattle, _gameMap, unit, ability, this);
         }
 
+        public IInputState ResolveExecuteAbilityState(IGameUnit unitCasting, IAbility abilityTargeting, int targetX, int targetY)
+        {
+            return new ExecuteAbilityState(_gameBattle, unitCasting, abilityTargeting, targetX, targetY);
+        }
+
 
         public IInputState ResolveViewUnitDetailsState(IGameUnit unit)
         {

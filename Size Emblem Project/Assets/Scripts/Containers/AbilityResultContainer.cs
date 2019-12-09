@@ -24,9 +24,14 @@ namespace SizeEmblem.Assets.Scripts.Containers
 
         public int CalculateDamage()
         {
-            if (!IsHit) return 0;
+            //if (!IsHit) return 0;
 
-            return BaseDamage;
+            var baseDamage = BaseDamage;
+
+            var multipliersProduct = DamageModifiers.Aggregate(1.0f, (product, modifier) => product * modifier.DamageMultiplier);
+            var modifierSum = DamageModifiers.Sum(x => x.DamageModifier);
+
+            return (int)((baseDamage + modifierSum) * multipliersProduct);
         }
     }
 }

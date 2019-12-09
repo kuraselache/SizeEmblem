@@ -10,6 +10,10 @@ using UnityEngine;
 using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Assets.Scripts.GameBattle.InputStates.Factory;
 using SizeEmblem.Assets.Scripts.GameBattle;
+using SizeEmblem.Scripts.Containers;
+using SizeEmblem.Assets.Scripts.Calculators;
+using SizeEmblem.Assets.Scripts.Containers;
+using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
 
 namespace SizeEmblem.Scripts.GameScenes
 {
@@ -211,7 +215,8 @@ namespace SizeEmblem.Scripts.GameScenes
         #endregion
 
 
-        public bool CanUnitAct(IGameUnit unit)
+
+        public bool IsUnitsPhase(IGameUnit unit)
         {
             // Sanity check
             if (unit == null) return false;
@@ -483,6 +488,65 @@ namespace SizeEmblem.Scripts.GameScenes
 
         #endregion
 
+
+
+        public void ExecuteAbility(IGameUnit user, IAbility ability, MapPoint targetPoint)
+        {
+            var targetPoints = ability.AreaPoints.Select(x => x.ApplyOffset(targetPoint.X, targetPoint.Y));
+            
+            var foundTargets = _gameMap.FindAllMapObjectsInBounds(out var targets, targetPoints);
+            var validTargets = AbilityTargetCalculator.FilterTargets(user, ability, targets);
+
+
+            var abilityExecuteParams = validTargets.Select(x => new AbilityExecuteParameters(user, ability, x, targets, targetPoint, _gameMap)).ToList();
+
+            foreach(var abilityExecute in abilityExecuteParams)
+            {
+                var targetUnit = abilityExecute.Target as IGameUnit; // I think the GameMapObject target was a mistake, I should fix that soon...
+                var repeatCount = DamageCalculator.RepeatCount(ability, user, targetUnit);
+
+                for(var i = 0; i < repeatCount; i++)
+                {
+                    ExecuteAbilityRepeatIteration(abilityExecute, i);
+                }
+
+                if(targetUnit.IsDead())
+                {
+                    RemoveUnit(targetUnit);
+                }
+            }
+
+            // Now that we executed the ability we need to 
+            ConsumeAbilityForUnit(user, ability);
+        }
+
+
+        public void ExecuteAbilityRepeatIteration(AbilityExecuteParameters abilityExecuteParameters, int iteration)
+        {
+            foreach(var effect in abilityExecuteParameters.AbilityExecuting.AbilityEffects)
+            {
+                ExecuteAbilityEffect(abilityExecuteParameters, effect);
+            }
+        }
+
+        public void ExecuteAbilityEffect(AbilityExecuteParameters abilityExecuteParameters, IAbilityEffect effect)
+        {
+            // I'll have to break this up and change all this later, but for now I'm tired and just want something to work for now
+            var effectResults = effect.CreateResults(abilityExecuteParameters);
+            effect.ExecuteEffect(abilityExecuteParameters, effectResults);
+        }
+
+
+        public void RemoveUnit(IGameUnit unit)
+        {
+            _gameMap.RemoveMapUnit(unit);
+        }
+
+
+        public void ConsumeAbilityForUnit(IGameUnit unit, IAbility ability)
+        {
+            unit.ConsumeAbilityCost(ability);
+        }
 
 
         public void Update()

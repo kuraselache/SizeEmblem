@@ -1,5 +1,6 @@
 ﻿using SizeEmblem.Assets.Scripts.Interfaces.GameBattle;
 using SizeEmblem.Assets.Scripts.Interfaces.UI;
+using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Scripts.Interfaces.GameMap;
 using SizeEmblem.Scripts.Interfaces.GameUnits;
 using System;
@@ -14,25 +15,19 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
     public class ExecuteAbilityState : IInputState
     {
         private readonly IGameBattle _gameBattle;
-        private readonly IGameMap _gameMap;
         private readonly IGameUnit _unitCasting;
         private readonly IAbility _abilityTargeting;
 
         private readonly int _targetX;
         private readonly int _targetY;
 
-        private readonly IInputStateFactory _inputStateFactory;
-
-        public ExecuteAbilityState(IGameBattle gameBattle, IGameMap gameMap, IGameUnit unitCasting, IAbility abilityTargeting, int targetX, int targetY, IInputStateFactory inputStateFactory)
+        public ExecuteAbilityState(IGameBattle gameBattle, IGameUnit unitCasting, IAbility abilityTargeting, int targetX, int targetY)
         {
             _gameBattle = gameBattle;
-            _gameMap = gameMap;
             _unitCasting = unitCasting;
             _abilityTargeting = abilityTargeting;
             _targetX = targetX;
             _targetY = targetY;
-
-            _inputStateFactory = inputStateFactory;
         }
 
 
@@ -42,19 +37,18 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
         {
             IsActive = true;
 
-            // Determine who has been targeted by the given X,Y target of the ability
-            _gameMap.FindMapObjectInBounds(out var foundObject, 0, 0);
+            // Execute the ability
+            _gameBattle.ExecuteAbility(_unitCasting, _abilityTargeting, new MapPoint(_targetX, _targetY, 1, 1));
+
+
+            // Reset the input stack (TODO: Handling minor actions that only reset the input stack but still allow actions)
+            _gameBattle.ResetInputStack();
         }
 
 
         public void UpdateState()
         {
-            // Back button hit: Undo this state
-            if (Input.GetMouseButtonDown(1))
-            {
-                _gameBattle.ClearTopInputState();
-                return;
-            }
+            
         }
 
 

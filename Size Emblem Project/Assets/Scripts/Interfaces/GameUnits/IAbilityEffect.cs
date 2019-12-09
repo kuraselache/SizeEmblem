@@ -13,6 +13,8 @@ namespace SizeEmblem.Assets.Scripts.Interfaces.GameUnits
     {
         AbilityResultContainer PreviewResults(AbilityExecuteParameters parameters);
 
-        AbilityResultContainer ExecuteEffect(AbilityExecuteParameters parameters);
+        AbilityResultContainer CreateResults(AbilityExecuteParameters parameters);
+
+        void ExecuteEffect(AbilityExecuteParameters parameters, AbilityResultContainer results);
     }
 }

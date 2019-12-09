@@ -17,8 +17,8 @@ MonoBehaviour:
   unitCategory: 1
   weaponType: 1
   baseMovementType: 5
-  movementSpeed: 4
-  initialLevel: 0
+  movementSpeed: 5
+  initialLevel: 1
   hp: 40
   sp: 5
   physical: 2

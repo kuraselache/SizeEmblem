@@ -54,7 +54,7 @@ namespace SizeEmblem.Assets.Scripts.GameBattle.InputStates
                 var result = _gameMap.GetUnitAtCursor(out var unit);
                 if (!result) return;
 
-                if (_gameBattle.CanUnitAct(unit))
+                if (_gameBattle.IsUnitsPhase(unit) && unit.CanAct())
                 {
                     var nextInputState = _inputStateFactory.ResolveMoveUnitState(unit);
                     _gameBattle.AddInputState(nextInputState);
