@@ -42,6 +42,10 @@ namespace SizeEmblem.Scripts.GameData
         public int RepeatCount;
         public int RepeatThreshold;
 
+        // Counter flags
+        public bool CanBeCountered;
+        public bool CanCounterAttack;
+
         // Action Consumption Flags
         public AbilityActionConsumption ActionConsumption;
         public string MinorActionConsumptionID; // ID for what minor action this ability consumes, NULL/Empty for none

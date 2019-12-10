@@ -63,12 +63,14 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
 
         // Combat State
         bool IsActive { get; set; }
+        bool CanAct();
+
         bool MovementActionConsumed { get; set; }
         bool MinorActionConsumed { get; set; }
         bool MajorActionConsumed { get; set; }
         bool ActionOver { get; set; }
 
-        bool CanAct();
+        bool CanTakeTurn();
         bool CanMoveAction();
         void ResetActionsConsumed();
 

@@ -21,10 +21,10 @@ MonoBehaviour:
   initialLevel: 1
   hp: 40
   sp: 5
-  physical: 2
+  physical: 4
   magic: 2
   skill: 2
-  speed: 2
+  speed: 6
   defense: 2
   resistance: 2
   luck: 2

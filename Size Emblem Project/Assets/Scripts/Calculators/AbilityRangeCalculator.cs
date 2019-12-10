@@ -123,5 +123,15 @@ namespace SizeEmblem.Assets.Scripts.Calculators
             
         }
 
+
+        public static bool CanAbilityTargetUnit(IGameUnit user, IGameUnit target, IAbility ability)
+        {
+            // Get the map points the ability can target
+            var targetPoints = GetMapPointsAbilityTargets(ability, user).ToList();
+
+            // See if there's any collision between those map points and the target
+            var rangeCheck = targetPoints.Any(x => x.CollidesWith(target.MapPoint));
+            return rangeCheck;
+        }
     }
 }

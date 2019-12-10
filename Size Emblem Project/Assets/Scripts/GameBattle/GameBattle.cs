@@ -14,6 +14,7 @@ using SizeEmblem.Scripts.Containers;
 using SizeEmblem.Assets.Scripts.Calculators;
 using SizeEmblem.Assets.Scripts.Containers;
 using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
+using SizeEmblem.Scripts.Extensions;
 
 namespace SizeEmblem.Scripts.GameScenes
 {
@@ -497,43 +498,128 @@ namespace SizeEmblem.Scripts.GameScenes
             var foundTargets = _gameMap.FindAllMapObjectsInBounds(out var targets, targetPoints);
             var validTargets = AbilityTargetCalculator.FilterTargets(user, ability, targets);
 
+            // Get a queue of abilities and their execution
+            var executionQueue = CreateAbiltyQueue(user, ability, validTargets, targetPoint, _gameMap);
 
-            var abilityExecuteParams = validTargets.Select(x => new AbilityExecuteParameters(user, ability, x, targets, targetPoint, _gameMap)).ToList();
-
-            foreach(var abilityExecute in abilityExecuteParams)
+            // Now execute each entry in our queue
+            while(executionQueue.Any())
             {
-                var targetUnit = abilityExecute.Target as IGameUnit; // I think the GameMapObject target was a mistake, I should fix that soon...
-                var repeatCount = DamageCalculator.RepeatCount(ability, user, targetUnit);
+                var executionParams = executionQueue.Dequeue();
+                var executionResults = new List<AbilityResultContainer>();
 
-                for(var i = 0; i < repeatCount; i++)
+                // If the params doesn't have a target assigned we'll create dupes and populate the targets
+                if(executionParams.Target == null)
                 {
-                    ExecuteAbilityRepeatIteration(abilityExecute, i);
+                    var newParams = executionParams.AllTargets.Select(x => new AbilityExecuteParameters(executionParams.UnitExecuting, executionParams.AbilityExecuting, x, executionParams.AllTargets, executionParams.TargetPoint, executionParams.GameMap));
+                    var newParamsResults = newParams.SelectMany(x => ExecuteAbilityParameters(x)).ToList();
+                    executionResults.AddRange(newParamsResults);
+                }
+                // Otherwise we'll just execute the ability
+                else
+                {
+                    var paramsResults = ExecuteAbilityParameters(executionParams);
+                    executionResults.AddRange(paramsResults);
                 }
 
-                if(targetUnit.IsDead())
-                {
-                    RemoveUnit(targetUnit);
-                }
+                // DO SOME ANIMATION HERE?
+
+                // ALSO IF A COUNTER HAS A COST IT ISN"T DEDUCTED EVER
+
             }
 
-            // Now that we executed the ability we need to 
+            // Now that we executed the ability we need to consume the cost of the ability
             ConsumeAbilityForUnit(user, ability);
+
+            // Check for defeated units
+            validTargets.OfType<IGameUnit>().Where(x => x.IsDead()).ForEach(x => RemoveUnit(x));
+            if (user.IsDead()) RemoveUnit(user);
+
         }
 
-
-        public void ExecuteAbilityRepeatIteration(AbilityExecuteParameters abilityExecuteParameters, int iteration)
+        public Queue<AbilityExecuteParameters> CreateAbiltyQueue(IGameUnit user, IAbility abilityToExecute, IEnumerable<IGameMapObject> targets, MapPoint targetPoint, IGameMap gameMap)
         {
-            foreach(var effect in abilityExecuteParameters.AbilityExecuting.AbilityEffects)
+            // Create our action queue
+            var abilityExecuteQueue = new Queue<AbilityExecuteParameters>();
+
+            // For now we'll only target game units from the targets list
+            var gameUnitTargets = targets.OfType<IGameUnit>().ToList();
+            // Sanity check: If we _don't_ have any game units then 
+            if (!gameUnitTargets.Any()) return abilityExecuteQueue;
+
+
+            // Create a counter-attack object for each target
+            var targetCounterAttacks = gameUnitTargets.Where(x => abilityToExecute.CanBeCountered).Where(x => x.UnitFaction != user.UnitFaction).Select(counteringUnit =>
             {
-                ExecuteAbilityEffect(abilityExecuteParameters, effect);
+                var counterAbility = GetAutoAttackAbility(counteringUnit, user);
+
+                return new
+                {
+                    CounterUnit = counteringUnit,
+                    CounterAbility = counterAbility,
+                    CounterRepeat = counterAbility != null ? DamageCalculator.RepeatCount(counterAbility, counteringUnit, user) : 0,
+                };
+            }).Where(x => x.CounterAbility != null).ToList();
+
+            // We need the number of repeats total. This'll govern how many loops we do of filling our queue
+            var userRepeatCount = gameUnitTargets.Select(target => DamageCalculator.RepeatCount(abilityToExecute, user, target)).Max();
+            var maxRepeatCount = targetCounterAttacks.Any() ? Math.Max(userRepeatCount, targetCounterAttacks.Max(x => x.CounterRepeat)) : userRepeatCount;
+
+            // Pregen list
+            var counterTargetsList = new List<IGameMapObject> { user };
+
+            for(var i = 0; i < maxRepeatCount; i++)
+            {
+                // Add the user's action to the queue if they have this many repeats
+                if(i < userRepeatCount)
+                    abilityExecuteQueue.Enqueue(new AbilityExecuteParameters(user, abilityToExecute, null, targets, targetPoint, gameMap));
+                // Then add all the counter attacks!
+                foreach(var counterAttack in targetCounterAttacks.Where(x => i < x.CounterRepeat))
+                {
+                    abilityExecuteQueue.Enqueue(new AbilityExecuteParameters(counterAttack.CounterUnit, counterAttack.CounterAbility, user, counterTargetsList, user.MapPoint, gameMap));
+                }
             }
+
+            return abilityExecuteQueue;
         }
 
-        public void ExecuteAbilityEffect(AbilityExecuteParameters abilityExecuteParameters, IAbilityEffect effect)
+        public IAbility GetAutoAttackAbility(IGameUnit user, IGameUnit target)
+        {
+            if (user.Abilities == null || !user.Abilities.Any(x => x.CanCounterAttack)) return null;
+
+            // Get all possible counter abilities for this user
+            var counterAbilities = user.Abilities.Where(ability => ability.CanCounterAttack && user.CanUseAbility(ability) && AbilityRangeCalculator.CanAbilityTargetUnit(user, target, ability)).ToList();
+            if (!counterAbilities.Any()) return null;
+            // And pick the strongest one!
+            var strongestAbility = counterAbilities.Select(ability =>
+            { 
+                var abilityParams = new AbilityExecuteParameters(user, ability, target, new List<IGameMapObject> { target }, target.MapPoint, _gameMap);
+                var repeatCount = DamageCalculator.RepeatCount(ability, user, target);
+                var results = ability.AbilityEffects.Select(x => x.PreviewResults(abilityParams)).Sum(x => x.BaseDamage * x.HitRate) * repeatCount;
+                return new { Ability = ability, DamageScore = results };
+            }).MaxBy(x => x.DamageScore).Ability;
+
+            return strongestAbility;
+        }
+
+
+        public IEnumerable<AbilityResultContainer> ExecuteAbilityParameters(AbilityExecuteParameters abilityExecuteParameters)
+        {
+            // Check to see if the user of this ability can act. If they can't then we can't execute this action (ie they died during execution, or are disabled)
+            // Also check if the target is dead. Don't attack if they're dead
+            if (!abilityExecuteParameters.UnitExecuting.CanAct() || (abilityExecuteParameters.Target is IGameUnit && (abilityExecuteParameters.Target as IGameUnit).IsDead())) return Enumerable.Empty<AbilityResultContainer>();
+
+            // Execute each ability effect and return the results containers
+            return abilityExecuteParameters.AbilityExecuting.AbilityEffects.Select(x => ExecuteAbilityEffect(abilityExecuteParameters, x)).ToList();
+
+        }
+
+
+        public AbilityResultContainer ExecuteAbilityEffect(AbilityExecuteParameters abilityExecuteParameters, IAbilityEffect effect)
         {
             // I'll have to break this up and change all this later, but for now I'm tired and just want something to work for now
             var effectResults = effect.CreateResults(abilityExecuteParameters);
             effect.ExecuteEffect(abilityExecuteParameters, effectResults);
+            return effectResults;
         }
 
 

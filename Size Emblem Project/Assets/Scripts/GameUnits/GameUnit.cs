@@ -110,6 +110,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
         public bool IsActive { get; set; } = true;
 
+
+        public bool CanAct()
+        {
+            return !IsDead();
+        }
+
+
         // Turn state properties
         public bool MovementActionConsumed { get; set; }
         public bool MinorActionConsumed { get; set; }
@@ -118,7 +125,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public bool ActionOver { get; set; }
 
 
-        public bool CanAct()
+        public bool CanTakeTurn()
         {
             if (!IsActive) return false;
             if (HP <= 0) return false; // temp flag for KO'd units, should be replaced in the future with something smarter
@@ -128,7 +135,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
 
         public bool CanMoveAction()
         {
-            if (CanAct() && HasRemainingMovement() && !MovementActionConsumed) return true;
+            if (CanTakeTurn() && HasRemainingMovement() && !MovementActionConsumed) return true;
             return false;
         }
 
@@ -386,6 +393,7 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public void Die()
         {
             SetHP(0);
+            IsActive = false;
         }
 
         public bool IsDead()
@@ -614,6 +622,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(stompDamageEffectParameters) },
+                    CanBeCountered = true,
+                    CanCounterAttack = true,
                 };
                 var abilityStomp = new Ability(this, abilityDataStomp);
                 Abilities.Add(abilityStomp);
@@ -646,6 +656,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(kickDamageEffectParameters) },
+                    CanBeCountered = true,
+                    CanCounterAttack = true,
                 };
                 var abilityKick = new Ability(this, abilityDataKick);
                 Abilities.Add(abilityKick);
@@ -677,6 +689,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(rapidJabDamageEffectParameters) },
+                    CanBeCountered = true,
+                    CanCounterAttack = false,
                 };
                 var abilityRapidJab = new Ability(this, abilityDataRapidJab);
                 Abilities.Add(abilityRapidJab);
@@ -708,6 +722,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(-1, 0, 3, 1), new MapPoint(0, -1, 1, 3) },
                     AbilityEffects = new[] { new DamageEffect(RoudnhouseDamageEffectParameters) },
+                    CanBeCountered = true,
+                    CanCounterAttack = false,
                 };
                 var abilityRoundhouse = new Ability(this, abilityDataRoundhouse);
                 Abilities.Add(abilityRoundhouse);
@@ -737,6 +753,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.AlliesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { danceAbilityEffect },
+                    CanBeCountered = false,
+                    CanCounterAttack = false,
                 };
                 var abilityDance = new Ability(this, abilityDataDance);
                 Abilities.Add(abilityDance);
@@ -767,6 +785,8 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
                     TargetRule = AbilityTargetRule.EnemiesOnly,
                     AreaPoints = new[] { new MapPoint(0, 0, 1, 1) },
                     AbilityEffects = new[] { new DamageEffect(cannonFireDamageEffectParameters) },
+                    CanBeCountered = true,
+                    CanCounterAttack = true,
                 };
                 var abilityTankShot = new Ability(this, abilityDataTankShot);
                 Abilities.Add(abilityTankShot);

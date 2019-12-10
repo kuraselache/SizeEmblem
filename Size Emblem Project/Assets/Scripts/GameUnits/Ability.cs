@@ -75,6 +75,13 @@ namespace SizeEmblem.Assets.Scripts.GameUnits
         public AbilityActionConsumption ActionConsumption { get { return Data.ActionConsumption; } }
         public string MinorActionConsumptionID { get { return Data.MinorActionConsumptionID; } }
 
+
+        // Counter flags
+        public bool CanBeCountered { get { return Data.CanBeCountered; } }
+        public bool CanCounterAttack { get { return Data.CanCounterAttack; } }
+
+
+
         // Cost Properties
         public int HPCost { get { return Data.HPCost; } }
         public int SPCost { get { return Data.SPCost; } }

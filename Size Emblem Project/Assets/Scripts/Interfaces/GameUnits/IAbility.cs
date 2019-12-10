@@ -21,7 +21,7 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         AbilityCategory AbilityCategory { get; }
 
 
-        // Ability Effects
+        // Ability Effects: The core of abilities! This is stuff like damage parameters, healing, or other effects like restoring an action!
         IAbilityEffect[] AbilityEffects { get; }
 
 
@@ -48,6 +48,10 @@ namespace SizeEmblem.Scripts.Interfaces.GameUnits
         // Repeat Count
         int RepeatCount { get; }
         int RepeatThreshold { get; }
+
+        // Counter flags
+        bool CanBeCountered { get; } // THIS is the flag if this ability triggers a counter
+        bool CanCounterAttack { get; } // this flag is if this ability can be a counter attack ability
 
 
         // Action Consumption Flags

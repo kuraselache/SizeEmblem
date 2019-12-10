@@ -24,7 +24,7 @@ MonoBehaviour:
   physical: 4
   magic: 0
   skill: 3
-  speed: 3
+  speed: 2
   defense: 2
   resistance: 0
   luck: 2
