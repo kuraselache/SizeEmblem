@@ -23,11 +23,11 @@ MonoBehaviour:
   sp: 5
   physical: 4
   magic: 2
-  skill: 2
-  speed: 6
+  skill: 0
+  speed: 7
   defense: 2
   resistance: 2
-  luck: 2
+  luck: 0
   bonusWalkingDamage: 0
   bonusWalkingDamageRange: 0
   height: 50

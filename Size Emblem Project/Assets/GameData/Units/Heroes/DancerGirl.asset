@@ -19,15 +19,15 @@ MonoBehaviour:
   baseMovementType: 7
   movementSpeed: 3
   initialLevel: 1
-  hp: 40
+  hp: 35
   sp: 10
-  physical: 5
-  magic: 5
-  skill: 5
-  speed: 5
-  defense: 5
+  physical: 3
+  magic: 4
+  skill: 0
+  speed: 4
+  defense: 1
   resistance: 5
-  luck: 5
+  luck: 0
   bonusWalkingDamage: 1
   bonusWalkingDamageRange: 0
   height: 420

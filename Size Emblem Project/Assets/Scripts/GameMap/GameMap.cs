@@ -1002,6 +1002,7 @@ namespace SizeEmblem.Scripts.GameMap
             {
                 MapObjects.Remove(mapObject);
                 mapObject.WorldPosition = new Vector3(-100, -100, -100);
+                
             }
         }
 

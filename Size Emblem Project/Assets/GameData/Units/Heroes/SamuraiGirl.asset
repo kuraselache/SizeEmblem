@@ -20,14 +20,14 @@ MonoBehaviour:
   movementSpeed: 4
   initialLevel: 1
   hp: 50
-  sp: 5
+  sp: 7
   physical: 4
-  magic: 4
-  skill: 4
-  speed: 4
-  defense: 4
-  resistance: 4
-  luck: 4
+  magic: 1
+  skill: 0
+  speed: 6
+  defense: 2
+  resistance: 0
+  luck: 0
   bonusWalkingDamage: 1
   bonusWalkingDamageRange: 0
   height: 160
