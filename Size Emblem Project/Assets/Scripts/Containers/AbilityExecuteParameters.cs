@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SizeEmblem.Assets.Scripts.Containers
 {
-    public struct AbilityExecuteParameters
+    public class AbilityExecuteParameters
     {
         public IGameUnit UnitExecuting; // The unit executing an ability
         public IAbility AbilityExecuting; // The ability that is being executed

@@ -15,6 +15,7 @@ using SizeEmblem.Assets.Scripts.Calculators;
 using SizeEmblem.Assets.Scripts.Containers;
 using SizeEmblem.Assets.Scripts.Interfaces.GameUnits;
 using SizeEmblem.Scripts.Extensions;
+using SizeEmblem.Assets.Scripts.UI.Windows;
 
 namespace SizeEmblem.Scripts.GameScenes
 {
@@ -491,6 +492,51 @@ namespace SizeEmblem.Scripts.GameScenes
 
 
 
+        #region Execute Abilities
+
+        private Queue<AbilityExecuteParameters> _executionQueue;
+        private AbilityExecuteParameters _currentAbilityExecuteParams;
+
+        public void ExecutionQueueUpdate()
+        {
+            // Return if we don't have a queue to run
+            if (!HasExecutionQueue()) return;
+
+            // If we're currently running something then don't start another
+            if (_currentAbilityExecuteParams != null) return;
+
+
+            var executionParams = _currentAbilityExecuteParams = _executionQueue.Dequeue();
+            var executionResults = new List<AbilityResultContainer>();
+
+            // If the params doesn't have a target assigned we'll create dupes and populate the targets
+            if (executionParams.Target == null)
+            {
+                var newParams = executionParams.AllTargets.Select(x => new AbilityExecuteParameters(executionParams.UnitExecuting, executionParams.AbilityExecuting, x, executionParams.AllTargets, executionParams.TargetPoint, executionParams.GameMap));
+                var newParamsResults = newParams.SelectMany(x => ExecuteAbilityParameters(x)).ToList();
+                executionResults.AddRange(newParamsResults);
+            }
+            // Otherwise we'll just execute the ability
+            else
+            {
+                var paramsResults = ExecuteAbilityParameters(executionParams);
+                executionResults.AddRange(paramsResults);
+            }
+
+            // DO SOME ANIMATION HERE?
+
+            // ALSO IF A COUNTER HAS A COST IT ISN"T DEDUCTED EVER
+
+
+        }
+
+        public bool HasExecutionQueue()
+        {
+            return _executionQueue != null || _executionQueue.Any();
+        }
+
+
+
         public void ExecuteAbility(IGameUnit user, IAbility ability, MapPoint targetPoint)
         {
             var targetPoints = ability.AreaPoints.Select(x => x.ApplyOffset(targetPoint.X, targetPoint.Y));
@@ -499,12 +545,12 @@ namespace SizeEmblem.Scripts.GameScenes
             var validTargets = AbilityTargetCalculator.FilterTargets(user, ability, targets);
 
             // Get a queue of abilities and their execution
-            var executionQueue = CreateAbiltyQueue(user, ability, validTargets, targetPoint, _gameMap);
+            _executionQueue = CreateAbiltyQueue(user, ability, validTargets, targetPoint, _gameMap);
 
             // Now execute each entry in our queue
-            while(executionQueue.Any())
+            while(_executionQueue.Any())
             {
-                var executionParams = executionQueue.Dequeue();
+                var executionParams = _executionQueue.Dequeue();
                 var executionResults = new List<AbilityResultContainer>();
 
                 // If the params doesn't have a target assigned we'll create dupes and populate the targets
@@ -535,6 +581,15 @@ namespace SizeEmblem.Scripts.GameScenes
             if (user.IsDead()) RemoveUnit(user);
 
         }
+
+
+
+
+
+
+
+
+
 
         public Queue<AbilityExecuteParameters> CreateAbiltyQueue(IGameUnit user, IAbility abilityToExecute, IEnumerable<IGameMapObject> targets, MapPoint targetPoint, IGameMap gameMap)
         {
@@ -633,6 +688,10 @@ namespace SizeEmblem.Scripts.GameScenes
         {
             unit.ConsumeAbilityCost(ability);
         }
+
+
+        #endregion
+
 
 
         public void Update()

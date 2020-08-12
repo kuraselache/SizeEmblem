@@ -2,7 +2,7 @@
 using SizeEmblem.Assets.Scripts.UI.Base;
 using System;
 
-namespace SizeEmblem.Assets.Scripts.UI
+namespace SizeEmblem.Assets.Scripts.UI.Windows
 {
     public class EndPhaseWindow : WindowBase, IEndPhaseWindow
     {
